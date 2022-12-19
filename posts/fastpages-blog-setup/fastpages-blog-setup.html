@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-05-09">
+<meta name="description" content="Start your blogging journey in a few easy steps.">
+
+<title>Saṃsāra - Setting up your blog with Fastpages</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Saṃsāra</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/samsaara"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Setting up your blog with Fastpages</h1>
+                  <div>
+        <div class="description">
+          Start your blogging journey in a few easy steps.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">meta</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 9, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a>
+  <ul class="collapse">
+  <li><a href="#quest-for-the-right-tool" id="toc-quest-for-the-right-tool" class="nav-link" data-scroll-target="#quest-for-the-right-tool">Quest for the right tool</a></li>
+  </ul></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">Setup</a>
+  <ul class="collapse">
+  <li><a href="#test-locally" id="toc-test-locally" class="nav-link" data-scroll-target="#test-locally">Test Locally</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>After going through a bit of an intensive setup, I thought of writing up my journey &amp; difficulties I faced while setting up this blog so that it could help others who might start later. <i class="fa-solid fa-person-hiking" aria-label="person-hiking"></i></p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>I was looking for ways to have my tiny little place on the internet &amp; therefore scouted for feasible options. As a Data Scientist, I interact with code regularly and (Jupyter) Notebooks are part of our DNA :stuck_out_tongue:. So the criteria that I had set for myself was that whatever platform I choose, it has to be (a) very code friendly, (b) easy to maintain, and (c) relatively affordable (if possible, even free).</p>
+<section id="quest-for-the-right-tool" class="level3">
+<h3 class="anchored" data-anchor-id="quest-for-the-right-tool">Quest for the right tool</h3>
+<p>I’m a big fan of <a href="https://www.notion.so/">Notion</a> and use it for almost everything in my private life. So I initially considered setting up my blog with <a href="https://super.so/">Super</a> as you can create websites straight away from Notion pages. Though it looks great, the pricing is something that I’m still not comfortable with (yet).</p>
+<p>Then there’s <a href="https://medium.com/">Medium</a>, which provides a nice writing experience but only as long as you don’t have much code in your content. Though affordable, just like Super, it has mediocre support for code formatting natively &amp; you have to optimize your content well ahead with a lot of GitHub gists. It also has no out-of-the-box support for mathematical symbols/equations. Read more about its shortcomings from a developer perspective in a great post from Prasanth Rao <a href="https://prrao87.github.io/blog/blogging-for-data-scientists">here</a>.Though, I might still consider using this service to post once in a while to increase my outreach. We’ll see how it goes. <i class="fa-solid fa-face-smile" aria-label="face-smile"></i></p>
+<blockquote class="blockquote">
+<p>These first two options are great if you don’t write code-heavy posts (that often) and are also very beginner friendly. But unfortunately, both of them are not free and also don’t fit well for my use case. Besides, where’s the fun if you don’t build stuff by tweaking stuff? :wink:</p>
+</blockquote>
+<p>I then decided to give <a href="https://pages.github.com">GitHub Pages</a> a try since it’s a free static site generator service from GitHub. One need not know (much) about HTML/CSS and can simply write content in human readable <code>Markdown</code> format which gets rendered as a webpage. Besides, you get a nice revision history of your blog as everything would be version controlled with GitHub. In combination with <a href="https://jekyllrb.com">Jekyll</a> (that powers Github pages), there’re numerous <a href="http://jekyllthemes.io">themes &amp; templates</a> to choose from and so much customization that can be made via styles, CSS, etc. I can easily convert Jupyter notebooks into markdown scripts and have them rendered with Jekyll. Since one can display code snippets, markdown cells, and embed 3<sup>rd</sup> party content within Jupyter notebooks, I intended to go with this as it fulfilled most of my needs… <em>until I rediscovered <a href="https://fastpages.fast.ai">Fastpages</a></em>.</p>
+<p>Fastpages, from <a href="https://fast.ai/">fast.ai</a>, turbocharges Jupyter notebooks by automating the process of creating blog posts from notebooks via Github Actions. We can write content in <em>notebooks markdown files, or <u>even Word</u> documents</em> and have them rendered as a web page. It offers so much more functionality on-top like code folding, interactive plots on a static web page via embeddings, comments &amp; emoji support :heart_eyes_cat:, etc. For an excellent introduction, please refer to the <a href="https://github.com/fastai/fastpages">official documentation</a>.</p>
+<p>That has convinced me &amp; so now you’re reading this site built with Fastpages. 🎉</p>
+</section>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>Fortunately, <a href="https://github.com/fastai/fastpages#welcome-to-fastpages">Fastpages</a> is very well documented and it is highly recommended that you go through that first. However, you might still encounter some problems because of some outdated documentation, and if in case you want to test it locally on Linux systems, which is what I cover here. So, without further ado, let’s dive in.</p>
+<ol type="1">
+<li>Think of a name for your blog. It can just be <code>blog</code> like mine.</li>
+<li>Go through the setup instructions detailed <a href="https://github.com/fastai/fastpages#setup-instructions">here</a>.
+<ol type="1">
+<li>It might happen that once after you try to generate a copy as per the instructions above, a PR won’t be automatically generated. The debug instructions in the README are a bit outdated. In this case, go to the <code>Settings -&gt; Actions -&gt; General</code> section of your newly created blog repository and ensure that you have <code>Read and write permissions</code> enabled and the last checkbox is ✔️ like :point_down:. Hit <code>Save</code>. <img src="actions_debug.png" class="img-fluid"></li>
+<li>Go to the <code>Actions</code> tab and you might see a failed section. Ignore what it is for now and click that failed one. Most likely it’d be a <code>Setup</code> workflow failure. On the top right, from the drop-down menu <code>Re-run jobs</code>, select <code>Re-run failed jobs</code>.</li>
+<li>Once the above steps are all ✅, go to the <code>Pull Requests</code> tab and wait for some time. Your first PR would soon be automatically created. You can also optionally check the progress under the <code>Actions</code> tab if desired.</li>
+<li>Now follow the instructions in the PR and merge it.</li>
+</ol></li>
+<li>Congratulations :confetti_ball:. Your blog would soon be up &amp; running at <code>{your-username}.github.io/{repo-name}</code>. Now you can make changes directly on GitHub online or create notebook/markdown/Word files locally and simply upload them as per the instructions into the right folder. Your blog would be updated just like that (in a few minutes). 🪄</li>
+</ol>
+<section id="test-locally" class="level3">
+<h3 class="anchored" data-anchor-id="test-locally">Test Locally</h3>
+<p>In most of the cases, you might want to check how your post looks like before you publish to make sure it looks as you intend it to be, especially when it contains data from different sources or in different formats. This is when having the option of testing it locally comes in handy. With Fastpages, you can run your blog locally to see how it would look like so that you can fix any nitty gritty details before pushing it online.</p>
+<p>Fastpages again provides a <a href="https://github.com/fastai/fastpages/blob/master/_fastpages_docs/DEVELOPMENT.md">good documentation</a> on how to test it locally with the help of Docker <i class="fa-brands fa-docker" aria-label="docker"></i>. It has worked fine on my Mac <i class="fa-solid fa-laptop" aria-label="laptop"></i> but installing/upgrading Docker on Linux <i class="fa-brands fa-linux" aria-label="linux"></i> is still nowhere as smooth as on Mac and hence I had to go through a bit of digging into forums to make it work on my Ubuntu <i class="fa-brands fa-fa-ubuntu" aria-label="fa-ubuntu"></i> machine especially on the latest version <strong>22.04 LTS</strong>. So, going forward I’d cover only this scenario.</p>
+<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Info
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For Mac/Windows, all you need is Docker installed and simply run <font color="teal">make server</font> from the root level of the repo.</p>
+</div>
+</div>
+<ol type="1">
+<li>Docker Desktop for Linux (DD4L) is still in beta and is only available for <code>21.XX</code> versions of Ubuntu. So if you have that, go ahead with the setup below. If not, skip to the next step.
+<ol type="1">
+<li>Follow the Docker installation instructions from the <a href="https://docs.docker.com/desktop/linux/">official documentation</a>.</li>
+<li>If you had installed Docker via <code>Snap</code> or you had a previous preview version of Docker Desktop installed, it’s recommended to uninstall them completely. See more <a href="https://askubuntu.com/questions/935569/how-to-completely-uninstall-docker">here</a> for help on how to do that.</li>
+</ol></li>
+<li>Since Ubuntu <strong>22.04 LTS</strong> is not yet supported, I ended up installing <i class="fa-brands fa-docker" aria-label="docker"></i> (not Docker Desktop) from <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04">here</a>.</li>
+<li>Check if you have <code>docker-compose</code> installed by doing <code>which docker-compose</code> or <code>docker-compose -v</code>. If not, install it as a <a href="https://docs.docker.com/compose/install/#install-compose-as-standalone-binary-on-linux-systems">standalone binary</a>.
+<ol type="1">
+<li>I’m not sure if it also installs <code>Make</code> but if it doesn’t, please install it too following the instructions <a href="https://www.linuxfordevices.com/tutorials/install-cmake-on-linux">here</a>.</li>
+</ol></li>
+<li>Run <code>make server</code> from the top level of your repository.
+<ol type="1">
+<li>Your Jupyter server would be available shortly at <code>http://localhost:8080/tree</code> and it would take a bit of time for your blog to be available under <code>http://localhost:4000/{your-repo-name}</code>. Be patient. :relieved:</li>
+</ol></li>
+</ol>
+<div class="callout-info callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Info
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>if <font color="teal">make server</font> doesn’t work because of permission issues, try <font color="teal"><b>sudo</b> make server</font> instead</p>
+</div>
+</div>
+<hr>
+<p>Congratulations once again! :tada: You now have a local version of your blog running. You can create new posts and have them rendered almost instantly :sparkles:. Once you’re happy with the content &amp; format, you can push it (preferably in a new branch and making a PR so that your <em>main/master</em> branch is unaffected). If you feel a bit adventurous, try customizing your blog more to your liking by changing fonts/styles, etc.</p>
+<p>If you like this blog’s customization, checkout its <i class="fa-brands fa-github" aria-label="github"></i> <a href="https://github.com/samsaara/blog">repo</a> esp.&nbsp;its <code>custom-style.scss</code>. May be I’ll write another post detailing it.</p>
+<p>Good Luck &amp; Happy Blogging! ❤️</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

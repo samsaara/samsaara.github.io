@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://samsaara.github.io/index.html</loc>
+    <lastmod>2022-12-19T17:47:32.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/about.html</loc>
+    <lastmod>2022-12-19T17:47:33.607Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
+    <lastmod>2022-12-19T17:47:34.359Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/migrate-to-quarto/index.html</loc>
+    <lastmod>2022-12-19T17:47:34.647Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
+    <lastmod>2022-12-19T17:47:35.079Z</lastmod>
+  </url>
+</urlset>

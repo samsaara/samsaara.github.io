@@ -1,0 +1,10 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/migrate-to-quarto/index.html",
+      "/posts/duckdb-tutorial/duckdb-tutorial.html",
+      "/posts/fastpages-blog-setup/fastpages-blog-setup.html"
+    ]
+  }
+]
