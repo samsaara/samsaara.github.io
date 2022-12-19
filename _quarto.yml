@@ -3,11 +3,15 @@ project:
 
 website:
   title: "Saṃsāra"
+  description: "posts about data science, learning & any other upcoming random stuff from Vivek Vaddina"
+  site-url: https://samsaara.github.io/
   navbar:
     right:
       - about.qmd
       - icon: github
         href: https://github.com/samsaara
+      - icon: rss
+        href: index.xml
 format:
   html:
     theme: solar
