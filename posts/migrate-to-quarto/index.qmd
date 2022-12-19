@@ -3,6 +3,7 @@ title: "Migrating from Fastpages to Quarto"
 description: "blogging setup... again..."
 date: "2022-12-18"
 categories: [meta]
+image: data-migration.jpg
 ---
 
 [Fastpages](https://fastpages.fast.ai), based on which my original blog was [setup](../fastpages-blog-setup/fastpages-blog-setup.md) has been archived and they now recommend using [Quarto](https://quarto.org) instead. If you're starting new, the latter is the recommended way to go but if you too have a fastpages blog setup initially and want to migrate, there's a [migration guide](https://nbdev.fast.ai/tutorials/blogging.html#migrating-from-fastpages) available. It's not completely perfect as you have to tweak a few bits here & there before you see all the renderings correctly (because of slight syntactic variations amongst other things).
