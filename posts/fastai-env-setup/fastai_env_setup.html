@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2022-12-18">
-<meta name="description" content="blogging setup… revisited…">
 
-<title>Saṃsāra - Migrating from Fastpages to Quarto</title>
+<title>Saṃsāra - fastai env setup</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -105,28 +103,14 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Migrating from Fastpages to Quarto</h1>
-                  <div>
-        <div class="description">
-          blogging setup… revisited…
-        </div>
-      </div>
-                          <div class="quarto-categories">
-                <div class="quarto-category">meta</div>
-              </div>
-                  </div>
+      <h1 class="title">fastai env setup</h1>
+                      </div>
   </div>
     
   
   <div class="quarto-title-meta">
 
       
-      <div>
-      <div class="quarto-title-meta-heading">Published</div>
-      <div class="quarto-title-meta-contents">
-        <p class="date">December 18, 2022</p>
-      </div>
-    </div>
     
       
     </div>
@@ -142,10 +126,8 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><a href="https://fastpages.fast.ai">Fastpages</a>, based on which my original blog was <a href="../../posts/fastpages-blog-setup/fastpages-blog-setup.html">setup</a> has been archived and they now recommend using <a href="https://quarto.org">Quarto</a> instead. If you’re starting new, the latter is the recommended way to go but if you too have a fastpages blog setup initially and want to migrate, there’s a <a href="https://nbdev.fast.ai/tutorials/blogging.html#migrating-from-fastpages">migration guide</a> available. It’s not completely perfect as you have to tweak a few bits here &amp; there before you see all the renderings correctly (because of slight syntactic variations amongst other things).</p>
-<p>However, I felt quarto to be much more intuitive and easy to setup. I also did the migration but found manually moving posts from my old blog repo to the new quarto repo to be a bit easier. (Migration worked but I was not happy with the directories it created as part of it… I found it aesthetically less pleasing and hence moved them myself).</p>
-<p>For simple blogging, fastpages offered more than enough features and quarto offers even more on top of that. It’s easy to get started with quarto. Head over to the <a href="https://quarto.org/docs/guide/">start guide</a> to learn more.</p>
-<p>I do miss the advanced styling options I setup in <em>fastpages</em> though… will have to dig into Quarto to see how much I can reuse. Until then, have fun with my frugalistic looking blog! :D</p>
+<p>It’s been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from fastai? :D In this post, we will see how to quickly setup your environment for running notebooks locally to put your hard earned GPUs to use :p</p>
+<p>Firstly, you need <code>mamba</code>. Use it wherever you use <code>conda</code> because it’s much faster. Once you install it, run the following script:</p>
 
 
 

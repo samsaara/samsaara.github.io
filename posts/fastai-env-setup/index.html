@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2022-12-18">
-<meta name="description" content="blogging setup… revisited…">
+<meta name="dcterms.date" content="2022-12-19">
+<meta name="description" content="get your notebooks running locally with GPU support">
 
-<title>Saṃsāra - Migrating from Fastpages to Quarto</title>
+<title>Saṃsāra - fastai env setup</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,6 +22,69 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -105,14 +168,15 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Migrating from Fastpages to Quarto</h1>
+      <h1 class="title">fastai env setup</h1>
                   <div>
         <div class="description">
-          blogging setup… revisited…
+          get your notebooks running locally with GPU support
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">meta</div>
+                <div class="quarto-category">code</div>
+                <div class="quarto-category">setup</div>
               </div>
                   </div>
   </div>
@@ -124,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">December 18, 2022</p>
+        <p class="date">December 19, 2022</p>
       </div>
     </div>
     
@@ -142,10 +206,24 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<p><a href="https://fastpages.fast.ai">Fastpages</a>, based on which my original blog was <a href="../../posts/fastpages-blog-setup/fastpages-blog-setup.html">setup</a> has been archived and they now recommend using <a href="https://quarto.org">Quarto</a> instead. If you’re starting new, the latter is the recommended way to go but if you too have a fastpages blog setup initially and want to migrate, there’s a <a href="https://nbdev.fast.ai/tutorials/blogging.html#migrating-from-fastpages">migration guide</a> available. It’s not completely perfect as you have to tweak a few bits here &amp; there before you see all the renderings correctly (because of slight syntactic variations amongst other things).</p>
-<p>However, I felt quarto to be much more intuitive and easy to setup. I also did the migration but found manually moving posts from my old blog repo to the new quarto repo to be a bit easier. (Migration worked but I was not happy with the directories it created as part of it… I found it aesthetically less pleasing and hence moved them myself).</p>
-<p>For simple blogging, fastpages offered more than enough features and quarto offers even more on top of that. It’s easy to get started with quarto. Head over to the <a href="https://quarto.org/docs/guide/">start guide</a> to learn more.</p>
-<p>I do miss the advanced styling options I setup in <em>fastpages</em> though… will have to dig into Quarto to see how much I can reuse. Until then, have fun with my frugalistic looking blog! :D</p>
+<p>It’s been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from <a href="https://course.fast.ai/">fastai</a>? :D In this post, we will see how to quickly setup your dev environment for running notebooks locally to put your hard earned GPUs to use :p</p>
+<p>Of course, you can run your notebooks on cloud with free GPU support on platforms such as <em><a href="https://colab.research.google.com/">Google Colab</a></em>, <em><a href="https://www.paperspace.com/gradient/notebooks">Paperspace Gradient</a></em> or even <em><a href="https://www.kaggle.com/docs/notebooks">kaggle notebooks</a></em> but sometimes, it feels good to run things locally without worrying too much about quotas or network issues etc. If you’re starting new in this field, it’s highly recommended to try the above platforms first.</p>
+<p>Firstly, you need <a href="https://anaconda.org/conda-forge/mamba">mamba</a>. Use it wherever you use <code>conda</code> because it’s much faster. Once you install it, run the following script:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># create a conda environment</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> fastai python=3.10</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install suitable version of `pyroch-cuda` at your time of installation</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install pytorch torchvision torchaudio pytorch-cuda=11.7 <span class="at">-c</span> pytorch <span class="at">-c</span> nvidia</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># install fastai</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> fastchan fastai</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> conda-forge jupyterlab ipywidgets</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Make sure you can use GPU with pytorch by running this in your python session:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> torch.cuda.is_available()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>That’s it. Now you can run notebooks with GPU support locally simply by doing <code>mamba activate fastai</code> and launching <em>jupyter</em> ! 💚</p>
 
 
 

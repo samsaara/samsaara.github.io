@@ -2,22 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://samsaara.github.io/index.html</loc>
-    <lastmod>2022-12-19T18:28:24.537Z</lastmod>
+    <lastmod>2022-12-20T19:55:47.724Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/about.html</loc>
-    <lastmod>2022-12-19T18:28:24.857Z</lastmod>
+    <lastmod>2022-12-20T19:55:48.040Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
-    <lastmod>2022-12-19T18:28:25.593Z</lastmod>
+    <lastmod>2022-12-20T19:55:48.764Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/face-mask-detection/facemask_detection.html</loc>
+    <lastmod>2022-12-20T19:55:49.312Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/migrate-to-quarto/index.html</loc>
-    <lastmod>2022-12-19T18:28:25.889Z</lastmod>
+    <lastmod>2022-12-20T19:55:49.604Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
-    <lastmod>2022-12-19T18:28:26.285Z</lastmod>
+    <lastmod>2022-12-20T19:55:50.048Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/fastai-env-setup/index.html</loc>
+    <lastmod>2022-12-20T19:55:50.396Z</lastmod>
   </url>
 </urlset>

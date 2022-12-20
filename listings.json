@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/face-mask-detection/facemask_detection.html",
+      "/posts/fastai-env-setup/index.html",
       "/posts/migrate-to-quarto/index.html",
       "/posts/duckdb-tutorial/duckdb-tutorial.html",
       "/posts/fastpages-blog-setup/fastpages-blog-setup.html"
