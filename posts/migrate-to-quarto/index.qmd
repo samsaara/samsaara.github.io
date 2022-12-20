@@ -1,6 +1,6 @@
 ---
 title: "Migrating from Fastpages to Quarto"
-description: "blogging setup... again..."
+description: "blogging setup... revisited..."
 date: "2022-12-18"
 categories: [meta]
 image: data-migration.jpg
