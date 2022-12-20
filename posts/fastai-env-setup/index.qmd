@@ -1,0 +1,33 @@
+---
+title: "fastai env setup"
+description: "get your notebooks running locally with GPU support"
+date: "2022-12-19"
+categories: [code, setup]
+image: dev_setup.jpg
+---
+
+It's been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from [fastai](https://course.fast.ai/)? :D In this post, we will see how to quickly setup your dev environment for running notebooks locally to put your hard earned GPUs to use :p
+
+Firstly, you need [mamba](https://anaconda.org/conda-forge/mamba). Use it wherever you use `conda` because it's much faster. Once you install it, run the following script:
+
+```bash
+
+# create a conda environment
+mamba create -n fastai python=3.10
+
+# install suitable version of `pyroch-cuda` at your time of installation
+mamba install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
+
+# install fastai
+mamba install -c fastchan fastai
+
+mamba install -c conda-forge jupyterlab ipywidgets
+```
+
+Make sure you can use GPU with pytorch by running this in your python session:
+```python
+import torch
+assert torch.cuda.is_available()
+```
+
+That's it. Now you can run notebooks with GPU support locally simply by doing `mamba activate fastai` and launching _jupyter_ ! 💚
