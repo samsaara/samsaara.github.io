@@ -8,6 +8,8 @@ image: dev_setup.jpg
 
 It's been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from [fastai](https://course.fast.ai/)? :D In this post, we will see how to quickly setup your dev environment for running notebooks locally to put your hard earned GPUs to use :p
 
+Of course, you can run your notebooks on cloud with free GPU support on platforms such as _[Google Colab](https://colab.research.google.com/)_, _[Paperspace Gradient](https://www.paperspace.com/gradient/notebooks)_ or even _[kaggle notebooks](https://www.kaggle.com/docs/notebooks)_ but sometimes, it feels good to run things locally without worrying too much about quotas or network issues etc. If you're starting new in this field, it's highly recommended to try the above platforms first.
+
 Firstly, you need [mamba](https://anaconda.org/conda-forge/mamba). Use it wherever you use `conda` because it's much faster. Once you install it, run the following script:
 
 ```bash
