@@ -2,7 +2,7 @@
 title: "fastai env setup"
 description: "get your notebooks running locally with GPU support"
 date: "2022-12-19"
-categories: [code, setup]
+categories: [setup, fastai]
 image: dev_setup.jpg
 ---
 
@@ -17,7 +17,7 @@ Firstly, you need [mamba](https://anaconda.org/conda-forge/mamba). Use it wherev
 # create a conda environment
 mamba create -n fastai python=3.10
 
-# install suitable version of `pyroch-cuda` at your time of installation
+# install suitable version of `pytorch-cuda` at your time of installation
 mamba install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia
 
 # install fastai
