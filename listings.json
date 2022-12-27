@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/mnist-transforms/starter-mnist-with-fast-ai.html",
       "/posts/face-mask-detection/facemask_detection.html",
       "/posts/fastai-env-setup/index.html",
       "/posts/migrate-to-quarto/index.html",
