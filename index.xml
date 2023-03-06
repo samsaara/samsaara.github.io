@@ -17,7 +17,246 @@
 <width>144</width>
 </image>
 <generator>quarto-1.2.280</generator>
-<lastBuildDate>Mon, 26 Dec 2022 23:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 04 Mar 2023 23:00:00 GMT</lastBuildDate>
+<item>
+  <title>Introduction to GIS with QGIS &amp; Python - Part I</title>
+  <link>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>As a data scientist, adding data analysis of geospatial information systems (GIS) to our skill set is a smart move in today’s data-driven world. The availability of free immense satellite and map data online, combined with the power of open source GIS tools, presents enormous opportunities for analyzing and visualizing geospatial data. With GIS, data scientists can enhance their data analytics and machine learning abilities, resulting in a more comprehensive understanding of complex problems such as climate change.</p>
+<p>By leveraging GIS, we can monitor and track the effects of climate change on the planet by analyzing data from a wide range of sources, such as temperature sensors, satellite imagery, and ocean currents, to provide a better understanding of its impact on our environment. This information can then be used to inform decision-making processes, such as predicting sea level rise and assessing the impact on coastal cities etc.</p>
+<p>Moreover, this also empowers common people by allowing them to answer questions about their own environment and surroundings. For example, farmers can use GIS to monitor crop health, water availability, and soil quality, while city dwellers can use it to explore the impact of urbanization on the environment. Anyone can access these tools to perform basic analysis, enabling them to become citizen scientists and contribute to the health of our planet.</p>
+<p>In a series of posts, we will try to explore the basics of GIS, and progress towards addressing some interesting questions through the application of QGIS, Python and data visualization. Although I am also new to this area and currently learning, I invite you to join me on this excursion of discovery.</p>
+<p>Together, we shall learn, experiment and explore the potential of GIS to transform data analytics by combining it with geospatial information.</p>
+<p>By the end of this session, you’ll be able to do this:</p>
+<div id="fig-final_map" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/final_map.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Final Map</figcaption><p></p>
+</figure>
+</div>
+<p>GIS, or <code>Geographic Information System</code>, is a tool for mapping and analyzing different types of data related to a specific location on 🌍. It allows you to visualize data on a map, such as population density, land use, or weather patterns. By combining data from various sources, we can uncover patterns, relationships, and derive insights that may not be apparent from individual datasets alone. It can be used to answer questions such as: Where are the most vulnerable areas to flooding? How has urbanization changed over time? And, where should we build a new school to ensure accessibility to the largest number of students? etc.</p>
+<div id="fig-gislayers" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-a" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/gislayers_I.jpg" class="img-fluid figure-img" data-ref-parent="fig-gislayers"></p>
+<p></p><figcaption class="figure-caption">(a)</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-b" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/gislayers_II.jpg" class="img-fluid figure-img" data-ref-parent="fig-gislayers"></p>
+<p></p><figcaption class="figure-caption">(b)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: GIS Layers<sup>1</sup></figcaption><p></p>
+</figure>
+</div>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A <em>raster</em> layer represents <strong>continuous</strong> data throughout the map such as elevation, temperature etc. It’s made up of grid of cells and the size of these determine the resolution of the layer.</p>
+</div>
+</div>
+</div>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A <em>vector</em> layer represents <strong>discrete</strong> data such as points, lines, polygons used typically for depiction of roads, buildings etc. This data need not be present throughout the layer.</p>
+</div>
+</div>
+</div>
+<p>QGIS is an open source tool to explore this layered GIS. Download it from <a href="https://qgis.org/">qgis.org</a> and install it. You may be greeted with the following window. You can create &amp; save the project by clicking <code>Project -&gt; Save As</code> on the top left menu of the application.</p>
+<div id="fig-newproject" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/01_new_project.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: New Project</figcaption><p></p>
+</figure>
+</div>
+<p>The UI is mainly divided into the following areas:</p>
+<ul>
+<li><code>1</code> contains the <em>Browser</em> where you can access your filesystem, layers, web connections etc. (discussed later as we learn).</li>
+<li><code>2</code> contains the map layers that you have imported for this project/use case.</li>
+<li><code>3</code> is the canvas where the layers are actually visualized.</li>
+<li><code>4</code> contains all the processing algorithms that you might need to carry your analysis and also for stylizing your map data.</li>
+</ul>
+<p>QGIS has <em>much, much</em> more things to offer but these four are good enough to start with.</p>
+<p>The first thing we do is get some <code>basemaps</code>.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A Basemap is a fundamental layer that serves as a backdrop for additional data layers. It is akin to a blank slate upon which other data layers can be superimposed to create a complete picture and is an essential reference point for all other layers, allowing users to understand the spatial relationships and patterns between various data points. The basemap can be zoomed in or out to reveal different levels of detail, just like a traditional map.</p>
+</div>
+</div>
+</div>
+<p>For this, download the <a href="https://github.com/giswqs/qgis-earthengine-examples/blob/master/Basemaps/qgis_basemaps.py">qgis_basemaps.py</a> (courtesy of <a href="https://github.com/giswqs">Asst. Prof.&nbsp;Qiusheng Wu</a>) and open the python console like so:</p>
+<div id="fig-newproject" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/python_console.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4: Python Console</figcaption><p></p>
+</figure>
+</div>
+<p>Paste the downloaded script and hit run (green ▶️). You see all basemaps loaded under <code>XYZ Tiles</code> in <code>browser</code>.</p>
+<p>In order to view a basemap, simply drag &amp; drop any of them into the <em>Canvas</em>. You will notice that the <em>Layers</em> widget starts getting populated. Any subsequent basemaps that you drop to the canvas will get stacked here. In general, we need one basemap layer and one or more data layers for analysis. Which basemap to choose depends on the analysis you’re carrying.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>You can uncheck the layers that you don’t want or simply click on them and hit <code>Ctrl+D</code> to remove them.</p>
+</div>
+</div>
+<p>As our initial use case, let’s examine the 2020 European Air Quality dataset (head <a href="https://sdi.eea.europa.eu/catalogue/srv/eng/catalog.search#/metadata/25f13624-3465-4de5-b1d3-1a479a4fe51b">here</a>, hit <em>Direct Download</em>). This dataset provides concentrations for the air pollutants <img src="https://latex.codecogs.com/png.latex?NO_2"> at 1 km grid.</p>
+<p>It contains a <code>.tif</code> file along with other metadata.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>TIF or TIFF (stands for “Tagged Image File Format”), is a file format used for storing raster images, which are digital images made up of a grid of pixels or dots. They can store images with different color depths, including grayscale, RGB, and CMYK color modes, and can be compressed or uncompressed. They can also include additional metadata such as tags, keywords, and copyright information.</p>
+<p>GeoTIFFs are similar to regular TIFF files, but with the added benefit of spatial information embedded in the file itself. This information can include the projection, coordinate system, and other metadata that is essential for accurate georeferencing. Additionally, GeoTIFF files can be used to store multiple bands of data, such as different wavelengths of light from a satellite image, which allows for more complex analysis of the data.</p>
+</div>
+</div>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/europe.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5: Europe Air Quality 2020</figcaption><p></p>
+</figure>
+</div>
+<p>To visualize the <code>tif</code> file (<code>no2_avg_20.tif</code>), simply drag &amp; drop to the canvas. Here’s what it looks like (after some styling). As you can see, it’s beautiful &amp; colorful but without context. That’s where our basemap comes in, as you might have expected. You can settle on any that’s appropriate for our use case here. I liked <code>Esri National Geographic</code> for this as it displays the borders of the countries more clearly. And remember, basemaps always come at the bottom. So make sure you reorder them in the <em>Layers</em> widget accordingly.</p>
+<p>The default <code>.tif</code> file shows a single band grayscale image. A band is like a channel, much like RGB of a color image. But that looks dull though it has the potential to show much more visual information. We can convert those values into quantiles and visualize those instead. For that, we will now turn our attention to the <code>styling</code> section (shown below).</p>
+<p>Once you click it, a new tab opens to the right in place of the <code>processing toolbox</code> area from the figure 3 above.</p>
+<div id="fig-styling" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-a" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/styling.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(a)</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-b" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/air_quality_styling.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(b)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6: Styling</figcaption><p></p>
+</figure>
+</div>
+<p>Make sure that the <code>.tif</code> file is selected and do the following to enhance the visual information (<code>Fig-6(b)</code>):</p>
+<ul>
+<li><code>1</code> select that to <em>singleband pseudocolor</em> from the dropdown menu</li>
+<li><code>2</code> select <code>discrete</code> interpolation</li>
+<li><code>3</code> select appropriate color map (<code>spectral</code>/<code>viridis</code> seems better)</li>
+<li><code>4</code> choose any reasonable no. of possible classes. The more you choose, the higher the gradients of a particular color and hence not <em>that</em> perceivable to our naked eye beyond a certain limit.</li>
+<li><code>5</code> select <em>quantile</em> mode</li>
+<li><code>6</code> hit <em>classify</em> to force render the data again.</li>
+<li><code>7</code> click <em>transparency</em> to change the opacity level to <code>~40%</code> so as to be able to read the underlying basemap data.</li>
+</ul>
+<p>Here, we just binned the values of this grayscale image and assigned a color to each bin.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/europe_aq.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7: Layered Map</figcaption><p></p>
+</figure>
+</div>
+<ul>
+<li>Notice how the central europe is much more polluted than the rest.</li>
+<li>Western Europe is less polluted than its eastern counterpart</li>
+<li>As expected, all major capitals, popular cities are relatively very polluted.</li>
+</ul>
+<p>In a modern industrialized world, a good portion of air pollution is caused by human settlements. To find its effects, we can check where are its majot sites. Headover <a href="https://www.naturalearthdata.com/downloads/10m-cultural-vectors">here</a> and download <em>populated places, urban areas, airports, ports</em> datasets and unzip them. These contain data at 1:10 (i.e., 1cm = 100km) scale.</p>
+<p>Drag &amp; drop the <code>ne_10m_urban_areas</code> shapefile layer onto canvas. This shows areas of dense human habitation.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>A <code>shapefile</code> is a common file format used to store and exchange geospatial vector data.</p>
+</div>
+</div>
+</div>
+<p>You can customize the styling based on your choices and make sure it doesn’t override any of the data shown from the underlying layers. Here’re mine.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/urban_styling.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8: Styling for Urban Areas</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/urban_areas.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;9: Urban Areas</figcaption><p></p>
+</figure>
+</div>
+<p>Not surprisingly, most parts of urban settlement area is under the region with worse air quality (dark red region)</p>
+<p>Let’s now also add the <em>populated places</em> data layer but this time from the commandline with the help of python.</p>
+<p>To do that, let’s open the python console from the top menu (<code>plugins -&gt; python console</code> or hit <code>Ctrl+Alt+P</code>). Qgis already makes an instance of its interface available under the variable <code>iface</code>.</p>
+<p>To add this vector layer to the canvas, simply run</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="co" style="color: #5E5E5E;"># replace the filepath accordingly</span></span>
+<span id="cb1-2">shapefile_path <span class="op" style="color: #5E5E5E;">=</span> <span class="st" style="color: #20794D;">'/home/&lt;user&gt;/Downloads/ne_10m_populated_places/ne_10m_populated_places.shp'</span></span>
+<span id="cb1-3">iface.addVectorLayer(shapefile_path, <span class="st" style="color: #20794D;">'populated_places'</span>, <span class="st" style="color: #20794D;">''</span>)</span></code></pre></div>
+<p>You can notice that the layer is then added with the name <code>populated_places</code>. Headover to its styling to choose how those individual data points are represented.</p>
+<p>Adding the other layers (i.e., <code>ne_10m_ports</code> &amp; <code>ne_10m_airports</code>) similarly would give us our final result.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_I/images/final_map_2.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;10: Final Map with all layers</figcaption><p></p>
+</figure>
+</div>
+<p>There’s so much information to unpack here (open in new tab for higher resolution) that I leave it as an exercise to the reader to derive their own insights.</p>
+<p>I hope this has helped you kickstart your journey into GIS analysis and understand our world a bit better. In the next post, we will see how to handle even more types of data, perform a complex processing pipeline and more.</p>
+<p>Bis dann 👋</p>
+
+
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><a href="https://www.researchgate.net/profile/Asma-Ibraheem/publication/305698432/figure/fig1/AS:388830134849541@1469715737031/Example-of-GIS-Data-Layers-or-Themes-Folger-2009.png">2a</a> and <a href="https://www.weather.gov/images/bmx/GIS/gislayers.jpg">2b</a>↩︎</p></li>
+</ol>
+</section></div> ]]></description>
+  <category>EDA</category>
+  <category>GIS</category>
+  <category>QGIS</category>
+  <guid>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</guid>
+  <pubDate>Sat, 04 Mar 2023 23:00:00 GMT</pubDate>
+  <media:content url="https://samsaara.github.io/posts/geospatial_intro_part_I/unsplash.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Diving into Fastai’s mid-level API with MNIST</title>
   <link>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</link>

@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/geospatial_intro_part_I/GIS.html",
       "/posts/mnist-transforms/starter-mnist-with-fast-ai.html",
       "/posts/face-mask-detection/facemask_detection.html",
       "/posts/fastai-env-setup/index.html",

@@ -2,34 +2,38 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://samsaara.github.io/index.html</loc>
-    <lastmod>2022-12-27T19:17:59.278Z</lastmod>
+    <lastmod>2023-03-06T12:03:37.109Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/about.html</loc>
-    <lastmod>2022-12-27T19:17:59.818Z</lastmod>
+    <lastmod>2023-03-06T12:03:37.433Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
-    <lastmod>2022-12-27T19:18:00.558Z</lastmod>
+    <lastmod>2023-03-06T12:03:38.177Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/face-mask-detection/facemask_detection.html</loc>
-    <lastmod>2022-12-27T19:18:01.074Z</lastmod>
+    <lastmod>2023-03-06T12:03:38.745Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/migrate-to-quarto/index.html</loc>
-    <lastmod>2022-12-27T19:18:01.378Z</lastmod>
+    <lastmod>2023-03-06T12:03:39.053Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
-    <lastmod>2022-12-27T19:18:01.794Z</lastmod>
+    <lastmod>2023-03-06T12:03:39.505Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</loc>
-    <lastmod>2022-12-27T19:18:02.370Z</lastmod>
+    <lastmod>2023-03-06T12:03:40.117Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</loc>
+    <lastmod>2023-03-06T12:03:40.633Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/fastai-env-setup/index.html</loc>
-    <lastmod>2022-12-27T19:18:02.682Z</lastmod>
+    <lastmod>2023-03-06T12:03:40.977Z</lastmod>
   </url>
 </urlset>
