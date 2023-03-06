@@ -14,8 +14,6 @@ website:
         href: index.xml
 format:
   html:
-    theme: solar
+    theme: minty
     css: styles.css
-
-
 
