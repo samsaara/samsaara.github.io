@@ -17,10 +17,582 @@
 <width>144</width>
 </image>
 <generator>quarto-1.2.280</generator>
-<lastBuildDate>Sat, 04 Mar 2023 23:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 06 Mar 2023 23:00:00 GMT</lastBuildDate>
+<item>
+  <title>Introduction to GIS with QGIS &amp; Python - Part II</title>
+  <link>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>Welcome back! In our <a href="https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html">last post</a>, we took a look at the basics of GIS and how we can explore some of the datasets in QGIS with shapefiles, TIFF files to derive interesting insights around air quality. This post covers loading data from CSV files on disk and also directly from online using server connections.</p>
+<section id="load-data-from-text-files" class="level1">
+<h1>Load data from text files</h1>
+<p>For this use case, let’s examine the latest satellite data where potential 🔥 events were detected in North American region. This could be a wildfire or controlled fire or anything else and may also occupy less than one pixel of the 🛰️ image depending on the resolution of that 🛰️ that’s taking it. <a href="https://www.noaa.gov/">NOAA</a>’s Hazard Mapping System (HMS) provide daily updated data for fire &amp; smoke detected. Let’s <a href="https://www.ospo.noaa.gov/Products/land/hms.html#data">download the latest data</a>. There are multiple data formats available but since we have seen shapefile in the last post, let’s try <code>text</code> file now.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/hms.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: HMS data download</figcaption><p></p>
+</figure>
+</div>
+<p>Let’s read a few lines from the file:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">'data/hms_fire20230306.txt'</span>)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">df.shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>(24485, 8)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">df.sample(<span class="dv" style="color: #AD0000;">10</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Lon</th>
+      <th>Lat</th>
+      <th>YearDay</th>
+      <th>Time</th>
+      <th>Satellite</th>
+      <th>Method</th>
+      <th>Ecosystem</th>
+      <th>FRP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>17651</th>
+      <td>-90.261902</td>
+      <td>19.713993</td>
+      <td>2023065</td>
+      <td>2201</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>34</td>
+      <td>87.415</td>
+    </tr>
+    <tr>
+      <th>2835</th>
+      <td>-78.968910</td>
+      <td>21.834669</td>
+      <td>2023065</td>
+      <td>1746</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>5250</th>
+      <td>-76.867294</td>
+      <td>18.226049</td>
+      <td>2023065</td>
+      <td>1840</td>
+      <td>NOAA 20</td>
+      <td>VIIRS</td>
+      <td>24</td>
+      <td>5.654</td>
+    </tr>
+    <tr>
+      <th>22280</th>
+      <td>-98.832497</td>
+      <td>19.443575</td>
+      <td>2023066</td>
+      <td>46</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>41</td>
+      <td>78.344</td>
+    </tr>
+    <tr>
+      <th>794</th>
+      <td>-100.092950</td>
+      <td>24.831312</td>
+      <td>2023065</td>
+      <td>910</td>
+      <td>NOAA 20</td>
+      <td>VIIRS</td>
+      <td>47</td>
+      <td>1.258</td>
+    </tr>
+    <tr>
+      <th>19110</th>
+      <td>-71.630478</td>
+      <td>19.319798</td>
+      <td>2023065</td>
+      <td>2231</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>91</td>
+      <td>32.565</td>
+    </tr>
+    <tr>
+      <th>23370</th>
+      <td>-83.569122</td>
+      <td>22.277122</td>
+      <td>2023066</td>
+      <td>216</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>220.716</td>
+    </tr>
+    <tr>
+      <th>1933</th>
+      <td>-98.455124</td>
+      <td>36.903248</td>
+      <td>2023065</td>
+      <td>1650</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>31</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>1883</th>
+      <td>-98.248184</td>
+      <td>26.366270</td>
+      <td>2023065</td>
+      <td>1646</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>94</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>3390</th>
+      <td>-81.141960</td>
+      <td>22.947918</td>
+      <td>2023065</td>
+      <td>1758</td>
+      <td>SUOMI NPP</td>
+      <td>VIIRS</td>
+      <td>93</td>
+      <td>6.468</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>As we can see, the data contains the coordinates of the location where 🔥 detected, date and time, the 🛰️ that took the picture among other data. Especially interesting is the <code>FRP</code> as that indicates the intensity of the activity. The higher the FRP, the intense the burning.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Fire radiative power (FRP) is a measure of heat output from a fire and is related to how quickly fuel is being consumed. It is directly related to the rate of biomass consumption during the active (flaming/smoldering) phase of a fire. Look <a href="https://www.ospo.noaa.gov/Products/land/hms.html#about">here</a> for more info.</p>
+</div>
+</div>
+</div>
+<p>Let’s look from which 🛰️ are we getting the data from:</p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1">df.columns</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>Index(['        Lon', '        Lat', ' YearDay', ' Time', '       Satellite',
+       '           Method', ' Ecosystem', '        FRP'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="co" style="color: #5E5E5E;"># strip extra spaces</span></span>
+<span id="cb8-2">df.columns <span class="op" style="color: #5E5E5E;">=</span> df.columns.<span class="bu" style="color: null;">map</span>(<span class="bu" style="color: null;">str</span>.strip)</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1">df.Satellite.value_counts()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>       GOES-EAST    17871
+       SUOMI NPP     3372
+         NOAA 20     3222
+       GOES-WEST       20
+Name: Satellite, dtype: int64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">df.Satellite.value_counts(normalize<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>       GOES-EAST    0.729875
+       SUOMI NPP    0.137717
+         NOAA 20    0.131591
+       GOES-WEST    0.000817
+Name: Satellite, dtype: float64</code></pre>
+</div>
+</div>
+<p>Almost <em>75%</em> of the data is from one source.</p>
+<p>Let’s now look at the distribution of FRP</p>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span></code></pre></div>
+</div>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">sns.kdeplot(df.FRP)<span class="op" style="color: #5E5E5E;">;</span></span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Most of the 🔥 places detected are relatively less intenseful. Let’s now look at their geographical distribution.</p>
+<p>First, as usual, select a basemap from the ones we downloaded in the last post (look under XYZ Tiles in browser area). Ideally you would want to know the topography of the land in this case. So I went with <code>Google Terrain Hybrid</code>.</p>
+<p>Now, unlike shapefiles, we can’t simply drag a text file to the canvas. Instead, goto <code>Layer-&gt; Add Layer -&gt; Add Delimited Text Layer</code>. Fill it with the information as shown.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/add_txt.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Load text file</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-hint callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Hint
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t forget to click <strong>Add</strong> before close in step <code>5</code> above.</p>
+</div>
+</div>
+<p>This would stack the file over our basemap. Now this is already good… but we are still not making use of the FRP information we have. Since it’s numerical data, let’s try to colorize the data based on this. We already know the higher the FRP, the intense the 🔥 is. As these are continuous values, let’s bin them into discrete classes based on the histrogram we saw above.</p>
+<div id="fig-styling" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-a" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/fire_styling_I.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(a)</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-b" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/fire_styling_II.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(b)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Styling</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The toolbar in fig.&nbsp;3(b) can be accessed by clicking the 🟣 circle (<code>Symbol</code> section) in fig.&nbsp;3(a). Change the values as you please.</p>
+</div>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/fires.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4: 🔥 activity across Northern Americas</figcaption><p></p>
+</figure>
+</div>
+<p>We clearly see that most of the activity is exclusively detected in the SE part of North America with most parts of Cuba, SE Mexico &amp; NW of Florida.</p>
+<p>Now that we know the intensity of the fires, we can also actually know from which satellite a given data point has originated. To do that, we need to label each data point with the corresponding value in the <code>Satellite</code> field as we have seen earlier.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/cuba_styling.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5: Styling for Labels</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/cuba.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6: Coordinates with Satellite names</figcaption><p></p>
+</figure>
+</div>
+<p>You may notice that the same coordinates have the same label repeated multiple times. That got me interested. So I digged in. I suspected that it could be because of duplicate entries of the coordinates.</p>
+<div class="cell" data-execution_count="54">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">df.shape, df.drop_duplicates().shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="54">
+<pre><code>((24485, 8), (24485, 8))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="55">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">df.drop_duplicates([<span class="st" style="color: #20794D;">'Lat'</span>, <span class="st" style="color: #20794D;">'Lon'</span>]).shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="55">
+<pre><code>(9752, 8)</code></pre>
+</div>
+</div>
+<p>Indeed it was. But only the coordinates are duplicated but not all the fields.</p>
+<div class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">df[[<span class="st" style="color: #20794D;">'Lat'</span>, <span class="st" style="color: #20794D;">'Lon'</span>]].value_counts().head()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="45">
+<pre><code>Lat        Lon       
+16.311804  -92.219566    156
+19.440290  -89.355492    149
+19.479744  -89.319229    131
+19.153973  -90.197701    120
+19.499657  -89.321320    116
+dtype: int64</code></pre>
+</div>
+</div>
+<p>Let’s take one example and see what’s changing.</p>
+<div class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1">df.query(<span class="st" style="color: #20794D;">'Lon==-92.219566 and Lat==16.311804'</span>)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="46">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Lon</th>
+      <th>Lat</th>
+      <th>YearDay</th>
+      <th>Time</th>
+      <th>Satellite</th>
+      <th>Method</th>
+      <th>Ecosystem</th>
+      <th>FRP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2087</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1700</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>22.154</td>
+    </tr>
+    <tr>
+      <th>2393</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1721</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>33.626</td>
+    </tr>
+    <tr>
+      <th>2520</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1730</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>32.808</td>
+    </tr>
+    <tr>
+      <th>2738</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1741</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>31.866</td>
+    </tr>
+    <tr>
+      <th>4156</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1800</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>53.364</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>23682</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>251</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>25.892</td>
+    </tr>
+    <tr>
+      <th>23704</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>256</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>31.707</td>
+    </tr>
+    <tr>
+      <th>23759</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>301</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>32.109</td>
+    </tr>
+    <tr>
+      <th>23786</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>306</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>29.846</td>
+    </tr>
+    <tr>
+      <th>24006</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>336</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>29.942</td>
+    </tr>
+  </tbody>
+</table>
+<p>156 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="56">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">df.query(<span class="st" style="color: #20794D;">'Lon==-92.219566 and Lat==16.311804'</span>).Satellite.unique()</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
+<pre><code>array(['       GOES-EAST'], dtype=object)</code></pre>
+</div>
+</div>
+<p>Interesting! We now have different values for <code>FRP</code> over a single coordinate but at different times.</p>
+<div class="cell" data-execution_count="57">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1">(df</span>
+<span id="cb24-2"> .query(<span class="st" style="color: #20794D;">'Lon==-92.219566 and Lat==16.311804'</span>)    <span class="co" style="color: #5E5E5E;"># take one location as an example</span></span>
+<span id="cb24-3"> .sort_values([<span class="st" style="color: #20794D;">'YearDay'</span>, <span class="st" style="color: #20794D;">'Time'</span>])               <span class="co" style="color: #5E5E5E;"># sort it by time</span></span>
+<span id="cb24-4"> .query(<span class="st" style="color: #20794D;">'FRP &gt; 0'</span>)                               <span class="co" style="color: #5E5E5E;"># filter out -ve values (incorrect data?)</span></span>
+<span id="cb24-5"> .reset_index(drop<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)                         <span class="co" style="color: #5E5E5E;"># drop the index values</span></span>
+<span id="cb24-6"> .FRP</span>
+<span id="cb24-7"> .plot(title<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'FRP of a single location over time'</span>, xlabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Time'</span>, ylabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'FRP'</span>))<span class="op" style="color: #5E5E5E;">;</span></span></code></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Nice! We now see how the <code>FRP</code> has evolved over time… it looks as if the 🔥 appears to have begun, spread, and intensified before eventually extinguishing or subsiding.</p>
+<section id="filtering-a-text-file" class="level2">
+<h2 class="anchored" data-anchor-id="filtering-a-text-file">filtering a text file</h2>
+<p>Coming back to our satellite names, we can filter only for the data coming from a single satellite by right clicking on the <code>hms_fire20230306</code> layer, selecting <code>filter</code> and later entering the query like so:</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/csv_filter.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7: Filtering a CSV/TXT file</figcaption><p></p>
+</figure>
+</div>
+<ul>
+<li><code>1</code> - selects the field we want to filter</li>
+<li><code>2</code> - gets a few sample values from that field</li>
+<li><code>3</code> - double click on the field to enter it into the query box below. Alternatively you can type it as well.</li>
+<li><code>4, 5</code> - double click/type</li>
+<li><code>6</code> - clicking <code>Test</code> gives us how many rows that satisfy the condition. Hit <code>OK</code></li>
+<li><code>7</code> - ignore (don’t click it)</li>
+<li><code>8</code> - click <code>OK</code> to finalize the filtered data</li>
+</ul>
+<p>If you now look at the later, we only see the datapoints from the satellite we filtered.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/filtered_entries.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8: Map with filtered entries</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">conclusion</h2>
+<p>Now we have seen how to load text files and filtering for our desired data. You can also load <a href="http://wiki.gis.com/wiki/index.php/Well-known_text">Well Known Text</a> (WKT) and other text files in the same manner. Just make sure to select the appropriate radio button while loading them.</p>
+</section>
+</section>
+<section id="add-wfs-connection" class="level1">
+<h1>Add WFS Connection</h1>
+<p>The Web Feature Service (WFS) protocol enables users to access and query feature data over the internet, without having to download and store the data locally. This can be particularly useful when working with large datasets or when collaborating with other users who may have different data sources or access privileges. WFS allows users to view and analyze feature data from multiple sources, combine data from different sources, and perform spatial and attribute queries on the data. This can help users to make more informed decisions and gain insights from the data that might not be apparent from a single dataset.</p>
+<p>There are lot of publicly available WFS servers online (just google) including from universities, government organizations etc. <a href="https://www.geoseer.net">geoseer</a> is one such service which provides links to those servers.</p>
+<p>For our purposes, we shall take a look at one WFS server that offers water level information in Germany. So head over <a href="https://www.geoseer.net/rl.php?ql=057545d9de309f76&amp;p=1&amp;q=wfs%20germany">here</a> and copy the <a href="https://www.pegelonline.wsv.de/geoserver/gk/wfs">WFS URL</a>.</p>
+<p>As this is a data layer, as usual, we will add a basemap layer or two. In this case, I went with <code>CartoDB Positron</code>.</p>
+<p>To add the WFS connection, goto <code>WFS/OGC API - Features</code> in the <em>browser</em> area and click <code>New Connection</code>.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/wfs.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;9: New WFS Connection</figcaption><p></p>
+</figure>
+</div>
+<p>Once you have done that above, you will notice a new connection appearing under that section. Clicking on it will reveal the layer that you can now simply drag &amp; drop to the canvas.</p>
+<p>We can right click on the added layer in the <code>Layers</code> section and select <code>Open Attribute Table</code> to reveal all its data in plaintext form. We notice that there’s a field named <code>Value</code> that shows the depth of the water level. Now just like in our last use case, you can now use this field to bin its values to get the following map.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://samsaara.github.io/posts/geospatial_intro_part_II/images/water_levels.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;10: Water Levels in Germany</figcaption><p></p>
+</figure>
+</div>
+<p>It shows that the levels are higher in North than in the South (most likely being it closer to the Sea) but it’s troubling to see some major cities suffering with severe lack of ground water.</p>
+<section id="conclusion-1" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<p>Just like WFS, you can also add <a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>/<a href="https://en.wikipedia.org/wiki/Web_Coverage_Service">WCS</a> services much the same way to carry out analysis without downloading data onto your disk.</p>
+</section>
+</section>
+<section id="final-words" class="level1">
+<h1>Final Words</h1>
+<p>In this post, we have seen how to use different types of data sources and possibly lighten our data resources on disk to perform our analysis and collaborate with others online when needed. We also performed query filtering to visualize only the data we need and how to do it in a meaningful way.</p>
+<p>In the next post, we will make a bit more use of Python &amp; QGIS scripting to write a complex processing pipeline.</p>
+<p>Thanks for reading.</p>
+<p>Auf wiedersehen 👋</p>
+
+
+</section>
+
+ ]]></description>
+  <category>EDA</category>
+  <category>GIS</category>
+  <category>QGIS</category>
+  <guid>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</guid>
+  <pubDate>Mon, 06 Mar 2023 23:00:00 GMT</pubDate>
+  <media:content url="https://samsaara.github.io/posts/geospatial_intro_part_II/unsplash.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Introduction to GIS with QGIS &amp; Python - Part I</title>
-  <link>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</link>
+  <link>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</link>
   <description><![CDATA[ 
 
 
@@ -253,7 +825,7 @@ Tip
   <category>EDA</category>
   <category>GIS</category>
   <category>QGIS</category>
-  <guid>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</guid>
+  <guid>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</guid>
   <pubDate>Sat, 04 Mar 2023 23:00:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/geospatial_intro_part_I/unsplash.jpg" medium="image" type="image/jpeg"/>
 </item>

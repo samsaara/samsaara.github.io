@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.280">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-03-07">
+<meta name="description" content="how to load data from CSV/Text files, do filtering and connect to data servers">
+
+<title>Saṃsāra - Introduction to GIS with QGIS &amp; Python - Part II</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Saṃsāra</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/samsaara"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml"><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Introduction to GIS with QGIS &amp; Python - Part II</h1>
+                  <div>
+        <div class="description">
+          how to load data from CSV/Text files, do filtering and connect to data servers
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">EDA</div>
+                <div class="quarto-category">GIS</div>
+                <div class="quarto-category">QGIS</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 7, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-data-from-text-files" id="toc-load-data-from-text-files" class="nav-link active" data-scroll-target="#load-data-from-text-files">Load data from text files</a>
+  <ul class="collapse">
+  <li><a href="#filtering-a-text-file" id="toc-filtering-a-text-file" class="nav-link" data-scroll-target="#filtering-a-text-file">filtering a text file</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">conclusion</a></li>
+  </ul></li>
+  <li><a href="#add-wfs-connection" id="toc-add-wfs-connection" class="nav-link" data-scroll-target="#add-wfs-connection">Add WFS Connection</a>
+  <ul class="collapse">
+  <li><a href="#conclusion-1" id="toc-conclusion-1" class="nav-link" data-scroll-target="#conclusion-1">Conclusion</a></li>
+  </ul></li>
+  <li><a href="#final-words" id="toc-final-words" class="nav-link" data-scroll-target="#final-words">Final Words</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>Welcome back! In our <a href="https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html">last post</a>, we took a look at the basics of GIS and how we can explore some of the datasets in QGIS with shapefiles, TIFF files to derive interesting insights around air quality. This post covers loading data from CSV files on disk and also directly from online using server connections.</p>
+<section id="load-data-from-text-files" class="level1">
+<h1>Load data from text files</h1>
+<p>For this use case, let’s examine the latest satellite data where potential 🔥 events were detected in North American region. This could be a wildfire or controlled fire or anything else and may also occupy less than one pixel of the 🛰️ image depending on the resolution of that 🛰️ that’s taking it. <a href="https://www.noaa.gov/">NOAA</a>’s Hazard Mapping System (HMS) provide daily updated data for fire &amp; smoke detected. Let’s <a href="https://www.ospo.noaa.gov/Products/land/hms.html#data">download the latest data</a>. There are multiple data formats available but since we have seen shapefile in the last post, let’s try <code>text</code> file now.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/hms.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: HMS data download</figcaption><p></p>
+</figure>
+</div>
+<p>Let’s read a few lines from the file:</p>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'data/hms_fire20230306.txt'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>(24485, 8)</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df.sample(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="19">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Lon</th>
+      <th>Lat</th>
+      <th>YearDay</th>
+      <th>Time</th>
+      <th>Satellite</th>
+      <th>Method</th>
+      <th>Ecosystem</th>
+      <th>FRP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>17651</th>
+      <td>-90.261902</td>
+      <td>19.713993</td>
+      <td>2023065</td>
+      <td>2201</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>34</td>
+      <td>87.415</td>
+    </tr>
+    <tr>
+      <th>2835</th>
+      <td>-78.968910</td>
+      <td>21.834669</td>
+      <td>2023065</td>
+      <td>1746</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>5250</th>
+      <td>-76.867294</td>
+      <td>18.226049</td>
+      <td>2023065</td>
+      <td>1840</td>
+      <td>NOAA 20</td>
+      <td>VIIRS</td>
+      <td>24</td>
+      <td>5.654</td>
+    </tr>
+    <tr>
+      <th>22280</th>
+      <td>-98.832497</td>
+      <td>19.443575</td>
+      <td>2023066</td>
+      <td>46</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>41</td>
+      <td>78.344</td>
+    </tr>
+    <tr>
+      <th>794</th>
+      <td>-100.092950</td>
+      <td>24.831312</td>
+      <td>2023065</td>
+      <td>910</td>
+      <td>NOAA 20</td>
+      <td>VIIRS</td>
+      <td>47</td>
+      <td>1.258</td>
+    </tr>
+    <tr>
+      <th>19110</th>
+      <td>-71.630478</td>
+      <td>19.319798</td>
+      <td>2023065</td>
+      <td>2231</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>91</td>
+      <td>32.565</td>
+    </tr>
+    <tr>
+      <th>23370</th>
+      <td>-83.569122</td>
+      <td>22.277122</td>
+      <td>2023066</td>
+      <td>216</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>220.716</td>
+    </tr>
+    <tr>
+      <th>1933</th>
+      <td>-98.455124</td>
+      <td>36.903248</td>
+      <td>2023065</td>
+      <td>1650</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>31</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>1883</th>
+      <td>-98.248184</td>
+      <td>26.366270</td>
+      <td>2023065</td>
+      <td>1646</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>94</td>
+      <td>-999.000</td>
+    </tr>
+    <tr>
+      <th>3390</th>
+      <td>-81.141960</td>
+      <td>22.947918</td>
+      <td>2023065</td>
+      <td>1758</td>
+      <td>SUOMI NPP</td>
+      <td>VIIRS</td>
+      <td>93</td>
+      <td>6.468</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>As we can see, the data contains the coordinates of the location where 🔥 detected, date and time, the 🛰️ that took the picture among other data. Especially interesting is the <code>FRP</code> as that indicates the intensity of the activity. The higher the FRP, the intense the burning.</p>
+<div class="callout-note callout callout-style-simple">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Fire radiative power (FRP) is a measure of heat output from a fire and is related to how quickly fuel is being consumed. It is directly related to the rate of biomass consumption during the active (flaming/smoldering) phase of a fire. Look <a href="https://www.ospo.noaa.gov/Products/land/hms.html#about">here</a> for more info.</p>
+</div>
+</div>
+</div>
+<p>Let’s look from which 🛰️ are we getting the data from:</p>
+<div class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>Index(['        Lon', '        Lat', ' YearDay', ' Time', '       Satellite',
+       '           Method', ' Ecosystem', '        FRP'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># strip extra spaces</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df.columns <span class="op">=</span> df.columns.<span class="bu">map</span>(<span class="bu">str</span>.strip)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df.Satellite.value_counts()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>       GOES-EAST    17871
+       SUOMI NPP     3372
+         NOAA 20     3222
+       GOES-WEST       20
+Name: Satellite, dtype: int64</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df.Satellite.value_counts(normalize<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>       GOES-EAST    0.729875
+       SUOMI NPP    0.137717
+         NOAA 20    0.131591
+       GOES-WEST    0.000817
+Name: Satellite, dtype: float64</code></pre>
+</div>
+</div>
+<p>Almost <em>75%</em> of the data is from one source.</p>
+<p>Let’s now look at the distribution of FRP</p>
+<div class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>sns.kdeplot(df.FRP)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="GIS_II_files/figure-html/cell-11-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Most of the 🔥 places detected are relatively less intenseful. Let’s now look at their geographical distribution.</p>
+<p>First, as usual, select a basemap from the ones we downloaded in the last post (look under XYZ Tiles in browser area). Ideally you would want to know the topography of the land in this case. So I went with <code>Google Terrain Hybrid</code>.</p>
+<p>Now, unlike shapefiles, we can’t simply drag a text file to the canvas. Instead, goto <code>Layer-&gt; Add Layer -&gt; Add Delimited Text Layer</code>. Fill it with the information as shown.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/add_txt.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Load text file</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-hint callout callout-style-default no-icon callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Hint
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t forget to click <strong>Add</strong> before close in step <code>5</code> above.</p>
+</div>
+</div>
+<p>This would stack the file over our basemap. Now this is already good… but we are still not making use of the FRP information we have. Since it’s numerical data, let’s try to colorize the data based on this. We already know the higher the FRP, the intense the 🔥 is. As these are continuous values, let’s bin them into discrete classes based on the histrogram we saw above.</p>
+<div id="fig-styling" class="quarto-layout-panel">
+<figure class="figure">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-a" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/fire_styling_I.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(a)</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell quarto-layout-cell-subref" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-b" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/fire_styling_II.jpg" class="img-fluid figure-img" data-ref-parent="fig-styling"></p>
+<p></p><figcaption class="figure-caption">(b)</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Styling</figcaption><p></p>
+</figure>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The toolbar in fig.&nbsp;3(b) can be accessed by clicking the 🟣 circle (<code>Symbol</code> section) in fig.&nbsp;3(a). Change the values as you please.</p>
+</div>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/fires.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4: 🔥 activity across Northern Americas</figcaption><p></p>
+</figure>
+</div>
+<p>We clearly see that most of the activity is exclusively detected in the SE part of North America with most parts of Cuba, SE Mexico &amp; NW of Florida.</p>
+<p>Now that we know the intensity of the fires, we can also actually know from which satellite a given data point has originated. To do that, we need to label each data point with the corresponding value in the <code>Satellite</code> field as we have seen earlier.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/cuba_styling.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;5: Styling for Labels</figcaption><p></p>
+</figure>
+</div>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/cuba.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;6: Coordinates with Satellite names</figcaption><p></p>
+</figure>
+</div>
+<p>You may notice that the same coordinates have the same label repeated multiple times. That got me interested. So I digged in. I suspected that it could be because of duplicate entries of the coordinates.</p>
+<div class="cell" data-execution_count="54">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>df.shape, df.drop_duplicates().shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="54">
+<pre><code>((24485, 8), (24485, 8))</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="55">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df.drop_duplicates([<span class="st">'Lat'</span>, <span class="st">'Lon'</span>]).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="55">
+<pre><code>(9752, 8)</code></pre>
+</div>
+</div>
+<p>Indeed it was. But only the coordinates are duplicated but not all the fields.</p>
+<div class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">'Lat'</span>, <span class="st">'Lon'</span>]].value_counts().head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="45">
+<pre><code>Lat        Lon       
+16.311804  -92.219566    156
+19.440290  -89.355492    149
+19.479744  -89.319229    131
+19.153973  -90.197701    120
+19.499657  -89.321320    116
+dtype: int64</code></pre>
+</div>
+</div>
+<p>Let’s take one example and see what’s changing.</p>
+<div class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">'Lon==-92.219566 and Lat==16.311804'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="46">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Lon</th>
+      <th>Lat</th>
+      <th>YearDay</th>
+      <th>Time</th>
+      <th>Satellite</th>
+      <th>Method</th>
+      <th>Ecosystem</th>
+      <th>FRP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2087</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1700</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>22.154</td>
+    </tr>
+    <tr>
+      <th>2393</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1721</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>33.626</td>
+    </tr>
+    <tr>
+      <th>2520</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1730</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>32.808</td>
+    </tr>
+    <tr>
+      <th>2738</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1741</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>31.866</td>
+    </tr>
+    <tr>
+      <th>4156</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023065</td>
+      <td>1800</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>53.364</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>23682</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>251</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>25.892</td>
+    </tr>
+    <tr>
+      <th>23704</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>256</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>31.707</td>
+    </tr>
+    <tr>
+      <th>23759</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>301</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>32.109</td>
+    </tr>
+    <tr>
+      <th>23786</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>306</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>29.846</td>
+    </tr>
+    <tr>
+      <th>24006</th>
+      <td>-92.219566</td>
+      <td>16.311804</td>
+      <td>2023066</td>
+      <td>336</td>
+      <td>GOES-EAST</td>
+      <td>FDC</td>
+      <td>93</td>
+      <td>29.942</td>
+    </tr>
+  </tbody>
+</table>
+<p>156 rows × 8 columns</p>
+</div>
+</div>
+</div>
+<div class="cell" data-execution_count="56">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df.query(<span class="st">'Lon==-92.219566 and Lat==16.311804'</span>).Satellite.unique()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="56">
+<pre><code>array(['       GOES-EAST'], dtype=object)</code></pre>
+</div>
+</div>
+<p>Interesting! We now have different values for <code>FRP</code> over a single coordinate but at different times.</p>
+<div class="cell" data-execution_count="57">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>(df</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">'Lon==-92.219566 and Lat==16.311804'</span>)    <span class="co"># take one location as an example</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a> .sort_values([<span class="st">'YearDay'</span>, <span class="st">'Time'</span>])               <span class="co"># sort it by time</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">'FRP &gt; 0'</span>)                               <span class="co"># filter out -ve values (incorrect data?)</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a> .reset_index(drop<span class="op">=</span><span class="va">True</span>)                         <span class="co"># drop the index values</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a> .FRP</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a> .plot(title<span class="op">=</span><span class="st">'FRP of a single location over time'</span>, xlabel<span class="op">=</span><span class="st">'Time'</span>, ylabel<span class="op">=</span><span class="st">'FRP'</span>))<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<p><img src="GIS_II_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Nice! We now see how the <code>FRP</code> has evolved over time… it looks as if the 🔥 appears to have begun, spread, and intensified before eventually extinguishing or subsiding.</p>
+<section id="filtering-a-text-file" class="level2">
+<h2 class="anchored" data-anchor-id="filtering-a-text-file">filtering a text file</h2>
+<p>Coming back to our satellite names, we can filter only for the data coming from a single satellite by right clicking on the <code>hms_fire20230306</code> layer, selecting <code>filter</code> and later entering the query like so:</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/csv_filter.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;7: Filtering a CSV/TXT file</figcaption><p></p>
+</figure>
+</div>
+<ul>
+<li><code>1</code> - selects the field we want to filter</li>
+<li><code>2</code> - gets a few sample values from that field</li>
+<li><code>3</code> - double click on the field to enter it into the query box below. Alternatively you can type it as well.</li>
+<li><code>4, 5</code> - double click/type</li>
+<li><code>6</code> - clicking <code>Test</code> gives us how many rows that satisfy the condition. Hit <code>OK</code></li>
+<li><code>7</code> - ignore (don’t click it)</li>
+<li><code>8</code> - click <code>OK</code> to finalize the filtered data</li>
+</ul>
+<p>If you now look at the later, we only see the datapoints from the satellite we filtered.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/filtered_entries.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;8: Map with filtered entries</figcaption><p></p>
+</figure>
+</div>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">conclusion</h2>
+<p>Now we have seen how to load text files and filtering for our desired data. You can also load <a href="http://wiki.gis.com/wiki/index.php/Well-known_text">Well Known Text</a> (WKT) and other text files in the same manner. Just make sure to select the appropriate radio button while loading them.</p>
+</section>
+</section>
+<section id="add-wfs-connection" class="level1">
+<h1>Add WFS Connection</h1>
+<p>The Web Feature Service (WFS) protocol enables users to access and query feature data over the internet, without having to download and store the data locally. This can be particularly useful when working with large datasets or when collaborating with other users who may have different data sources or access privileges. WFS allows users to view and analyze feature data from multiple sources, combine data from different sources, and perform spatial and attribute queries on the data. This can help users to make more informed decisions and gain insights from the data that might not be apparent from a single dataset.</p>
+<p>There are lot of publicly available WFS servers online (just google) including from universities, government organizations etc. <a href="https://www.geoseer.net">geoseer</a> is one such service which provides links to those servers.</p>
+<p>For our purposes, we shall take a look at one WFS server that offers water level information in Germany. So head over <a href="https://www.geoseer.net/rl.php?ql=057545d9de309f76&amp;p=1&amp;q=wfs%20germany">here</a> and copy the <a href="https://www.pegelonline.wsv.de/geoserver/gk/wfs">WFS URL</a>.</p>
+<p>As this is a data layer, as usual, we will add a basemap layer or two. In this case, I went with <code>CartoDB Positron</code>.</p>
+<p>To add the WFS connection, goto <code>WFS/OGC API - Features</code> in the <em>browser</em> area and click <code>New Connection</code>.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/wfs.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;9: New WFS Connection</figcaption><p></p>
+</figure>
+</div>
+<p>Once you have done that above, you will notice a new connection appearing under that section. Clicking on it will reveal the layer that you can now simply drag &amp; drop to the canvas.</p>
+<p>We can right click on the added layer in the <code>Layers</code> section and select <code>Open Attribute Table</code> to reveal all its data in plaintext form. We notice that there’s a field named <code>Value</code> that shows the depth of the water level. Now just like in our last use case, you can now use this field to bin its values to get the following map.</p>
+<div id="fig-" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="images/water_levels.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;10: Water Levels in Germany</figcaption><p></p>
+</figure>
+</div>
+<p>It shows that the levels are higher in North than in the South (most likely being it closer to the Sea) but it’s troubling to see some major cities suffering with severe lack of ground water.</p>
+<section id="conclusion-1" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<p>Just like WFS, you can also add <a href="https://en.wikipedia.org/wiki/Web_Map_Service">WMS</a>/<a href="https://en.wikipedia.org/wiki/Web_Coverage_Service">WCS</a> services much the same way to carry out analysis without downloading data onto your disk.</p>
+</section>
+</section>
+<section id="final-words" class="level1">
+<h1>Final Words</h1>
+<p>In this post, we have seen how to use different types of data sources and possibly lighten our data resources on disk to perform our analysis and collaborate with others online when needed. We also performed query filtering to visualize only the data we need and how to do it in a meaningful way.</p>
+<p>In the next post, we will make a bit more use of Python &amp; QGIS scripting to write a complex processing pipeline.</p>
+<p>Thanks for reading.</p>
+<p>Auf wiedersehen 👋</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

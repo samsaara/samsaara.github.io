@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://samsaara.github.io/index.html</loc>
-    <lastmod>2023-03-06T12:03:37.109Z</lastmod>
+    <lastmod>2023-03-08T02:06:07.699Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/about.html</loc>
-    <lastmod>2023-03-06T12:03:37.433Z</lastmod>
+    <lastmod>2023-03-08T02:06:08.127Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
-    <lastmod>2023-03-06T12:03:38.177Z</lastmod>
+    <lastmod>2023-03-08T02:06:08.883Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/face-mask-detection/facemask_detection.html</loc>
-    <lastmod>2023-03-06T12:03:38.745Z</lastmod>
+    <lastmod>2023-03-08T02:06:09.435Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</loc>
+    <lastmod>2023-03-08T02:06:09.987Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/migrate-to-quarto/index.html</loc>
-    <lastmod>2023-03-06T12:03:39.053Z</lastmod>
+    <lastmod>2023-03-08T02:06:10.299Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
-    <lastmod>2023-03-06T12:03:39.505Z</lastmod>
+    <lastmod>2023-03-08T02:06:10.743Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</loc>
-    <lastmod>2023-03-06T12:03:40.117Z</lastmod>
+    <lastmod>2023-03-08T02:06:11.635Z</lastmod>
   </url>
   <url>
-    <loc>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS.html</loc>
-    <lastmod>2023-03-06T12:03:40.633Z</lastmod>
+    <loc>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</loc>
+    <lastmod>2023-03-08T02:06:12.119Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/fastai-env-setup/index.html</loc>
-    <lastmod>2023-03-06T12:03:40.977Z</lastmod>
+    <lastmod>2023-03-08T02:06:12.463Z</lastmod>
   </url>
 </urlset>
