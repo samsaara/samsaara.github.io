@@ -27,6 +27,7 @@
 
 
 
+
 <p>I recently distro-hopped and this time settled onto <a href="https://projectbluefin.io">BlueFin</a>, an atomic OS from <a href="https://universal-blue.org">Universal Blue</a> based on <i class="fa-brands fa-fedora" aria-label="fedora"></i> Silverblue. I had to setup my local deep learning environment again and this provided a nice opportunity to test a new setup afresh.</p>
 <p>I had previously <a href="../../posts/fastai-env-setup/index.html">setup fastai with mamba</a> but this time I wanted to test <a href="https://pixi.sh/">pixi</a>. It’s a <a href="https://prefix.dev/blog/pixi_a_fast_conda_alternative">lot faster and overall, a better alternative</a> to mamba/conda.</p>
 <p>Installing deep learning libraries locally is always a daunting task, dealing with system level dependencies and potentially corrupting them being one of the main reasons. Let’s see how easy and safe it is with <em>pixi</em>.</p>
@@ -606,6 +607,7 @@ font-style: inherit;">"jupyter lab"</span></span></code></pre></div>
   <title>Introduction to GIS with QGIS &amp; Python - Part II</title>
   <link>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -1306,6 +1308,7 @@ Figure&nbsp;10: Water Levels in Germany
 
 
 
+
 <p>As a data scientist, adding data analysis of geospatial information systems (GIS) to our skill set is a smart move in today’s data-driven world. The availability of free immense satellite and map data online, combined with the power of open source GIS tools, presents enormous opportunities for analyzing and visualizing geospatial data. With GIS, data scientists can enhance their data analytics and machine learning abilities, resulting in a more comprehensive understanding of complex problems such as climate change.</p>
 <p>By leveraging GIS, we can monitor and track the effects of climate change on the planet by analyzing data from a wide range of sources, such as temperature sensors, satellite imagery, and ocean currents, to provide a better understanding of its impact on our environment. This information can then be used to inform decision-making processes, such as predicting sea level rise and assessing the impact on coastal cities etc.</p>
 <p>Moreover, this also empowers common people by allowing them to answer questions about their own environment and surroundings. For example, farmers can use GIS to monitor crop health, water availability, and soil quality, while city dwellers can use it to explore the impact of urbanization on the environment. Anyone can access these tools to perform basic analysis, enabling them to become citizen scientists and contribute to the health of our planet.</p>
@@ -1607,6 +1610,7 @@ Figure&nbsp;10: Final Map with all layers
   <title>Diving into Fastai’s mid-level API with MNIST</title>
   <link>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -2778,6 +2782,7 @@ AstroDave, Will Cukierski. 2012. <span>“Digit Recognizer.”</span> Kaggle. <a
 
 
 
+
 <p>With COVID-19 mutating and still posing a threat globally, wearing a 😷 is still mandatory in many countries. In this post, we will see how to train a simple computer vision model to detect whether the person is wearing a facemask or not. Let’s start by downloading the appropriate dataset<sup>1</sup> from kaggle.</p>
 <p>You can either download it manually from kaggle or use <a href="https://www.kaggle.com/docs/api">its free API</a>. Let’s do the latter.</p>
 <div id="cell-2" class="cell" data-execution_count="1">
@@ -3586,6 +3591,7 @@ font-style: inherit;">float</span>().mean()</span></code></pre></div>
 
 
 
+
 <p>It’s been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from <a href="https://course.fast.ai/">fastai</a>? :D In this post, we will see how to quickly setup your dev environment for running notebooks locally to put your hard earned GPUs to use :p</p>
 <p>Of course, you can run your notebooks on cloud with free GPU support on platforms such as <em><a href="https://colab.research.google.com/">Google Colab</a></em>, <em><a href="https://www.paperspace.com/gradient/notebooks">Paperspace Gradient</a></em> or even <em><a href="https://www.kaggle.com/docs/notebooks">kaggle notebooks</a></em> but sometimes, it feels good to run things locally without worrying too much about quotas or network issues etc. If you’re starting new in this field, it’s highly recommended to try the above platforms first.</p>
 <p>Firstly, you need <a href="https://anaconda.org/conda-forge/mamba">mamba</a>. Use it wherever you use <code>conda</code> because it’s much faster. Once you install it, run the following script:</p>
@@ -3652,6 +3658,7 @@ font-style: inherit;">assert</span> torch.cuda.is_available()</span></code></pre
 
 
 
+
 <p><a href="https://fastpages.fast.ai">Fastpages</a>, based on which my original blog was <a href="../../posts/fastpages-blog-setup/fastpages-blog-setup.html">setup</a> has been archived and they now recommend using <a href="https://quarto.org">Quarto</a> instead. If you’re starting new, the latter is the recommended way to go but if you too have a fastpages blog setup initially and want to migrate, there’s a <a href="https://nbdev.fast.ai/tutorials/blogging.html#migrating-from-fastpages">migration guide</a> available. It’s not completely perfect as you have to tweak a few bits here &amp; there before you see all the renderings correctly (because of slight syntactic variations amongst other things).</p>
 <p>However, I felt quarto to be much more intuitive and easy to setup. I also did the migration but found manually moving posts from my old blog repo to the new quarto repo to be a bit easier. (Migration worked but I was not happy with the directories it created as part of it… I found it aesthetically less pleasing and hence moved them myself).</p>
 <p>For simple blogging, fastpages offered more than enough features and quarto offers even more on top of that. It’s easy to get started with quarto. Head over to the <a href="https://quarto.org/docs/guide/">start guide</a> to learn more.</p>
@@ -3669,6 +3676,7 @@ font-style: inherit;">assert</span> torch.cuda.is_available()</span></code></pre
   <title>Supercharge your data processing with DuckDB</title>
   <link>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</link>
   <description><![CDATA[ 
+
 
 
 
@@ -5904,6 +5912,7 @@ font-style: inherit;">;</span></span></code></pre></div>
   <title>Setting up your blog with Fastpages</title>
   <link>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</link>
   <description><![CDATA[ 
+
 
 
 
