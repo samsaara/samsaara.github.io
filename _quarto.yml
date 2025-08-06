@@ -17,5 +17,4 @@ format:
     respect-user-color-scheme: true
     theme:
       light: minty
-      dark: minty
-    # css: styles.css
+      dark:  solar
