@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://samsaara.github.io/about.html</loc>
-    <lastmod>2025-08-06T15:44:43.931Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</loc>
-    <lastmod>2025-08-06T08:32:04.698Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</loc>
-    <lastmod>2025-08-06T08:32:04.686Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
-    <lastmod>2025-08-06T08:32:04.658Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/face-mask-detection/facemask_detection.html</loc>
-    <lastmod>2025-08-06T08:32:04.655Z</lastmod>
-  </url>
-  <url>
     <loc>https://samsaara.github.io/index.html</loc>
-    <lastmod>2025-08-06T16:04:28.589Z</lastmod>
+    <lastmod>2025-08-06T18:19:12.453Z</lastmod>
   </url>
   <url>
-    <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
-    <lastmod>2025-08-06T08:32:04.649Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/fastai-env-setup/index.html</loc>
-    <lastmod>2025-08-06T16:04:16.138Z</lastmod>
-  </url>
-  <url>
-    <loc>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</loc>
-    <lastmod>2025-08-06T08:32:04.658Z</lastmod>
+    <loc>https://samsaara.github.io/posts/quick-pytorch-setup-with-pixi-Nvidia/index.html</loc>
+    <lastmod>2025-08-06T17:52:34.320Z</lastmod>
   </url>
   <url>
     <loc>https://samsaara.github.io/posts/migrate-to-quarto/index.html</loc>
     <lastmod>2025-08-06T08:32:04.698Z</lastmod>
   </url>
   <url>
-    <loc>https://samsaara.github.io/posts/quick-pytorch-setup-with-pixi-Nvidia/index.html</loc>
-    <lastmod>2025-08-06T17:52:34.320Z</lastmod>
+    <loc>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</loc>
+    <lastmod>2025-08-06T08:32:04.658Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/fastai-env-setup/index.html</loc>
+    <lastmod>2025-08-06T16:04:16.138Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</loc>
+    <lastmod>2025-08-06T08:32:04.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/face-mask-detection/facemask_detection.html</loc>
+    <lastmod>2025-08-06T08:32:04.655Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/fastpages-blog-setup/fastpages-blog-setup.html</loc>
+    <lastmod>2025-08-06T08:32:04.658Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</loc>
+    <lastmod>2025-08-06T08:32:04.686Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/posts/mnist-transforms/starter-mnist-with-fast-ai.html</loc>
+    <lastmod>2025-08-06T08:32:04.698Z</lastmod>
+  </url>
+  <url>
+    <loc>https://samsaara.github.io/about.html</loc>
+    <lastmod>2025-08-06T18:19:12.448Z</lastmod>
   </url>
 </urlset>
