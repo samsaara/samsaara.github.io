@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/quick-pytorch-setup-with-pixi-Nvidia/index.html",
       "/posts/geospatial_intro_part_II/GIS_II.html",
       "/posts/geospatial_intro_part_I/GIS_I.html",
       "/posts/mnist-transforms/starter-mnist-with-fast-ai.html",

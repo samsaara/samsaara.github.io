@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2022-12-19">
-<meta name="description" content="get fastai running locally with GPU support">
+<meta name="dcterms.date" content="2025-08-06">
+<meta name="description" content="Get pytorch running locally with GPU support">
 
-<title>fastai env setup – Saṃsāra</title>
+<title>Simple &amp; Fast Local DL Setup with PyTorch, Pixi &amp; Nvidia – Saṃsāra</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -77,6 +77,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-b91c67fa4b5af78359063df39734c13f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,15 +153,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">fastai env setup</h1>
+      <h1 class="title">Simple &amp; Fast Local DL Setup with PyTorch, Pixi &amp; Nvidia</h1>
                   <div>
         <div class="description">
-          get fastai running locally with GPU support
+          Get pytorch running locally with GPU support
         </div>
       </div>
                           <div class="quarto-categories">
                 <div class="quarto-category">setup</div>
-                <div class="quarto-category">fastai</div>
+                <div class="quarto-category">pixi</div>
+                <div class="quarto-category">pytorch</div>
+                <div class="quarto-category">nvidia</div>
               </div>
                   </div>
   </div>
@@ -171,7 +175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">December 19, 2022</p>
+        <p class="date">August 6, 2025</p>
       </div>
     </div>
     
@@ -190,24 +194,90 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>It’s been quite a while since I last dabbled myself in deep learning and therefore decided to revisit from the basics. And what better way than to start doing that than learning from <a href="https://course.fast.ai/">fastai</a>? :D In this post, we will see how to quickly setup your dev environment for running notebooks locally to put your hard earned GPUs to use :p</p>
-<p>Of course, you can run your notebooks on cloud with free GPU support on platforms such as <em><a href="https://colab.research.google.com/">Google Colab</a></em>, <em><a href="https://www.paperspace.com/gradient/notebooks">Paperspace Gradient</a></em> or even <em><a href="https://www.kaggle.com/docs/notebooks">kaggle notebooks</a></em> but sometimes, it feels good to run things locally without worrying too much about quotas or network issues etc. If you’re starting new in this field, it’s highly recommended to try the above platforms first.</p>
-<p>Firstly, you need <a href="https://anaconda.org/conda-forge/mamba">mamba</a>. Use it wherever you use <code>conda</code> because it’s much faster. Once you install it, run the following script:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># create a conda environment</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="at">-n</span> fastai python=3.10</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># install suitable version of `pytorch-cuda` at your time of installation</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install pytorch torchvision torchaudio pytorch-cuda=11.7 <span class="at">-c</span> pytorch <span class="at">-c</span> nvidia</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># install fastai</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> fastchan fastai</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> install <span class="at">-c</span> conda-forge jupyterlab ipywidgets</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Make sure you can use GPU with pytorch by running this in your python session:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> torch.cuda.is_available()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>That’s it. Now you can run fastai with GPU support locally simply by doing <code>mamba activate fastai</code> and launching <em>jupyter</em> ! 💚</p>
+<p>I recently distro-hopped and this time settled onto <a href="https://projectbluefin.io">BlueFin</a>, an atomic OS from <a href="https://universal-blue.org">Universal Blue</a> based on <i class="fa-brands fa-fedora" aria-label="fedora"></i> Silverblue. I had to setup my local deep learning environment again and this provided a nice opportunity to test a new setup afresh.</p>
+<p>I had previously <a href="../../posts/fastai-env-setup/index.html">setup fastai with mamba</a> but this time I wanted to test <a href="https://pixi.sh/">pixi</a>. It’s a <a href="https://prefix.dev/blog/pixi_a_fast_conda_alternative">lot faster and overall, a better alternative</a> to mamba/conda.</p>
+<p>Installing deep learning libraries locally is always a daunting task, dealing with system level dependencies and potentially corrupting them being one of the main reasons. Let’s see how easy and safe it is with <em>pixi</em>.</p>
+<p>First, make sure you have NVIDIA drivers setup correctly matching your system. You can check that out by running <code>nvidia-smi</code> on your cmdline which gives an output something similar to this.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> nvidia-smi</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">+-----------------------------------------------------------------------------------------+</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">NVIDIA-SMI</span> 575.64.05              Driver Version: 575.64.05      CUDA Version: 12.9     <span class="kw">|</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">-----------------------------------------+------------------------+----------------------+</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">GPU</span>  Name                 Persistence-M <span class="kw">|</span> <span class="ex">Bus-Id</span>          Disp.A <span class="kw">|</span> <span class="ex">Volatile</span> Uncorr. ECC <span class="kw">|</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">Fan</span>  Temp   Perf          Pwr:Usage/Cap <span class="kw">|</span>           <span class="ex">Memory-Usage</span> <span class="kw">|</span> <span class="ex">GPU-Util</span>  Compute M. <span class="kw">|</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>                                         <span class="kw">|</span>                        <span class="kw">|</span>               <span class="ex">MIG</span> M. <span class="kw">|</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">=========================================+========================+======================</span><span class="kw">|</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>   <span class="ex">0</span>  NVIDIA GeForce RTX 4060 ...    Off <span class="kw">|</span>   <span class="ex">00000000:01:00.0</span> Off <span class="kw">|</span>                  <span class="ex">N/A</span> <span class="kw">|</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">N/A</span>   47C    P0             15W /   75W <span class="kw">|</span>      <span class="ex">12MiB</span> /   8188MiB <span class="kw">|</span>      <span class="ex">0%</span>      Default <span class="kw">|</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>                                         <span class="kw">|</span>                        <span class="kw">|</span>                  <span class="ex">N/A</span> <span class="kw">|</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">+-----------------------------------------+------------------------+----------------------+</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                                                                                         </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">+-----------------------------------------------------------------------------------------+</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">Processes:</span>                                                                              <span class="kw">|</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>  <span class="ex">GPU</span>   GI   CI              PID   Type   Process name                        GPU Memory <span class="kw">|</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>        <span class="ex">ID</span>   ID                                                               Usage      <span class="kw">|</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="ex">=========================================================================================</span><span class="kw">|</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span>    <span class="ex">0</span>   N/A  N/A            3550      G   /usr/bin/gnome-shell                      2MiB <span class="kw">|</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ex">+-----------------------------------------------------------------------------------------+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>As you can see, I have nvidia driver <code>v575</code> with CUDA <code>v12.9</code>. As of this writing, the latest CUDA version which pytorch supports is <code>12.8</code>. So, we’re good to go.</p>
+<p>Now go ahead and install pixi by your preferred method and later run <code>pixi init dl_setup</code> to create a folder named <code>dl_setup</code> and initialize it. This creates a default <code>pixi.toml</code> configuration file which is similar to <code>pyproject.toml</code> but better.</p>
+<p>The first section <code>workspace</code> of the TOML file should look like this:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[workspace]</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dt">channels</span> <span class="op">=</span> <span class="op">[</span><span class="st">"conda-forge"</span><span class="op">]</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">"dl_setup"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="dt">platforms</span> <span class="op">=</span> <span class="op">[</span><span class="st">"linux-64"</span><span class="op">]</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">version</span> <span class="op">=</span> <span class="st">"0.1.0"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If in case, you already use <code>pyproject.toml</code> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <code>tool.prefix</code> and including <code>build-system</code> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
+<p>First run <code>pixi add "python&gt;=3.12"</code> to add python itself as a dependency.</p>
+<p>Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run <code>pixi add &lt;pkg&gt; --pypi</code> to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom <code>index-url</code> (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the <code>pixi.toml</code> file to set the appropriate index URL.</p>
+<p>Before that, quickly note the latest versions (minus the patch versions) of <code>torch, torchaudio &amp; torchvision</code> from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[system-requirements]</span>                                         </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">cuda</span> <span class="op">=</span> <span class="st">"12.0"</span>    <span class="co"># just major version suffices</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[feature.gpu.pypi-dependencies]</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">torch</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=2.7.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="dt">torchaudio</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=2.7.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="dt">torchvision</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=0.22.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We have added a feature section named <code>gpu</code> and since these are <em>PyPi</em> dependencies, you notice that appended at the last. Pixi already defines a default environment named <code>default</code>. We just need to include this feature to that environment before creating it by running the following on the cmdline:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pixi workspace environment add default <span class="at">--feature</span><span class="op">=</span>gpu <span class="at">--force</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>It creates the following section in the <code>toml</code> file which makes sure that the <code>gpu</code> dependencies are included in that environment when run.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[environments]</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">default</span> <span class="op">=</span> <span class="op">[</span><span class="st">"gpu"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s install <em>Jupyter</em> as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run <code>pixi add jupyterlab</code> that fetches this from <code>conda-forge</code> channel by default.</p>
+<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <code>task</code> in pixi by running:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pixi task add jupyter <span class="st">"jupyter lab"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<p>The whole <code>pixi.toml</code> now looks like this for me:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[workspace]</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="dt">channels</span> <span class="op">=</span> <span class="op">[</span><span class="st">"conda-forge"</span><span class="op">]</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">"llm2"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="dt">platforms</span> <span class="op">=</span> <span class="op">[</span><span class="st">"linux-64"</span><span class="op">]</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="dt">version</span> <span class="op">=</span> <span class="st">"0.1.0"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">[system-requirements]</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="dt">cuda</span> <span class="op">=</span> <span class="st">"12.0"</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="kw">[dependencies]</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="dt">python</span> <span class="op">=</span> <span class="st">"&gt;=3.12"</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="dt">jupyterlab</span> <span class="op">=</span> <span class="st">"&gt;=4.4.5,&lt;5"</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="dt">numpy</span> <span class="op">=</span> <span class="st">"&gt;=2.3.2,&lt;3"</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="dt">pandas</span> <span class="op">=</span> <span class="st">"&gt;=2.3.1,&lt;3"</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="dt">seaborn</span> <span class="op">=</span> <span class="st">"&gt;=0.13.2,&lt;0.14"</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="kw">[feature.gpu.pypi-dependencies]</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="dt">torch</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=2.7.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="dt">torchaudio</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=2.7.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="dt">torchvision</span> <span class="op">=</span> <span class="op">{ </span><span class="dt">version</span><span class="op"> =</span> <span class="st">"&gt;=0.22.0"</span><span class="op">, </span><span class="dt">index</span><span class="op"> =</span> <span class="st">"https://download.pytorch.org/whl/cu128"</span><span class="op"> }</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="kw">[environments]</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="dt">default</span> <span class="op">=</span> <span class="op">[</span><span class="st">"gpu"</span><span class="op">]</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="kw">[tasks]</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="dt">jupyter</span> <span class="op">=</span> <span class="st">"jupyter lab"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+<p>The versions might differ for you depending on the platform or when you run this.</p>
+<p>Now we run a full fledged jupyter lab session by simply running <code>pixi run jupyter</code> at the commandline.</p>
+<p>That’s it! Happy coding!!! ⚡️✨</p>
 
 
 
