@@ -224,9 +224,9 @@ font-style: inherit;">|</span></span>
 <span id="cb1-21"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">+-----------------------------------------------------------------------------------------+</span></span></code></pre></div>
-<p>As you can see, I have nvidia driver <code>v575</code> with CUDA <code>v12.9</code>. As of this writing, the latest CUDA version which pytorch supports is <code>12.8</code>. So, we’re good to go.</p>
-<p>Now go ahead and install pixi by your preferred method and later run <code>pixi init dl_setup</code> to create a folder named <code>dl_setup</code> and initialize it. This creates a default <code>pixi.toml</code> configuration file which is similar to <code>pyproject.toml</code> but better.</p>
-<p>The first section <code>workspace</code> of the TOML file should look like this:</p>
+<p>As you can see, I have nvidia driver <strong>v575</strong> with CUDA <strong>v12.9</strong>. As of this writing, the latest CUDA version which pytorch supports is <strong>12.8</strong>. So, we’re good to go.</p>
+<p>Now go ahead and install pixi by your preferred method and later run <code>pixi init dl_setup</code> to create a folder named <em>dl_setup</em> and initialize it. This creates a default <strong>pixi.toml</strong> configuration file which is similar to <strong>pyproject.toml</strong> but better.</p>
+<p>The first section <em>workspace</em> of the TOML file should look like this:</p>
 <div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb2-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -267,10 +267,22 @@ background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"0.1.0"</span></span></code></pre></div>
-<p>If in case, you already use <code>pyproject.toml</code> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <code>tool.prefix</code> and including <code>build-system</code> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If in case, you already use <strong>pyproject.toml</strong> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <strong>tool.prefix</strong> and including <strong>build-system</strong> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
+</div>
+</div>
 <p>First run <code>pixi add "python&gt;=3.12"</code> to add python itself as a dependency.</p>
-<p>Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run <code>pixi add &lt;pkg&gt; --pypi</code> to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom <code>index-url</code> (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the <code>pixi.toml</code> file to set the appropriate index URL.</p>
-<p>Before that, quickly note the latest versions (minus the patch versions) of <code>torch, torchaudio &amp; torchvision</code> from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.</p>
+<p>Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run <code>pixi add &lt;pkg&gt; --pypi</code> to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom <code>index-url</code> (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the <strong>pixi.toml</strong> file to set the appropriate index URL.</p>
+<p>Before that, quickly note the latest versions (minus the patch versions) of <strong>torch, torchaudio &amp; torchvision</strong> from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.</p>
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb3-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -358,7 +370,7 @@ background-color: null;
 font-style: inherit;">"https://download.pytorch.org/whl/cu128"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"> }</span></span></code></pre></div>
-<p>We have added a feature section named <code>gpu</code> and since these are <em>PyPi</em> dependencies, you notice that appended at the last. Pixi already defines a default environment named <code>default</code>. We just need to include this feature to that environment before creating it by running the following on the cmdline:</p>
+<p>We have added a feature section named <strong>gpu</strong> and since these are <em>PyPi</em> dependencies, you notice that appended at the last. Pixi already defines a default environment named <strong>default</strong>. We just need to include this feature to that environment before creating it by running the following on the cmdline:</p>
 <div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">$</span> pixi workspace environment add default <span class="at" style="color: #657422;
@@ -368,7 +380,7 @@ background-color: null;
 font-style: inherit;">=</span>gpu <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">--force</span> </span></code></pre></div>
-<p>It creates the following section in the <code>toml</code> file which makes sure that the <code>gpu</code> dependencies are included in that environment when run.</p>
+<p>It creates the following section in the <strong>toml</strong> file which makes sure that the <strong>gpu</strong> dependencies are included in that environment when run.</p>
 <div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb5-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -384,15 +396,15 @@ background-color: null;
 font-style: inherit;">"gpu"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
-<p>Let’s install <em>Jupyter</em> as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run <code>pixi add jupyterlab</code> that fetches this from <code>conda-forge</code> channel by default.</p>
-<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <code>task</code> in pixi by running:</p>
+<p>Let’s install <em>Jupyter</em> as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run <code>pixi add jupyterlab</code> that fetches this from <strong>conda-forge</strong> channel by default.</p>
+<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <strong>task</strong> in pixi by running:</p>
 <div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">$</span> pixi task add jupyter <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"jupyter lab"</span></span></code></pre></div>
 <hr>
-<p>The whole <code>pixi.toml</code> now looks like this for me:</p>
+<p>The whole <strong>pixi.toml</strong> might look something like this:</p>
 <div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb7-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -414,7 +426,7 @@ font-style: inherit;">name</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"llm2"</span></span>
+font-style: inherit;">"dl_setup"</span></span>
 <span id="cb7-4"><span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">platforms</span> <span class="op" style="color: #5E5E5E;
@@ -589,7 +601,7 @@ background-color: null;
 font-style: inherit;">"jupyter lab"</span></span></code></pre></div>
 <hr>
 <p>The versions might differ for you depending on the platform or when you run this.</p>
-<p>Now we run a full fledged jupyter lab session by simply running <code>pixi run jupyter</code> at the commandline.</p>
+<p>We can now enjoy a full fledged jupyter lab session by simply running <code>pixi run jupyter</code> at the commandline.</p>
 <p>That’s it! Happy coding!!! ⚡️✨</p>
 
 
