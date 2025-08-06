@@ -16,5 +16,5 @@ format:
   html:
     respect-user-color-scheme: true
     theme:
-      light: minty
-      dark:  solar
+      light: flatly
+      dark:  darkly
