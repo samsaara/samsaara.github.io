@@ -1,0 +1,126 @@
+---
+title: "Simple & Fast Local DL Setup with PyTorch, Pixi & Nvidia"
+description: "Get pytorch running locally with GPU support"
+date: "2025-08-06"
+categories: [setup, pixi, pytorch, nvidia]
+image: pixi_nvidia_torch.png
+---
+
+I recently distro-hopped and this time settled onto [BlueFin](https://projectbluefin.io), an atomic OS from [Universal Blue](https://universal-blue.org) based on {{< fa brands fedora >}} Silverblue. I had to setup my local deep learning environment again and this provided a nice opportunity to test a new setup afresh.
+
+I had previously [setup fastai with mamba](../fastai-env-setup/index.qmd) but this time I wanted to test [pixi](https://pixi.sh/). It's a [lot faster and overall, a better alternative](https://prefix.dev/blog/pixi_a_fast_conda_alternative) to mamba/conda.
+
+Installing deep learning libraries locally is always a daunting task, dealing with system level dependencies and potentially corrupting them being one of the main reasons. Let's see how easy and safe it is with _pixi_.
+
+First, make sure you have NVIDIA drivers setup correctly matching your system. You can check that out by running `nvidia-smi` on your cmdline which gives an output something similar to this.
+
+```bash
+$ nvidia-smi
+
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 575.64.05              Driver Version: 575.64.05      CUDA Version: 12.9     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 4060 ...    Off |   00000000:01:00.0 Off |                  N/A |
+| N/A   47C    P0             15W /   75W |      12MiB /   8188MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            3550      G   /usr/bin/gnome-shell                      2MiB |
++-----------------------------------------------------------------------------------------+
+```
+
+As you can see, I have nvidia driver `v575` with CUDA `v12.9`. As of this writing, the latest CUDA version which pytorch supports is `12.8`. So, we're good to go. 
+
+Now go ahead and install pixi by your preferred method and later run `pixi init dl_setup` to create a folder named `dl_setup` and initialize it. This creates a default `pixi.toml` configuration file which is similar to `pyproject.toml` but better. 
+
+The first section `workspace` of the TOML file should look like this:
+```toml
+[workspace]
+channels = ["conda-forge"]
+name = "dl_setup"
+platforms = ["linux-64"]
+version = "0.1.0"
+```
+
+If in case, you already use `pyproject.toml` or you prefer to have that instead, just pass the flag `--format=pyproject` to the _init_ cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with `tool.prefix` and including `build-system` section. Refer to [pixi's documentation](https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml)) 
+
+First run `pixi add "python>=3.12"` to add python itself as a dependency.
+
+Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run `pixi add <pkg> --pypi` to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom `index-url` (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the `pixi.toml` file to set the appropriate index URL.
+
+Before that, quickly note the latest versions (minus the patch versions) of `torch, torchaudio & torchvision` from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.
+
+```toml
+[system-requirements]                                         
+cuda = "12.0"    # just major version suffices
+
+[feature.gpu.pypi-dependencies]
+torch = { version = ">=2.7.0", index = "https://download.pytorch.org/whl/cu128" }
+torchaudio = { version = ">=2.7.0", index = "https://download.pytorch.org/whl/cu128" }
+torchvision = { version = ">=0.22.0", index = "https://download.pytorch.org/whl/cu128" }
+```
+
+We have added a feature section named `gpu` and since these are _PyPi_ dependencies, you notice that appended at the last. Pixi already defines a default environment named `default`. We just need to include this feature to that environment before creating it by running the following on the cmdline:
+```bash
+$ pixi workspace environment add default --feature=gpu --force 
+```
+It creates the following section in the `toml` file which makes sure that the `gpu` dependencies are included in that environment when run.
+```toml
+[environments]
+default = ["gpu"]
+```
+
+Let's install _Jupyter_ as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run `pixi add jupyterlab` that fetches this from `conda-forge` channel by default.
+
+Finally, if we want to run a jupyter notebook session with a shortcut, we can add a `task` in pixi by running:
+```bash
+$ pixi task add jupyter "jupyter lab"
+```
+
+---
+
+The whole `pixi.toml` now looks like this for me:
+```toml
+[workspace]
+channels = ["conda-forge"]
+name = "llm2"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[system-requirements]
+cuda = "12.0"
+
+[dependencies]
+python = ">=3.12"
+jupyterlab = ">=4.4.5,<5"
+numpy = ">=2.3.2,<3"
+pandas = ">=2.3.1,<3"
+seaborn = ">=0.13.2,<0.14"
+
+[feature.gpu.pypi-dependencies]
+torch = { version = ">=2.7.0", index = "https://download.pytorch.org/whl/cu128" }
+torchaudio = { version = ">=2.7.0", index = "https://download.pytorch.org/whl/cu128" }
+torchvision = { version = ">=0.22.0", index = "https://download.pytorch.org/whl/cu128" }
+
+[environments]
+default = ["gpu"]
+
+[tasks]
+jupyter = "jupyter lab"
+```
+---
+
+The versions might differ for you depending on the platform or when you run this.
+
+Now we run a full fledged jupyter lab session by simply running `pixi run jupyter` at the commandline.
+
+That's it! Happy coding!!! ⚡️✨

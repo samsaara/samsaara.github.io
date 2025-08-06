@@ -1,6 +1,6 @@
 ---
 title: "fastai env setup"
-description: "get your notebooks running locally with GPU support"
+description: "get fastai running locally with GPU support"
 date: "2022-12-19"
 categories: [setup, fastai]
 image: dev_setup.jpg
@@ -32,4 +32,4 @@ import torch
 assert torch.cuda.is_available()
 ```
 
-That's it. Now you can run notebooks with GPU support locally simply by doing `mamba activate fastai` and launching _jupyter_ ! 💚
+That's it. Now you can run fastai with GPU support locally simply by doing `mamba activate fastai` and launching _jupyter_ ! 💚

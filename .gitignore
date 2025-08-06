@@ -4,4 +4,4 @@ data/
 *.log
 models/
 .ipynb_checkpoints/
-
+.vscode/
