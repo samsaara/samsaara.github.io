@@ -38,11 +38,11 @@ $ nvidia-smi
 +-----------------------------------------------------------------------------------------+
 ```
 
-As you can see, I have nvidia driver `v575` with CUDA `v12.9`. As of this writing, the latest CUDA version which pytorch supports is `12.8`. So, we're good to go. 
+As you can see, I have nvidia driver **v575** with CUDA **v12.9**. As of this writing, the latest CUDA version which pytorch supports is **12.8**. So, we're good to go. 
 
-Now go ahead and install pixi by your preferred method and later run `pixi init dl_setup` to create a folder named `dl_setup` and initialize it. This creates a default `pixi.toml` configuration file which is similar to `pyproject.toml` but better. 
+Now go ahead and install pixi by your preferred method and later run `pixi init dl_setup` to create a folder named *dl_setup* and initialize it. This creates a default **pixi.toml** configuration file which is similar to **pyproject.toml** but better. 
 
-The first section `workspace` of the TOML file should look like this:
+The first section *workspace* of the TOML file should look like this:
 ```toml
 [workspace]
 channels = ["conda-forge"]
@@ -51,13 +51,15 @@ platforms = ["linux-64"]
 version = "0.1.0"
 ```
 
-If in case, you already use `pyproject.toml` or you prefer to have that instead, just pass the flag `--format=pyproject` to the _init_ cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with `tool.prefix` and including `build-system` section. Refer to [pixi's documentation](https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml)) 
+::: {.callout-note}
+If in case, you already use **pyproject.toml** or you prefer to have that instead, just pass the flag `--format=pyproject` to the _init_ cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with **tool.prefix** and including **build-system** section. Refer to [pixi's documentation](https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml)) 
+:::
 
 First run `pixi add "python>=3.12"` to add python itself as a dependency.
 
-Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run `pixi add <pkg> --pypi` to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom `index-url` (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the `pixi.toml` file to set the appropriate index URL.
+Pixi supports installing PyPI dependencies alongside Conda packages, and you can typically run `pixi add <pkg> --pypi` to install a PyPi package. For example, PyTorch—which is now officially available only via PyPi—could be installed this way. However, currently, it is not possible to specify a custom `index-url` (the URL from which to download wheels) via the command line. Therefore, you need to manually edit the **pixi.toml** file to set the appropriate index URL.
 
-Before that, quickly note the latest versions (minus the patch versions) of `torch, torchaudio & torchvision` from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.
+Before that, quickly note the latest versions (minus the patch versions) of **torch, torchaudio & torchvision** from PyPi so that we can manually add them in the config. Also, since this setup involves system dependencies (e.g., CUDA), we need to specify that as well so that pixi can take advantage of that during dependency resolution.
 
 ```toml
 [system-requirements]                                         
@@ -69,30 +71,30 @@ torchaudio = { version = ">=2.7.0", index = "https://download.pytorch.org/whl/cu
 torchvision = { version = ">=0.22.0", index = "https://download.pytorch.org/whl/cu128" }
 ```
 
-We have added a feature section named `gpu` and since these are _PyPi_ dependencies, you notice that appended at the last. Pixi already defines a default environment named `default`. We just need to include this feature to that environment before creating it by running the following on the cmdline:
+We have added a feature section named **gpu** and since these are _PyPi_ dependencies, you notice that appended at the last. Pixi already defines a default environment named **default**. We just need to include this feature to that environment before creating it by running the following on the cmdline:
 ```bash
 $ pixi workspace environment add default --feature=gpu --force 
 ```
-It creates the following section in the `toml` file which makes sure that the `gpu` dependencies are included in that environment when run.
+It creates the following section in the **toml** file which makes sure that the **gpu** dependencies are included in that environment when run.
 ```toml
 [environments]
 default = ["gpu"]
 ```
 
-Let's install _Jupyter_ as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run `pixi add jupyterlab` that fetches this from `conda-forge` channel by default.
+Let's install _Jupyter_ as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run `pixi add jupyterlab` that fetches this from **conda-forge** channel by default.
 
-Finally, if we want to run a jupyter notebook session with a shortcut, we can add a `task` in pixi by running:
+Finally, if we want to run a jupyter notebook session with a shortcut, we can add a **task** in pixi by running:
 ```bash
 $ pixi task add jupyter "jupyter lab"
 ```
 
 ---
 
-The whole `pixi.toml` now looks like this for me:
+The whole **pixi.toml** might look something like this:
 ```toml
 [workspace]
 channels = ["conda-forge"]
-name = "llm2"
+name = "dl_setup"
 platforms = ["linux-64"]
 version = "0.1.0"
 
@@ -121,6 +123,6 @@ jupyter = "jupyter lab"
 
 The versions might differ for you depending on the platform or when you run this.
 
-Now we run a full fledged jupyter lab session by simply running `pixi run jupyter` at the commandline.
+We can now enjoy a full fledged jupyter lab session by simply running `pixi run jupyter` at the commandline.
 
 That's it! Happy coding!!! ⚡️✨
