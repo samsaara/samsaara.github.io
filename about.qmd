@@ -1,7 +1,8 @@
 ---
 title: "About"
 about:
-  template: marquee
+  template: broadside
+  image: images/dp.jpg
   links:
     - icon: linkedin
       text: LinkedIn
@@ -14,7 +15,7 @@ about:
 
 ## Namaste 🙏
 
-Thanks for visiting my humble abode on the Internet. I am Vivek, a freelance `Data Scientist` by profession.
+Thanks for visiting my humble abode on the Internet. I am Vivek, a freelance Data Scientist by profession.
 
 **[Saṃsāra](https://en.wikipedia.org/wiki/Sa%E1%B9%83s%C4%81ra)** means *World* in Sanskrit and I welcome you into mine where I blog about programming, among other things.
 
