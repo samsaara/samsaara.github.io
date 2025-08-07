@@ -14,6 +14,7 @@ website:
         href: index.xml
 format:
   html:
+    include-in-header: google-verify.html
     respect-user-color-scheme: true
     theme:
       light: flatly
