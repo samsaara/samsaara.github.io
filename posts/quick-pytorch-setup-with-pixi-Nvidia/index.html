@@ -414,7 +414,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If in case, you already use <strong>pyproject.toml</strong> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <strong>tool.prefix</strong> and including <strong>build-system</strong> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
+<p>If in case, you already use <strong>pyproject.toml</strong> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <strong>tool.pixi</strong> and including <strong>build-system</strong> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
 </div>
 </div>
 <p>First run <code>pixi add "python&gt;=3.12"</code> to add python itself as a dependency.</p>
@@ -432,8 +432,9 @@ Note
 <p>It creates the following section in the <strong>toml</strong> file which makes sure that the <strong>gpu</strong> dependencies are included in that environment when run.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode toml code-with-copy"><code class="sourceCode toml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[environments]</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="dt">default</span> <span class="op">=</span> <span class="op">[</span><span class="st">"gpu"</span><span class="op">]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We pass the <code>--force</code> flag so as to update the <strong>default</strong> environment which already exists.</p>
 <p>Let’s install <em>Jupyter</em> as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run <code>pixi add jupyterlab</code> that fetches this from <strong>conda-forge</strong> channel by default.</p>
-<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <strong>task</strong> in pixi by running:</p>
+<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <strong>task</strong> by running:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pixi task add jupyter <span class="st">"jupyter lab"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 <p>The whole <strong>pixi.toml</strong> might look something like this:</p>

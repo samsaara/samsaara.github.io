@@ -277,7 +277,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>If in case, you already use <strong>pyproject.toml</strong> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <strong>tool.prefix</strong> and including <strong>build-system</strong> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
+<p>If in case, you already use <strong>pyproject.toml</strong> or you prefer to have that instead, just pass the flag <code>--format=pyproject</code> to the <em>init</em> cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with <strong>tool.pixi</strong> and including <strong>build-system</strong> section. Refer to <a href="https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml">pixi’s documentation</a>)</p>
 </div>
 </div>
 <p>First run <code>pixi add "python&gt;=3.12"</code> to add python itself as a dependency.</p>
@@ -396,8 +396,9 @@ background-color: null;
 font-style: inherit;">"gpu"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
+<p>We pass the <code>--force</code> flag so as to update the <strong>default</strong> environment which already exists.</p>
 <p>Let’s install <em>Jupyter</em> as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run <code>pixi add jupyterlab</code> that fetches this from <strong>conda-forge</strong> channel by default.</p>
-<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <strong>task</strong> in pixi by running:</p>
+<p>Finally, if we want to run a jupyter notebook session with a shortcut, we can add a <strong>task</strong> by running:</p>
 <div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">$</span> pixi task add jupyter <span class="st" style="color: #20794D;
