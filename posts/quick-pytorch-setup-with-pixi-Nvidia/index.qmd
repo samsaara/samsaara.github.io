@@ -52,7 +52,7 @@ version = "0.1.0"
 ```
 
 ::: {.callout-note}
-If in case, you already use **pyproject.toml** or you prefer to have that instead, just pass the flag `--format=pyproject` to the _init_ cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with **tool.prefix** and including **build-system** section. Refer to [pixi's documentation](https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml)) 
+If in case, you already use **pyproject.toml** or you prefer to have that instead, just pass the flag `--format=pyproject` to the _init_ cmd earlier. You also need to do some extra steps if in case you go this way. (E.g., by prefixing each section with **tool.pixi** and including **build-system** section. Refer to [pixi's documentation](https://pixi.sh/latest/python/tutorial/#pixitoml-and-pyprojecttoml)) 
 :::
 
 First run `pixi add "python>=3.12"` to add python itself as a dependency.
@@ -80,10 +80,11 @@ It creates the following section in the **toml** file which makes sure that the 
 [environments]
 default = ["gpu"]
 ```
+We pass the `--force` flag so as to update the **default** environment which already exists. 
 
 Let's install _Jupyter_ as well so that we can explore interactively. Since pixi handles conda and pip dependencies, we can safely run `pixi add jupyterlab` that fetches this from **conda-forge** channel by default.
 
-Finally, if we want to run a jupyter notebook session with a shortcut, we can add a **task** in pixi by running:
+Finally, if we want to run a jupyter notebook session with a shortcut, we can add a **task** by running:
 ```bash
 $ pixi task add jupyter "jupyter lab"
 ```
