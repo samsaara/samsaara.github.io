@@ -6,7 +6,7 @@ categories: [setup, pixi, pytorch, nvidia]
 image: pixi_nvidia_torch.png
 ---
 
-I recently distro-hopped and this time settled onto [BlueFin](https://projectbluefin.io), an atomic OS from [Universal Blue](https://universal-blue.org) based on {{< fa brands fedora >}} Silverblue. I had to setup my local deep learning environment again and this provided a nice opportunity to test a new setup afresh.
+I recently distro-hopped and this time settled onto {{< fa brands fedora >}} [BlueFin](https://projectbluefin.io), from [Universal Blue](https://universal-blue.org). I had to setup my local deep learning environment again and this provided a nice opportunity to test a new setup afresh.
 
 I had previously [setup fastai with mamba](../fastai-env-setup/index.qmd) but this time I wanted to test [pixi](https://pixi.sh/). It's a [lot faster and overall, a better alternative](https://prefix.dev/blog/pixi_a_fast_conda_alternative) to mamba/conda.
 
