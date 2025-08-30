@@ -13,6 +13,8 @@
 <url>https://samsaara.github.io/images/logo.png</url>
 <title>Saṃsāra</title>
 <link>https://samsaara.github.io/</link>
+<height>144</height>
+<width>144</width>
 </image>
 <generator>quarto-1.7.32</generator>
 <lastBuildDate>Tue, 26 Aug 2025 18:30:00 GMT</lastBuildDate>
@@ -459,8 +461,7 @@ font-style: inherit;">...</span></span>
 <span id="cb4-38"><span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">]</span></span></code></pre></div>
-<p>Sweet!!! Now all you need to do is checkout just these roles at your favorite companies, click the links only of the roles you’d want to know more about and possibly apply… all while sipping ☕️ with one hand. 😎</p>
-<p>Now, all that’s left is to browse through the filtered roles at your favorite companies, click on the listings you’re genuinely interested in, and maybe even apply—all while comfortably sipping your ☕️ with one hand.</p>
+<p>Sweet!!! Now, all that’s left is to browse through the filtered roles at your favorite companies, click on the listings you’re genuinely interested in, and maybe even apply—all while comfortably sipping your ☕️ with one hand. 😎</p>
 <p>That said, this setup works best if you have access to a decent model from a reliable cloud provider—but those don’t come cheap. CrewAI agents make multiple calls to the LLM for each organization (including tool calls), so if you’re not on a generous plan, the tokens consumed and requests made can quickly add up, especially as you add more companies to your YAML file.</p>
 <p>It gets trickier if the <i class="fa-brands fa-python" title="python" aria-label="python"></i> scraper can’t locate your specified selector and ends up scraping the entire page as a fallback, or if the listings come from a large company and you forgot to include adequate filters in your selector. Feeding huge chunks of HTML content—beyond just the system and assistant prompts—🔥 through tokens fast. And even worse, if the model makes a mistake, you often have to feed its response back into the system, which further increases both calls and token usage.</p>
 <p>For those without a paid subscription, there are alternatives like <a href="https://openrouter.ai/">openrouter</a> and <a href="https://aimlapi.com/">AIML</a>, though the free tiers are quite restrictive. These options work well for manual testing but aren’t suited for the high volume of calls that CrewAI requires. If you need to handle larger workloads, you might want to explore the Programmatic approach section optionally combined with ollama for better efficiency.</p>
@@ -468,8 +469,8 @@ font-style: inherit;">]</span></span></code></pre></div>
 <section id="ollama" class="level2">
 <h2 class="anchored" data-anchor-id="ollama">Ollama</h2>
 <p>If you have a (beefy) system at home or access to one, you can then run LLMs locally with <a href="https://ollama.com/">ollama</a>. Their extensive <a href="https://ollama.com/library">library</a> offers a range of models that can comfortably run on your hardware for inference tasks. We won’t cover its installation and pre-requisites but assume that it’s already setup on your system, which you can check by running <code>which ollama</code>.</p>
-<p>With my system setup, I was able to run <a href="https://ollama.com/library/gpt-oss">gpt-oss:20b</a> after closing all other applications, but the model response time remained quite low. It might be fine for having a (patient) conversation but isn’t fast enough to run our agents effectively. That said, as mentioned earlier, we don’t necessarily need a highly advanced reasoning model for this use case since the tasks aren’t that complex.</p>
-<p>What we really need is a model that runs comfortably on our systems and is preferably trained on code. That’s why I settled on <a href="https://ollama.com/library/qwen2.5-coder">Qwen2.5-coder</a>, which showed strong performance on various coding tasks and programming languages. Of course, feel free to pick whichever model suits your needs best!</p>
+<p>With my 💻 config, I was able to run <a href="https://ollama.com/library/gpt-oss">gpt-oss:20b</a> after closing all other applications, but the model response time remained quite low. It might be fine for having a (patient) conversation but isn’t fast enough to run our agents effectively. That said, as mentioned earlier, we don’t necessarily need a highly advanced (reasoning) model for this use case since the tasks aren’t that complex.</p>
+<p>What we really need is a model that runs comfortably on our systems and is preferably trained on code. So, I settled on <a href="https://ollama.com/library/qwen2.5-coder">Qwen2.5-coder</a>, which showed strong performance on various coding tasks and programming languages. Of course, feel free to pick whichever model suits your needs best!</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -483,11 +484,11 @@ Note
 <p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>.env</em> file but make sure you fill up the rest of the two values:<code>MODEL_NAME, API_BASE</code>, the latter most likely being <code>http://localhost:11434</code>. Checkout the logs when you run <code>ollama serve</code> to see the where the server is listening at.</p>
 </div>
 </div>
-<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. All you need to do is to change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>.env</em>).</p>
+<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. Just change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>.env</em>).</p>
 </section>
 <section id="programmatic-job-search" class="level2">
 <h2 class="anchored" data-anchor-id="programmatic-job-search">Programmatic Job Search</h2>
-<p>You can also choose to skip the agentic flow entirely, and just go with the programmatic approach where in we go through each each organization sequentially and fetch the listings. You can also use your preferred cloud provider or a local model with ollama. All you need to do is set the appropriate <strong>provider</strong> with some optional params. To fetch results programmatically, simply run:</p>
+<p>Alternatively, you can bypass the agentic workflow altogether and opt for a programmatic approach that sequentially processes each organization to fetch job listings. This method supports using your preferred cloud provider or a local ollama model. Simply configure the appropriate <strong>provider</strong> along with any optional parameters. To execute the programmatic fetch, run:</p>
 <div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="ex" style="color: null;
 background-color: null;
 font-style: inherit;">uv</span> run run_manual</span></code></pre></div>
@@ -501,7 +502,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>I only tested my setup with free cloud providers and with ollama. If in case you face errors with paid ones, please raise an issue on <i class="fa-brands fa-github" title="Github" aria-label="github"></i> so that it might be resolved with community’s help.</p>
+<p>Unfortunately, I could only test my setup with free cloud providers and with ollama. If in case you face errors, please raise an issue on <i class="fa-brands fa-github" title="Github" aria-label="github"></i> so that it might be resolved with community’s help.</p>
 </div>
 </div>
 </section>
@@ -524,7 +525,7 @@ Note
 </section>
 <section id="next-steps-or-customization" class="level1">
 <h1>Next Steps or Customization</h1>
-<p>Thanks for sticking with me this far! If you only need a bare-bones working version, you might want to stop here. But of course, there’s plenty of room to ⚗️🧪 and expand. We’ve used just one 🤖 and one task, but feel free to add more.</p>
+<p>Thanks for sticking with me this far! If you only need a bare-bones working version, you might want to stop here. But of course, there’s plenty of room to ⚗️🧪 and expand. We’ve used just one 🤖 and one task ✅️, but feel free to add more.</p>
 <p>For example, you could do additional post-processing on the final report—convert it to markdown, filter roles further by location or workplace type, or even make another LLM call to summarize the entire report 🤯. You could also set up an alert system, like a <i class="fa-brands fa-slack" title="Slack" aria-label="slack"></i> hook, to get your daily job report delivered automatically. ✨️</p>
 <p>If you want to go really deep, you could filter the returned role ⛓️‍💥, scrape those pages for content, and then use a powerful LLM to customize cover letters for each application. Or, keep it visual 📊 to analyze the scraped data.</p>
 <p>Go 🥜🥜🥜!!! <u><i>But remember to use this work responsibly and for personal use only.</i></u></p>
