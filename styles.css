@@ -1,1 +1,5 @@
 /* css styles */
+#quarto-document-content {
+  max-width: 1600px; /* or wider, e.g. 1600px */
+  width: 100%;
+}
