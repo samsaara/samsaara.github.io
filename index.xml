@@ -13,11 +13,538 @@
 <url>https://samsaara.github.io/images/logo.png</url>
 <title>Saṃsāra</title>
 <link>https://samsaara.github.io/</link>
-<height>144</height>
-<width>144</width>
 </image>
 <generator>quarto-1.7.32</generator>
-<lastBuildDate>Tue, 05 Aug 2025 18:30:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 26 Aug 2025 18:30:00 GMT</lastBuildDate>
+<item>
+  <title>Curate jobs with Agentic AI &amp; Ollama</title>
+  <link>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<section id="intro" class="level2">
+<h2 class="anchored" data-anchor-id="intro">Intro</h2>
+<p>Job searching is hard. Anybody looking for one knows how draining it can be to sift through endless listings, hoping to find something that fits or feels right. <i>Ain’t nobody got time for dat… </i><img src="https://samsaara.github.io/posts/agentic-job-search/images/no_time.png" alt="icon" style="height: 1em; vertical-align: middle;"></p>
+<p>Instead, we use agents 🤖 to keep track of openings at companies we care about and in departments we want to work in. The challenge is, not every company offers a 🔔 / 📩 / <i class="fa-solid fa-rss" title="rss" aria-label="rss"></i> to notify you when new positions open up. And even when they do, how often do you actually check those newsletters? Thought so! 😉</p>
+<p>With ✨<strong><em>agentic job search</em></strong>✨, you get a streamlined report of all the current openings at companies you’re interested in, tailored to the departments you want to work in. This is made possible by web scraping combined with agents—specialized programs that can run tasks independently and make decisions without human intervention. For this project, we rely on <a href="https://crewai.com/">CrewAI</a>, one of the leading agentic frameworks out there. It brings together multiple specialized AI agents into a collaborative team, letting them work together smoothly to tackle complex tasks. Think of it as an AI squad with defined roles and workflows, functioning much like a well-oiled <i class="fa-solid fa-users" title="human" aria-label="users"></i> team.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The inspiration for this project came from one of the use cases demoed in <a href="https://www.deeplearning.ai/short-courses/practical-multi-ai-agents-and-advanced-use-cases-with-crewai/">crewAI’s courses</a> on deeplearning.ai. I highly recommend checking them out. Their approach to job searching is a bit different and more generic but equally powerful.</p>
+</div>
+</div>
+</section>
+<section id="prerequisites" class="level2">
+<h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<p>Before diving in, you’ll need:</p>
+<ul>
+<li><strong>Technical Skills</strong>: Basic Python knowledge, familiarity with HTML/CSS, command-line operations</li>
+<li><strong>System Requirements</strong>: Python 3.10+, 4GB+ RAM (16GB+ recommended for local LLMs along with a supporting GPU)</li>
+<li><strong>API Access</strong>: Account with any cloud LLM provider (optional if using Ollama)</li>
+<li><strong>Time Investment</strong>: 30-45 minutes for initial setup, a few minutes per run thereafter</li>
+</ul>
+<p>This guide targets intermediate developers comfortable with web scraping concepts and API integrations.</p>
+</section>
+<section id="web-scraping" class="level2">
+<h2 class="anchored" data-anchor-id="web-scraping">Web Scraping</h2>
+<p>Before we look at what 🤖 do, we need to look at the good’ol web scraping. The idea is simple. You create a list of your favorite organizations and a department/sector that you’d like to filter for. Then you scrape the <i class="fa-solid fa-file-code" title="webpage" aria-label="file-code"></i> for the latest openings and store it on disk. <em>(We use <a href="https://playwright.dev/">Playwright</a> <i class="fa-brands fa-python" title="python" aria-label="python"></i> package for this)</em> After that, the 🤖 steps in to sift through these roles and handpick the ones that match your interests.</p>
+<p>There are a few good reasons why we can’t just tell an agent to hop onto a website and grab the latest job postings directly:</p>
+<ul>
+<li>The large language model (LLM) the agent relies on might not be powerful enough to fully get the instructions or might miss parts of the content—after all, not everyone’s got access to OpenAI’s top-tier models!</li>
+<li>Dynamic content on job listing pages can trip up the model. Sometimes the section you want isn’t even loaded yet when the agent tries to fetch it, especially since many organizations use third-party platforms like <em>Ashby or Workable</em> that embed listings via JavaScript.</li>
+<li>Some websites are massive, with an overwhelming number of openings across multiple locations, making it tough to scrape everything efficiently.</li>
+<li>Models can hallucinate—meaning the job listings they generate might look legit but actually be inaccurate, outdated, or just plain wrong based on their training data or knowledge cut-off.</li>
+</ul>
+<p>That’s why the scraping step here is crucial. To make it manageable, we create a YAML file where we define specific attributes that help us target and fetch the right content later on.</p>
+<p>Here’s a sample:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#orgs.yaml sample file</span></span>
+<span id="cb1-2"></span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">browser_company</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">url</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> https://jobs.ashbyhq.com/The%20Browser%20Company</span></span>
+<span id="cb1-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">selector</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"div._departments_12ylk_345"</span></span>
+<span id="cb1-6"></span>
+<span id="cb1-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">choco</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-8"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">url</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> https://jobs.ashbyhq.com/choco</span></span>
+<span id="cb1-9"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">selector</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"div._departments_12ylk_345"</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mozilla</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span></span>
+<span id="cb1-12"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">url</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> https://www.mozilla.org/en-US/careers/listings/</span></span>
+<span id="cb1-13"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">selector</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'#listings-positions tbody tr.position[data-team="Strategy, Operations, Data &amp; Ads"]'</span></span></code></pre></div>
+<p>The key here is the organization name you’re interested in, and the values hold the URL plus a <code>selector</code>. These are CSS patterns that identify specific HTML elements on a webpage, so you can zero in on the exact part you want to scrape.</p>
+<p>Finding the right selector is usually straightforward but <em>sometimes can be a bit tricky</em>. If the webpage uses dynamic content, wait until the job listings or tables have fully loaded, then right-click on the listing area and choose <strong>Inspect</strong>. That opens the <em>developer tools</em> where you can explore the DOM tree. Move up or down through parent and child elements until you spot the container holding the data. As you click on different elements, they’ll highlight corresponding webpage parts, helping you confirm you got the right one. Finally, look for a unique attribute like an id or class—this becomes your CSS selector for scraping the content precisely.</p>
+<div id="fig-" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig--caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://samsaara.github.io/posts/agentic-job-search/images/selectors.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig--caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Sample table view of openings at Mozilla
+</figcaption>
+</figure>
+</div>
+<p>For instance, I’ve found that a few companies using <em>Ashby</em> as their job listing provider list their openings under the class name <i>_departments_12ylk_345</i>. But this may change later and finding the right selector isn’t always that simple—take Mozilla’s, for example. Their page features a large table (because, well, they have tons of positions across <i class="fa-solid fa-earth-asia" title="globe" aria-label="earth-asia"></i>) combined with filters by teams, making the structure more complex. If you’re comfortable with HTML and CSS, identifying the correct selector might seem straightforward. In my case, though, it was more of a trial-and-error journey—iteratively testing selectors step by step in a Jupyter notebook, with some guidance from a benevolent LLM along the way.</p>
+<p>Using the selector approach has several key advantages:</p>
+<ul>
+<li>It enables scraping of targeted and precise content—you download just the data you need, or at most a manageable superset that can be filtered later by an agent or LLM.</li>
+<li>It’s reliable because website layouts don’t change that often. When they do, you simply update the selector in the YAML file, and you’re good to go (well, almost!). Plus, the program logs failures if scraping doesn’t work, so you can jump in and fix it manually.</li>
+<li>It allows for a highly effective, yet optional, use of a powerful model—since we feed the LLM only the stripped-down HTML content, even mid-sized models can deliver great results.</li>
+</ul>
+<p>This method ensures the 🤖 always work with the freshest and cleanest data, making filtering faster, simpler, and more accurate. They’re happy, you’re happy! Now, let’s see how it all comes together.</p>
+<p>The complete code and installation instructions are <a href="https://github.com/samsaara/agentic_job_search">available on <u><i class="fa-brands fa-github" title="Github" aria-label="github"></i></u></a>. Head over there to setup the repo, then come back, and we’ll dive into the details!</p>
+</section>
+<section id="run-with-agents" class="level2">
+<h2 class="anchored" data-anchor-id="run-with-agents">Run with agents</h2>
+<p>Hopefully, you’re now set up. You only needed to do three things:</p>
+<ul>
+<li>Make sure the <em>.env</em> file is filled with the credentials for your favorite LLM. While it currently supports three providers out of the box, adding another cloud provider—like <em>Claude</em>—is as simple as adding three entries to the file and passing the provider name as an argument to <em>main.py</em>.</li>
+<li>Populate the <em>orgs.yaml</em> file with your favorite organizations.</li>
+<li>Set the <code>JOB_TOPIC</code> value in <u><em>src/config.py</em></u> with a topic or department you want to filter roles for. Alternatively, you can pass this as a parameter directly to the <em>main.py</em> script.</li>
+</ul>
+<p>With these in place, you’re ready to roll!! 🥁</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to do LLM inferencing locally or from a remote endpoint, checkout the 🦙ollama🦙 section below.</p>
+</div>
+</div>
+<p>To run your setup, simply do:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">crewai run</span></code></pre></div>
+<p>If you run into any errors, the first place to check is the <em>logs.log</em> file—it’s where all the action gets recorded. And if you bump into a <strong>ModuleNotFoundError</strong> or your command won’t execute properly, try running this command instead:</p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">PYHONPATH<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'.'</span> uv run run_crew</span></code></pre></div>
+<p>The completed jobs report is available under <u><em>src/scrape/jobs</em></u> directory. Here’s a sample:</p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb4-1"><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb4-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-3">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"org"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mozilla"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-4">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"url"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www.mozilla.org/en-US/careers/listings/"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-5">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"jobs"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[</span></span>
+<span id="cb4-6">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-7">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"title"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Staff Data Scientist - Operations"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-8">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"href"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www.mozilla.org/en-US/careers/position/gh/7141659/"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-9">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"location"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Remote UK"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-10">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"workplaceType"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">null</span></span>
+<span id="cb4-11">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-12">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-13">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"title"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Manager, Data Science"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-14">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"href"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www.mozilla.org/en-US/careers/position/gh/6989335/"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-15">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"location"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Remote Canada, Remote US"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-16">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"workplaceType"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">null</span></span>
+<span id="cb4-17">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-18">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-19">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"title"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Senior Data Scientist"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-20">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"href"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www.mozilla.org/en-US/careers/position/gh/7125910/"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-21">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"location"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Remote Canada, Remote US"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-22">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"workplaceType"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">null</span></span>
+<span id="cb4-23">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-24">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-25">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"title"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Senior Data Scientist"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-26">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"href"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://www.mozilla.org/en-US/careers/position/gh/7137777/"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-27">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"location"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Remote US"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-28">        <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"workplaceType"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">null</span></span>
+<span id="cb4-29">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb4-30">    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span></span>
+<span id="cb4-31">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-32">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb4-33">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"org"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"choco"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-34">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"url"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://jobs.ashbyhq.com/choco"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-35">    <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">"jobs"</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">:</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[]</span></span>
+<span id="cb4-36">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">}</span><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">,</span></span>
+<span id="cb4-37">  <span class="er" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">...</span></span>
+<span id="cb4-38"><span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]</span></span></code></pre></div>
+<p>Sweet!!! Now all you need to do is checkout just these roles at your favorite companies, click the links only of the roles you’d want to know more about and possibly apply… all while sipping ☕️ with one hand. 😎</p>
+<p>Now, all that’s left is to browse through the filtered roles at your favorite companies, click on the listings you’re genuinely interested in, and maybe even apply—all while comfortably sipping your ☕️ with one hand.</p>
+<p>That said, this setup works best if you have access to a decent model from a reliable cloud provider—but those don’t come cheap. CrewAI agents make multiple calls to the LLM for each organization (including tool calls), so if you’re not on a generous plan, the tokens consumed and requests made can quickly add up, especially as you add more companies to your YAML file.</p>
+<p>It gets trickier if the <i class="fa-brands fa-python" title="python" aria-label="python"></i> scraper can’t locate your specified selector and ends up scraping the entire page as a fallback, or if the listings come from a large company and you forgot to include adequate filters in your selector. Feeding huge chunks of HTML content—beyond just the system and assistant prompts—🔥 through tokens fast. And even worse, if the model makes a mistake, you often have to feed its response back into the system, which further increases both calls and token usage.</p>
+<p>For those without a paid subscription, there are alternatives like <a href="https://openrouter.ai/">openrouter</a> and <a href="https://aimlapi.com/">AIML</a>, though the free tiers are quite restrictive. These options work well for manual testing but aren’t suited for the high volume of calls that CrewAI requires. If you need to handle larger workloads, you might want to explore the Programmatic approach section optionally combined with ollama for better efficiency.</p>
+</section>
+<section id="ollama" class="level2">
+<h2 class="anchored" data-anchor-id="ollama">Ollama</h2>
+<p>If you have a (beefy) system at home or access to one, you can then run LLMs locally with <a href="https://ollama.com/">ollama</a>. Their extensive <a href="https://ollama.com/library">library</a> offers a range of models that can comfortably run on your hardware for inference tasks. We won’t cover its installation and pre-requisites but assume that it’s already setup on your system, which you can check by running <code>which ollama</code>.</p>
+<p>With my system setup, I was able to run <a href="https://ollama.com/library/gpt-oss">gpt-oss:20b</a> after closing all other applications, but the model response time remained quite low. It might be fine for having a (patient) conversation but isn’t fast enough to run our agents effectively. That said, as mentioned earlier, we don’t necessarily need a highly advanced reasoning model for this use case since the tasks aren’t that complex.</p>
+<p>What we really need is a model that runs comfortably on our systems and is preferably trained on code. That’s why I settled on <a href="https://ollama.com/library/qwen2.5-coder">Qwen2.5-coder</a>, which showed strong performance on various coding tasks and programming languages. Of course, feel free to pick whichever model suits your needs best!</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>.env</em> file but make sure you fill up the rest of the two values:<code>MODEL_NAME, API_BASE</code>, the latter most likely being <code>http://localhost:11434</code>. Checkout the logs when you run <code>ollama serve</code> to see the where the server is listening at.</p>
+</div>
+</div>
+<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. All you need to do is to change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>.env</em>).</p>
+</section>
+<section id="programmatic-job-search" class="level2">
+<h2 class="anchored" data-anchor-id="programmatic-job-search">Programmatic Job Search</h2>
+<p>You can also choose to skip the agentic flow entirely, and just go with the programmatic approach where in we go through each each organization sequentially and fetch the listings. You can also use your preferred cloud provider or a local model with ollama. All you need to do is set the appropriate <strong>provider</strong> with some optional params. To fetch results programmatically, simply run:</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">uv</span> run run_manual</span></code></pre></div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I only tested my setup with free cloud providers and with ollama. If in case you face errors with paid ones, please raise an issue on <i class="fa-brands fa-github" title="Github" aria-label="github"></i> so that it might be resolved with community’s help.</p>
+</div>
+</div>
+</section>
+<section id="metrics" class="level2">
+<h2 class="anchored" data-anchor-id="metrics">Metrics</h2>
+<p>On my rig, scraping only took a couple of seconds per organization and about 30s for inferencing and preparing the job report with <em>qwen2.5-coder</em> &amp; ollama per organization. The tokens per second roughly hovered between 6-10 and the response time is usually under 5 seconds. The input prompt tokens roughly are in a couple of thousands (less than 5K) because we send a blob of HTML but the response tokens relatively are far less - roughly around 500. For orgs with no listings, it’s negligible (<em>&lt;10</em>). <strong><em>YMMV</em></strong></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If doing local LLM inferencing, you can check your metrics in the logs whenever the model makes an inference.</p>
+</div>
+</div>
+</section>
+<section id="next-steps-or-customization" class="level1">
+<h1>Next Steps or Customization</h1>
+<p>Thanks for sticking with me this far! If you only need a bare-bones working version, you might want to stop here. But of course, there’s plenty of room to ⚗️🧪 and expand. We’ve used just one 🤖 and one task, but feel free to add more.</p>
+<p>For example, you could do additional post-processing on the final report—convert it to markdown, filter roles further by location or workplace type, or even make another LLM call to summarize the entire report 🤯. You could also set up an alert system, like a <i class="fa-brands fa-slack" title="Slack" aria-label="slack"></i> hook, to get your daily job report delivered automatically. ✨️</p>
+<p>If you want to go really deep, you could filter the returned role ⛓️‍💥, scrape those pages for content, and then use a powerful LLM to customize cover letters for each application. Or, keep it visual 📊 to analyze the scraped data.</p>
+<p>Go 🥜🥜🥜!!! <u><i>But remember to use this work responsibly and for personal use only.</i></u></p>
+<p>Please feel free to ⭐ the <a href="https://github.com/samsaara/agentic_job_search">repo</a> on <i class="fa-brands fa-github" title="Github" aria-label="github"></i>, fork it to tweak further and/or provide feedback.</p>
+<p>Auf Wiedersehen! 👋</p>
+
+
+</section>
+
+ ]]></description>
+  <category>Agents</category>
+  <category>NLP</category>
+  <category>LLMs</category>
+  <category>Web Scraping</category>
+  <category>ollama</category>
+  <category>crewai</category>
+  <guid>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</guid>
+  <pubDate>Tue, 26 Aug 2025 18:30:00 GMT</pubDate>
+  <media:content url="https://samsaara.github.io/posts/agentic-job-search/images/llama_crew.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>Simple &amp; Fast Local DL Setup with PyTorch, Pixi &amp; Nvidia</title>
   <link>https://samsaara.github.io/posts/quick-pytorch-setup-with-pixi-Nvidia/</link>
