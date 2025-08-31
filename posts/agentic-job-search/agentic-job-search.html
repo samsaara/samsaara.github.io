@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-08-27">
+<meta name="dcterms.date" content="2025-08-31">
 <meta name="description" content="Get a consolidated report of your favorite jobs">
 
 <title>Curate jobs with Agentic AI &amp; Ollama – Saṃsāra</title>
@@ -353,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 27, 2025</p>
+        <p class="date">August 31, 2025</p>
       </div>
     </div>
     
@@ -444,18 +444,17 @@ Note
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://www.mozilla.org/en-US/careers/listings/</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">'#listings-positions tbody tr.position[data-team="Strategy, Operations, Data &amp; Ads"]'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>The key here is the organization name you’re interested in, and the values hold the URL plus a <code>selector</code>. These are CSS patterns that identify specific HTML elements on a webpage, so you can zero in on the exact part you want to scrape.</p>
-<p>Finding the right selector is usually straightforward but <em>sometimes can be a bit tricky</em>. If the webpage uses dynamic content, wait until the job listings or tables have fully loaded, then right-click on the listing area and choose <strong>Inspect</strong>. That opens the <em>developer tools</em> where you can explore the DOM tree. Move up or down through parent and child elements until you spot the container holding the data. As you click on different elements, they’ll highlight corresponding webpage parts, helping you confirm you got the right one. Finally, look for a unique attribute like an id or class—this becomes your CSS selector for scraping the content precisely.</p>
+<p>Finding the right selector is usually straightforward but <em>sometimes can be a bit tricky</em>. If the webpage uses dynamic content, wait until the job listings or tables have fully loaded, then right-click on the listing area and choose <strong>Inspect</strong>. That opens the <em>developer tools</em> where you can explore the DOM tree. Move up or down through parent and child elements until you spot the container holding the data. As you click on different elements, they’ll highlight corresponding webpage parts, helping you confirm you got the right one. Finally, right click on the element (or on the <em>…</em> dots at the start of the line), and choose <code>copy -&gt; copy selector</code> as shown below.</p>
 <div id="fig-" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig--caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/selectors.png" class="img-fluid figure-img">
+<img src="images/selectors.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig--caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Sample table view of openings at Mozilla
 </figcaption>
 </figure>
 </div>
-<p>For instance, I’ve found that a few companies using <em>Ashby</em> as their job listing provider list their openings under the class name <i>_departments_12ylk_345</i>. But this may change later and finding the right selector isn’t always that simple—take Mozilla’s, for example. Their page features a large table (because, well, they have tons of positions across <i class="fa-solid fa-earth-asia" title="globe" aria-label="earth-asia"></i>) combined with filters by teams, making the structure more complex. If you’re comfortable with HTML and CSS, identifying the correct selector might seem straightforward. In my case, though, it was more of a trial-and-error journey—iteratively testing selectors step by step in a Jupyter notebook, with some guidance from a benevolent LLM along the way.</p>
 <p>Using the selector approach has several key advantages:</p>
 <ul>
 <li>It enables scraping of targeted and precise content—you download just the data you need, or at most a manageable superset that can be filtered later by an agent or LLM.</li>
