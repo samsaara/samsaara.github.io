@@ -17,7 +17,7 @@
 <width>144</width>
 </image>
 <generator>quarto-1.7.32</generator>
-<lastBuildDate>Sat, 30 Aug 2025 18:30:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 02 Sep 2025 18:30:00 GMT</lastBuildDate>
 <item>
   <title>Curate jobs with Agentic AI &amp; Ollama</title>
   <link>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</link>
@@ -105,10 +105,12 @@ font-style: inherit;">"div._departments_12ylk_345"</span></span>
 <span id="cb1-6"></span>
 <span id="cb1-7"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">choco</span><span class="kw" style="color: #003B4F;
+font-style: inherit;">ecosia</span><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
-font-style: inherit;">:</span></span>
+font-style: inherit;">:</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;"> </span></span>
 <span id="cb1-8"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
@@ -118,7 +120,7 @@ background-color: null;
 font-weight: bold;
 font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;"> https://jobs.ashbyhq.com/choco</span></span>
+font-style: inherit;"> https://jobs.ashbyhq.com/ecosia.org</span></span>
 <span id="cb1-9"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">  </span><span class="fu" style="color: #4758AB;
@@ -130,7 +132,7 @@ font-style: inherit;">:</span><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;"> </span><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"div._departments_12ylk_345"</span></span>
+font-style: inherit;">"#root &gt; div._container_ud4nd_29._section_12ylk_341 &gt; div._content_ud4nd_71 &gt; div._departments_12ylk_345"</span></span>
 <span id="cb1-10"></span>
 <span id="cb1-11"><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -185,7 +187,11 @@ Figure&nbsp;1: Sample table view of openings at Mozilla
 <h2 class="anchored" data-anchor-id="run-with-agents">Run with agents</h2>
 <p>Hopefully, you’re now set up. You only needed to do three things:</p>
 <ul>
-<li>Make sure the <em>.env</em> file is filled with the credentials for your favorite LLM. While it currently supports three providers out of the box, adding another cloud provider—like <em>Claude</em>—is as simple as adding three entries to the file and passing the provider name as an argument to <em>main.py</em>.</li>
+<li>Make sure the <em>creds.yaml</em> file is filled with the credentials for your favorite LLM.
+<ul>
+<li>While it currently supports three providers out of the box, adding another cloud provider—like <em>Anthropic</em>—is as simple as adding the corresponding entries to the file and passing the provider name as an argument to <em>main.py</em>.</li>
+<li>Different providers make different env variables available apart from common ones like <code>API_KEY</code>. Simply add them under the corresponding provider in the YAML file.</li>
+</ul></li>
 <li>Populate the <em>orgs.yaml</em> file with your favorite organizations.</li>
 <li>Set the <code>JOB_TOPIC</code> value in <u><em>src/config.py</em></u> with a topic or department you want to filter roles for. Alternatively, you can pass this as a parameter directly to the <em>main.py</em> script.</li>
 </ul>
@@ -430,7 +436,7 @@ font-style: inherit;">"org"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">:</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"choco"</span><span class="fu" style="color: #4758AB;
+font-style: inherit;">"ecosia"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">,</span></span>
 <span id="cb4-34">    <span class="dt" style="color: #AD0000;
@@ -439,7 +445,7 @@ font-style: inherit;">"url"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">:</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"https://jobs.ashbyhq.com/choco"</span><span class="fu" style="color: #4758AB;
+font-style: inherit;">"https://jobs.ashbyhq.com/ecosia.org"</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">,</span></span>
 <span id="cb4-35">    <span class="dt" style="color: #AD0000;
@@ -480,10 +486,10 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>.env</em> file but make sure you fill up the rest of the two values:<code>MODEL_NAME, API_BASE</code>, the latter most likely being <code>http://localhost:11434</code>. Checkout the logs when you run <code>ollama serve</code> to see the where the server is listening at.</p>
+<p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>creds.yaml</em> file but make sure you fill up the rest.</p>
 </div>
 </div>
-<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. Just change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>.env</em>).</p>
+<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. Just change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>creds.yaml</em>).</p>
 </section>
 <section id="programmatic-job-search" class="level2">
 <h2 class="anchored" data-anchor-id="programmatic-job-search">Programmatic Job Search</h2>
@@ -542,7 +548,7 @@ Note
   <category>ollama</category>
   <category>crewai</category>
   <guid>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</guid>
-  <pubDate>Sat, 30 Aug 2025 18:30:00 GMT</pubDate>
+  <pubDate>Tue, 02 Sep 2025 18:30:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/agentic-job-search/images/llama_crew.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>

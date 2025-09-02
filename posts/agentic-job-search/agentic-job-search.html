@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-08-31">
+<meta name="dcterms.date" content="2025-09-03">
 <meta name="description" content="Get a consolidated report of your favorite jobs">
 
 <title>Curate jobs with Agentic AI &amp; Ollama – Saṃsāra</title>
@@ -353,7 +353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">August 31, 2025</p>
+        <p class="date">September 3, 2025</p>
       </div>
     </div>
     
@@ -436,9 +436,9 @@ Note
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://jobs.ashbyhq.com/The%20Browser%20Company</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">"div._departments_12ylk_345"</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">choco</span><span class="kw">:</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://jobs.ashbyhq.com/choco</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">"div._departments_12ylk_345"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ecosia</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://jobs.ashbyhq.com/ecosia.org</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span><span class="at"> </span><span class="st">"#root &gt; div._container_ud4nd_29._section_12ylk_341 &gt; div._content_ud4nd_71 &gt; div._departments_12ylk_345"</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">mozilla</span><span class="kw">:</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">url</span><span class="kw">:</span><span class="at"> https://www.mozilla.org/en-US/careers/listings/</span></span>
@@ -468,7 +468,11 @@ Figure&nbsp;1: Sample table view of openings at Mozilla
 <h2 class="anchored" data-anchor-id="run-with-agents">Run with agents</h2>
 <p>Hopefully, you’re now set up. You only needed to do three things:</p>
 <ul>
-<li>Make sure the <em>.env</em> file is filled with the credentials for your favorite LLM. While it currently supports three providers out of the box, adding another cloud provider—like <em>Claude</em>—is as simple as adding three entries to the file and passing the provider name as an argument to <em>main.py</em>.</li>
+<li>Make sure the <em>creds.yaml</em> file is filled with the credentials for your favorite LLM.
+<ul>
+<li>While it currently supports three providers out of the box, adding another cloud provider—like <em>Anthropic</em>—is as simple as adding the corresponding entries to the file and passing the provider name as an argument to <em>main.py</em>.</li>
+<li>Different providers make different env variables available apart from common ones like <code>API_KEY</code>. Simply add them under the corresponding provider in the YAML file.</li>
+</ul></li>
 <li>Populate the <em>orgs.yaml</em> file with your favorite organizations.</li>
 <li>Set the <code>JOB_TOPIC</code> value in <u><em>src/config.py</em></u> with a topic or department you want to filter roles for. Alternatively, you can pass this as a parameter directly to the <em>main.py</em> script.</li>
 </ul>
@@ -523,8 +527,8 @@ Note
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span></span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span><span class="ot">,</span></span>
 <span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">{</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"org"</span><span class="fu">:</span> <span class="st">"choco"</span><span class="fu">,</span></span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"url"</span><span class="fu">:</span> <span class="st">"https://jobs.ashbyhq.com/choco"</span><span class="fu">,</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"org"</span><span class="fu">:</span> <span class="st">"ecosia"</span><span class="fu">,</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"url"</span><span class="fu">:</span> <span class="st">"https://jobs.ashbyhq.com/ecosia.org"</span><span class="fu">,</span></span>
 <span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>    <span class="dt">"jobs"</span><span class="fu">:</span> <span class="ot">[]</span></span>
 <span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span><span class="ot">,</span></span>
 <span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="er">...</span></span>
@@ -549,10 +553,10 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>.env</em> file but make sure you fill up the rest of the two values:<code>MODEL_NAME, API_BASE</code>, the latter most likely being <code>http://localhost:11434</code>. Checkout the logs when you run <code>ollama serve</code> to see the where the server is listening at.</p>
+<p>With ollama, you don’t need an API key to run it locally. So you can skip the <code>OLLAMA_API_KEY</code> in the <em>creds.yaml</em> file but make sure you fill up the rest.</p>
 </div>
 </div>
-<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. Just change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>.env</em>).</p>
+<p>When running an Ollama model locally, you can use it to power your agents instead of relying on expensive cloud providers. Just change the provider name to <code>OLLAMA</code> in the <em>main.py</em> file suggested earlier (assuming you’ve set up its credentials in <em>creds.yaml</em>).</p>
 </section>
 <section id="programmatic-job-search" class="level2">
 <h2 class="anchored" data-anchor-id="programmatic-job-search">Programmatic Job Search</h2>
