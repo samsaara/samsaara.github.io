@@ -15,11 +15,11 @@ about:
 
 ## Namaste 🙏
 
-Thanks for visiting my humble abode on the Internet. I am Vivek, a freelance Data Scientist by profession.
+Thanks for visiting my humble abode on the Internet. I am Vivek, a freelance Data Scientist & AI Engineer by profession.
 
 **[Saṃsāra](https://en.wikipedia.org/wiki/Sa%E1%B9%83s%C4%81ra)** means *World* in Sanskrit and I welcome you into mine where I blog about programming, among other things.
 
-I’m a data scientist and AI engineer who’s been building ML solutions for the past 6+ years or so — from spotting anomalies in energy data to fraud detection for BNPL, churn prediction and forecasting for mobility, and compliance backends for a Swiss climate tech. I’ve dug into satellite imagery to assess vegetation health, helped classify product carbon footprints with GenAI & LLMs, and worked on optimizing smart-heating systems with IoT data. I love tinkering in Python, NLP, GenAI while keeping things practical, a little playful, and always aim to leverage AI for social & environmental good.
+I’ve been building ML solutions for the past 6+ years or so — from spotting anomalies in energy data to fraud detection for BNPL, churn prediction and forecasting for mobility, and compliance backends for a Swiss climate tech. I’ve dug into satellite imagery to assess vegetation health, helped classify product carbon footprints with GenAI & LLMs, and worked on optimizing smart-heating systems with IoT data. I love tinkering in Python, NLP, GenAI while keeping things practical, a little playful, and always aim to leverage AI for social & environmental good.
 
 When not working, I take interest in 🏸, 🎶, 🧑‍🍳 and aim to know a little bit of everything I come across.
 
