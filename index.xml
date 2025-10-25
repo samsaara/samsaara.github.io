@@ -13,11 +13,1796 @@
 <url>https://samsaara.github.io/images/logo.png</url>
 <title>Saṃsāra</title>
 <link>https://samsaara.github.io/</link>
-<height>144</height>
-<width>144</width>
 </image>
 <generator>quarto-1.7.32</generator>
-<lastBuildDate>Tue, 02 Sep 2025 18:30:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 24 Oct 2025 18:30:00 GMT</lastBuildDate>
+<item>
+  <title>Mastering RAG Pipelines</title>
+  <link>https://samsaara.github.io/posts/rag_with_hyde_rrf/rag_hyde.html</link>
+  <description><![CDATA[ 
+
+
+
+
+
+
+<p>Ever wished your search engine could read your mind? In this post, we’ll dive into how Retrieval-Augmented Generation (RAG) can come close — by expanding user queries into hypothetical documents, refining them through query rewriting, and fusing results intelligently using Reciprocal Rank Fusion (RRF). Together, these techniques transform ordinary retrieval into a contextual, knowledge-aware reasoning process.</p>
+<p><em>PS: This post is inspired by these two articles: <a href="https://medium.com/data-and-beyond/the-ultimate-rag-hack-use-this-customized-hyde-for-better-answers-28e251332a0b">RAG Hack</a>, <a href="https://blog.gopenai.com/part-5-advanced-rag-techniques-llm-based-query-rewriting-and-hyde-dbcadb2f20d1">LLM Based Query Rewriting</a></em></p>
+<section id="what-is-rag" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-rag">What is RAG?</h2>
+<p><strong>Retrieval-Augmented Generation</strong> (RAG) is an architecture that combines two powerful components: <em>retrieval</em> and <em>generation</em>. Instead of relying solely on what a language model “remembers,” RAG retrieves relevant documents from an external knowledge base and uses them to generate more accurate, up-to-date, and context-aware responses.</p>
+<p>It’s particularly useful when dealing with dynamic or domain-specific information — for example, enterprise knowledge bases, customer support documentation, or academic research. By grounding responses in retrieved facts, RAG reduces hallucinations and enhances factual accuracy, making it an ideal solution for any use case where the underlying data changes frequently or is too large to fit into a model’s internal memory.</p>
+<section id="limitations-of-traditional-rag-based-systems" class="level3">
+<h3 class="anchored" data-anchor-id="limitations-of-traditional-rag-based-systems">Limitations of traditional RAG based systems</h3>
+<p>While RAG sounds elegant in theory, traditional implementations often struggle in practice. The retrieval step depends heavily on keyword or embedding similarity, which can miss relevant documents when the query is vague, abstract, or phrased differently from the source text. This leads to poor recall — the model simply doesn’t find the right context to reason from.</p>
+<p>Additionally, many RAG systems fail under semantic drift, long-tail queries, or domain-specific jargon. Even when relevant information exists, it may rank too low or be drowned out by irrelevant results. As a result, the generation step produces confident but inaccurate answers — defeating the very purpose of retrieval augmentation.</p>
+<p>Enter 🔥<strong>HyDE</strong>🔥</p>
+</section>
+</section>
+<section id="hypothetical-document-embeddings" class="level2">
+<h2 class="anchored" data-anchor-id="hypothetical-document-embeddings">Hypothetical Document Embeddings</h2>
+<p>Hypothetical Document Embeddings (HyDE) is a retrieval technique that addresses a key weakness of traditional RAG systems—poor performance on vague or under-specified queries. Instead of retrieving directly from the raw query, HyDE first uses a language model to generate a short, plausible “hypothetical document” answering the query. This synthetic passage is embedded and used to retrieve semantically similar real documents from the knowledge base.</p>
+<p>By transforming queries into document-like representations, HyDE aligns retrieval with document embedding space, allowing contrastive encoders (such as Contriever) to match these hypotheticals to relevant corpus entries. This approach yields strong zero-shot retrieval, especially for open-ended, exploratory, or low-context queries where users may lack precise keywords.</p>
+</section>
+<section id="query-generationrewriting" class="level2">
+<h2 class="anchored" data-anchor-id="query-generationrewriting">Query Generation/ReWriting</h2>
+<p>Before applying HyDE, it’s often useful to rewrite user queries to make them clearer and more retrieval-friendly. In real-world scenarios, users tend to ask compound or referential questions such as <em>What is XXX and how does it impact sales?</em>. Instead of treating this as one query, we can split it into multiple focused sub-queries — for example: <code>['What is XXX?', 'How does XXX impact sales?']</code>.</p>
+<p>During this rewriting step, an LLM can also resolve demonstrative pronouns (like <em>this, that, it, or they</em>) in follow-up questions, replacing them with explicit references from earlier parts of the query. This process ensures that each rewritten query is self-contained, semantically clear, and ready for more effective retrieval downstream.</p>
+<p>This stage is called <strong>query generation or query rewriting</strong>, and it acts as a smart preprocessing layer before the HyDE step. By running HyDE on each rewritten sub-query, we get richer hypothetical contexts and significantly better retrieval accuracy for complex, multi-part user inputs.</p>
+</section>
+<section id="reciprocal-rank-fusion" class="level2">
+<h2 class="anchored" data-anchor-id="reciprocal-rank-fusion">Reciprocal Rank Fusion</h2>
+<p>Even after applying Query Rewriting and HyDE, retrieval isn’t always perfect. Each rewritten or hypothetical query might surface slightly different sets of relevant documents — some overlap, some don’t. For example, one version of the query might capture documents with broader context, while another highlights highly specific details. Choosing just one retrieval run risks losing valuable information.</p>
+<p>In real-world RAG systems, no single retrieval method or query formulation is universally optimal. Dense embeddings, keyword search, and HyDE-generated queries each offer unique perspectives on relevance. What we need is a way to combine their strengths — to merge the best results from multiple retrieval strategies into a unified, high-quality ranking.</p>
+<p>That’s where <strong>Reciprocal Rank Fusion</strong> (RRF) comes in.</p>
+<p>It is a simple yet powerful ranking aggregation technique designed to fuse multiple retrieval results into one coherent ranked list. Instead of trusting one retrieval run, RRF looks across all of them, giving higher priority to documents that appear near the top across lists.</p>
+<p>Mathematicaly, it sums the reciprocals of rank positions, rewarding items consistently ranked highly. This makes RRF especially useful in hybrid or multi-source retrieval systems—such as combining embeddings, keyword searches, or reformulations—where it boosts recall, stability, and robustness for more reliable results.</p>
+</section>
+<section id="powerful-trio" class="level2">
+<h2 class="anchored" data-anchor-id="powerful-trio">Powerful Trio</h2>
+<p>When used together, Query Rewriting, HyDE, and RRF form a highly effective multi-stage RAG pipeline.</p>
+<ol type="1">
+<li>Query Rewriting ensures that each user query (or sub-query) is explicit and context-independent.</li>
+<li>HyDE then generates a hypothetical answer for each rewritten query, enriching the semantic representation used for retrieval.</li>
+<li>Finally, RRF fuses the retrieval results from all rewritten and HyDE-generated queries into a unified, ranked list of documents.</li>
+</ol>
+<p>This combination addresses several real-world challenges:</p>
+<ul>
+<li>Ambiguity and reference resolution → handled by Query Rewriting.</li>
+<li>Sparse or underspecified queries → improved via HyDE’s hypothetical document generation.</li>
+<li>Retrieval diversity and ranking stability → enhanced by RRF’s fusion mechanism.</li>
+</ul>
+<p>In essence, RRF acts as the final consensus layer, aggregating the best retrieval signals from each query variant. Together, these steps make RAG systems far more resilient, accurate, and context-aware, especially in enterprise or multi-domain settings where queries vary in form and complexity.</p>
+</section>
+<section id="choosing-right-models" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-right-models">Choosing Right Models</h2>
+<p>Even with a powerful retrieval pipeline built on Query Rewriting, HyDE, and RRF, the system’s overall performance still depends heavily on the embedding model used for retrieval and the LLM used for generation. These are the foundational layers that determine how well our RAG system understands, retrieves, and communicates information.</p>
+<p>The <em>embedding</em> model is responsible for mapping both queries and documents into a shared semantic space. If this model isn’t well-aligned with our domain or language, even the best retrieval strategies will struggle — relevant documents might sit far apart in the vector space, leading to poor recall. For example, an English-only embedding model will fail when users query in Spanish or Hindi, or when the document corpus is multilingual. Choosing a multilingual or domain-tuned embedding model ensures that semantically similar ideas are close together, regardless of language or phrasing.</p>
+<p>On the <em>generation</em> side, the LLM plays an equally critical role. It needs to interpret the retrieved context correctly, synthesize information fluently, and handle domain-specific or multilingual outputs gracefully. If our users interact in multiple languages, our generation model should either be natively multilingual or supported by a translation layer that preserves meaning without distorting the original intent.</p>
+<hr>
+<p>Now that we’re armed with this knowledge, let’s dive into code. The repo is available on <a href="https://github.com/samsaara/rag_hyde/">github</a> <i class="fa-brands fa-github" title="GitHub" aria-label="github"></i>. Feel free to clone it and run this notebook. It is designed primarily to run on Linux <i class="fa-brands fa-linux" title="Linux" aria-label="linux"></i> with NVIDIA GPU or on Mac <i class="fa-brands fa-apple" title="Apple" aria-label="apple"></i> with Silicon processors with integrated GPU.</p>
+<div id="1180b166-155b-490f-9a49-b64110cb6f66" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> os</span>
+<span id="cb1-2">os.chdir(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'..'</span>)</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> sys</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> faiss</span>
+<span id="cb1-6"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> yaml</span>
+<span id="cb1-7"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> textwrap</span>
+<span id="cb1-8"></span>
+<span id="cb1-9"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> time <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> time</span>
+<span id="cb1-10"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> glob <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> glob</span>
+<span id="cb1-11"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> collections <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> defaultdict</span>
+<span id="cb1-12"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> langchain_text_splitters <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> MarkdownTextSplitter</span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> IPython.display <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> Markdown</span>
+<span id="cb1-15"></span>
+<span id="cb1-16"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> src.utils <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> build_corpus, empty_cache</span>
+<span id="cb1-17"><span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">from</span> src.main <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">import</span> load_models, generate_text, make_query_variants, transform_query, aggregate_queries_and_tasks</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="building-a-corpus-extracting-content-from-pdfs" class="level2">
+<h2 class="anchored" data-anchor-id="building-a-corpus-extracting-content-from-pdfs">📚 Building a Corpus: Extracting Content from PDFs</h2>
+<p>To test our RAG pipeline, we first need a knowledge corpus built from one or more PDFs. Extracting content from PDFs isn’t always straightforward — layouts, tables, and images can make parsing tricky. Two great tools for this are PyMuPDF (or PyMuPDF4LLM) and Docling, each suited for different needs.</p>
+<section id="pymupdf-pymupdf4llm" class="level3">
+<h3 class="anchored" data-anchor-id="pymupdf-pymupdf4llm">⚡ PyMuPDF / PyMuPDF4LLM</h3>
+<p>PyMuPDF is a fast, lightweight library for PDF text extraction — perfect for CPU environments and large batches of text-heavy documents. Its LLM-optimized variant, PyMuPDF4LLM, adds support for exporting structured Markdown, preserving headings, lists, and tables for easier downstream use.</p>
+<p>Pros:</p>
+<ul>
+<li>Fast, efficient, and CPU-friendly</li>
+<li>Handles simple-to-moderate layouts well</li>
+<li>Markdown export with PyMuPDF4LLM fits LLM pipelines</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Limited accuracy for complex layouts or multi-column designs</li>
+</ul>
+<p>Best for: Quick, scalable extraction of mostly text-based PDFs.</p>
+</section>
+<section id="docling" class="level3">
+<h3 class="anchored" data-anchor-id="docling">🧠 Docling</h3>
+<p>Docling is a deep-learning–powered PDF parser that excels at handling complex document structures — tables, figures, multi-column text, etc. It can export to plain text or Markdown, producing highly structured, clean outputs. However, it’s heavier and slower, typically requiring GPU support for optimal performance.</p>
+<p>Pros:</p>
+<ul>
+<li>High-fidelity extraction of structured layouts</li>
+<li>Flexible text/Markdown outputs</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Slower and GPU-intensive</li>
+</ul>
+<p>Best for: Complex or visually rich PDFs when GPU resources are available.</p>
+</section>
+<section id="why-extract-in-markdown" class="level3">
+<h3 class="anchored" data-anchor-id="why-extract-in-markdown">📝 Why Extract in Markdown?</h3>
+<p>Extracting in Markdown strikes the right balance between structure and simplicity. It retains document hierarchy — like headings, lists, and especially tables — that plain text loses, helping LLMs and embedding models better understand context and meaning. Markdown also makes document chunking more coherent, improving retrieval and generation quality downstream.</p>
+<p>Let’s take the <a href="https://arxiv.org/pdf/2408.09869">docling technical report</a> as our PDF to build our corpus. But remember, we can use more than one too.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When run from CLI, we can use gradio where we can directly drop the folder or choose PDF(s) to process.</p>
+</div>
+</div>
+<p>Since our documents are extracted in Markdown rather than plain text, we need a text splitter that can respect Markdown structure. For this, we use the <code>MarkdownTextSplitter</code> from LangChain’s text splitters module. It allows us to define a <em>chunk_size</em> to control segment length, along with a small overlap to maintain context between chunks.</p>
+<p>It’s important to note that with Markdown, the chunk_size serves as an approximation — the splitter avoids cutting through sections or formatting elements to preserve the logical and structural continuity of the text.</p>
+<div id="28c1bca4-a071-449f-a799-51e8b2cce856" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1">text_splitter <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> MarkdownTextSplitter(chunk_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3000</span>, chunk_overlap<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">450</span>)</span></code></pre></div>
+</div>
+<div id="37a47c53-2671-4907-8515-8af9171bf17c" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">pdfs <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> glob(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"notebooks/data/*.pdf"</span>)</span>
+<span id="cb3-2">pdfs</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<pre><code>['notebooks/data/docling_technical_report.pdf']</code></pre>
+</div>
+</div>
+<div id="01d833d6-04c2-4985-85fc-24e1331e81d2" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">ds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> build_corpus([pdfs[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]], text_splitter, fast_extract<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb5-2">ds</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2025-10-24 21:29:31,859 - INFO - detected formats: [&lt;InputFormat.PDF: 'pdf'&gt;]
+2025-10-24 21:29:31,897 - INFO - Going to convert document batch...
+2025-10-24 21:29:31,897 - INFO - Initializing pipeline for StandardPdfPipeline with options hash e647edf348883bed75367b22fbe60347
+2025-10-24 21:29:31,904 - INFO - Loading plugin 'docling_defaults'
+2025-10-24 21:29:31,905 - INFO - Registered picture descriptions: ['vlm', 'api']
+2025-10-24 21:29:31,911 - INFO - Loading plugin 'docling_defaults'
+2025-10-24 21:29:31,913 - INFO - Registered ocr engines: ['easyocr', 'ocrmac', 'rapidocr', 'tesserocr', 'tesseract']
+2025-10-24 21:29:31,976 - INFO - Accelerator device: 'cuda:0'
+2025-10-24 21:29:33,349 - INFO - Accelerator device: 'cuda:0'
+2025-10-24 21:29:34,413 - INFO - Accelerator device: 'cuda:0'
+2025-10-24 21:29:34,770 - INFO - Processing document docling_technical_report.pdf
+2025-10-24 21:29:41,917 - INFO - Finished converting document docling_technical_report.pdf in 10.06 sec.</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<pre><code>Dataset({
+    features: ['id', 'file', 'chunk_id', 'chunk'],
+    num_rows: 14
+})</code></pre>
+</div>
+</div>
+<p>We loaded our corpus in HuggingFace’s <em>dataset</em> format containing the following columns:</p>
+<ul>
+<li><code>id</code> - unique ID across documents</li>
+<li><code>file</code> - filename</li>
+<li><code>chunk_id</code> - ID of the chunk within a given document</li>
+<li><code>chunk</code> - raw text extracted as markdown</li>
+</ul>
+<p>We need to preserve this metadata which would later help in fetching the appopriate chunks after RRF.</p>
+<div id="5073ada2-9ecd-4b83-998e-2ebcc684f4bb" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">list</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">map</span>(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>, ds[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chunk"</span>][:]))</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<pre><code>[2746,
+ 775,
+ 269,
+ 2579,
+ 2696,
+ 2436,
+ 2948,
+ 2885,
+ 331,
+ 2993,
+ 1783,
+ 2552,
+ 2648,
+ 2332]</code></pre>
+</div>
+</div>
+<p>As noted earlier, the data is chunked unevenly. We will also empty the cache to offload docling from GPU as we no longer need it by running:</p>
+<div id="75a30fed-0c3e-4da4-b714-52eceeff06b9" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1">empty_cache()</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="load-models" class="level2">
+<h2 class="anchored" data-anchor-id="load-models">Load Models</h2>
+<section id="embedding-model" class="level3">
+<h3 class="anchored" data-anchor-id="embedding-model">Embedding Model</h3>
+<p>For our pipeline, we need a lightweight yet high-quality embedding model — one that can generate strong dense vector representations while being efficient enough for local or production use. If our use case mandates it, ideally, the model should be multilingual, capable of producing similar embeddings for semantically similar text across different languages. This is crucial because users might upload documents in one language and ask questions in another, or even provide multilingual documents within the same corpus.</p>
+<p>After experimenting with several variants, I chose Qwen3-Embedding, which strikes a great balance between performance, efficiency, and multilingual capability. For local deployment, I’ve settled on the <a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B">Qwen3-Embedding-0.6B</a> model — with a maximum embedding dimension of 1024. It performs exceptionally well for most workloads, though you can always switch to a larger variant (e.g., via the Hugging Face Spaces) if you need more capacity or precision.</p>
+</section>
+<section id="text-generation-model" class="level3">
+<h3 class="anchored" data-anchor-id="text-generation-model">Text Generation Model</h3>
+<p>For the text generation step, I opted for <a href="https://huggingface.co/Qwen/Qwen3-4B-AWQ">Qwen3-4B-AWQ</a> due to its strong reasoning abilities, instruction-following skills, agent capabilities, and multilingual support. It also offers a generous context window of 32,768 tokens, which is ideal for handling long documents or multi-section queries. <code>AWQ</code> (Attention Aware Quantization) preserves a small fraction of the weights that are important for LLM performance to compress a model to 4-bits with minimal performance degradation. Therefore we can be able to load huge models on limited GPU RAM that are otherwise impossible.</p>
+<p>Smaller variants proved less effective: the 0.6B model was too weak to generate meaningful answers, and the 1.7B model was only partially reliable. The 4B version, on the other hand, though not perfect, consistently produced accurate results across most queries.</p>
+<p>A key factor contributing to this performance was the Markdown-format PDF extraction, especially when done via Docling, which preserved document structure and context, allowing the model to reason over the content more effectively.</p>
+<p>We’ll define a few model combinations to use depending on host platform’s capabilities.</p>
+<div id="e14fddae-6b0c-4808-b0d1-63d251bbdf7d" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1">MODEL_COMBOS <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> {</span>
+<span id="cb11-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"linux"</span>: {</span>
+<span id="cb11-3">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb11-4">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-4B-AWQ"</span>,</span>
+<span id="cb11-5">    },</span>
+<span id="cb11-6">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># feel free to replace with any ??B-MLX-?bit versions from Qwen3 Collection at:</span></span>
+<span id="cb11-7">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># https://huggingface.co/collections/Qwen/qwen3-67dd247413f0e2e4f653967f</span></span>
+<span id="cb11-8">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mac"</span>: {</span>
+<span id="cb11-9">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb11-10">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-4B-MLX-4bit"</span>,</span>
+<span id="cb11-11">    },</span>
+<span id="cb11-12">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mac_mid"</span>: {</span>
+<span id="cb11-13">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb11-14">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-4B-MLX-6bit"</span>,</span>
+<span id="cb11-15">    },</span>
+<span id="cb11-16">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mac_high"</span>: {</span>
+<span id="cb11-17">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb11-18">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-4B-MLX-8bit"</span>,</span>
+<span id="cb11-19">    },</span>
+<span id="cb11-20">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># models to load on HF Spaces </span></span>
+<span id="cb11-21">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># HF-low is same as `linux-local`</span></span>
+<span id="cb11-22">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HF-mid"</span>: {</span>
+<span id="cb11-23">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb11-24">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-8B-AWQ"</span>,</span>
+<span id="cb11-25">    },</span>
+<span id="cb11-26">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HF-high"</span>: {</span>
+<span id="cb11-27">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-Embedding-4B"</span>,</span>
+<span id="cb11-28">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>: <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Qwen/Qwen3-14B-AWQ"</span>,</span>
+<span id="cb11-29">    },</span>
+<span id="cb11-30">}</span></code></pre></div>
+</div>
+<p>Now, we load the embedding &amp; generative models based on one of the combination keys above.</p>
+<div id="c1d79dd8-8ab7-4d14-8292-c54ac838f463" class="cell">
+<div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1">combo <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"linux"</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> sys.platform <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"linux"</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"mac"</span></span>
+<span id="cb12-2">GEN_MODEL_NAME <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> MODEL_COMBOS[combo][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>]</span>
+<span id="cb12-3">embedder, tok, gen <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> load_models(</span>
+<span id="cb12-4">    embed_model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>MODEL_COMBOS[combo][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embed_model"</span>],</span>
+<span id="cb12-5">    gen_model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>MODEL_COMBOS[combo][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gen_model"</span>],</span>
+<span id="cb12-6">)</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="embeddings-for-corpus" class="level2">
+<h2 class="anchored" data-anchor-id="embeddings-for-corpus">Embeddings for corpus</h2>
+<div id="4bf33ff8-1a76-459e-9099-63c0db8ac929" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> get_emb(texts, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>kwargs):</span>
+<span id="cb13-2">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> embedder.encode(texts, normalize_embeddings<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>kwargs)</span></code></pre></div>
+</div>
+<p>We can now add embeddings directly as a column to the dataset</p>
+<div id="45049b05-bd84-4272-a471-d6d5751b71d2" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1">batch_size <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">8</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># change it based on your system's capabilities</span></span>
+<span id="cb14-2">ds <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ds.<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">map</span>(</span>
+<span id="cb14-3">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lambda</span> x: {</span>
+<span id="cb14-4">        <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>: get_emb(</span>
+<span id="cb14-5">            x[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chunk"</span>],</span>
+<span id="cb14-6">            batch_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>batch_size,</span>
+<span id="cb14-7">            prompt_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"query"</span>,</span>
+<span id="cb14-8">            show_progress_bar<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>,</span>
+<span id="cb14-9">        )</span>
+<span id="cb14-10">    },</span>
+<span id="cb14-11">    batched<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>,</span>
+<span id="cb14-12">    batch_size<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>batch_size,</span>
+<span id="cb14-13">)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"08075af975b946b59c1f990e48053a7c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"0793a4a5d8e545bf9ded03aea2efa217","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"fd2da72f13724384b3559ecc983b572e","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div id="b1fc1d5e-70b4-4085-b016-79e976a82412" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1">empty_cache()</span></code></pre></div>
+</div>
+<div id="ff9b988f-c9e3-445b-8be3-df71980a8b64" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ds.save_to_disk('temp_dataset');</span></span>
+<span id="cb16-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># ds = load_from_disk('temp_dataset/')</span></span></code></pre></div>
+</div>
+</section>
+<section id="build-index" class="level2">
+<h2 class="anchored" data-anchor-id="build-index">Build Index</h2>
+<p>Now that we have the input data setup, it’s time to index them. We shall use FAISS as it’s efficient &amp; fast (esp.&nbsp;if you have a GPU). Since we’re using datasets, adding a faiss index over a column is pretty simple.</p>
+<div id="922e1469-cde5-449c-9cc7-c75c01be7f40" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">ds.add_faiss_index(</span>
+<span id="cb17-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>, metric_type<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>faiss.METRIC_INNER_PRODUCT</span>
+<span id="cb17-3">)<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">;</span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># , device=0 if (torch.cuda.is_available() or torch.mps.is_available()) else None)</span></span></code></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"996d322646074b5c9aacded8edfcc039","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+</section>
+<section id="generate-queries" class="level2">
+<h2 class="anchored" data-anchor-id="generate-queries">Generate queries</h2>
+<p>Now that we have the data and the models setup, time to process user queries. Let’s define a function that handles that.</p>
+<div id="9da5df2a-4c02-446e-a15f-14acffed10e4" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1">queries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [</span>
+<span id="cb18-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"tell me about cloud bursts"</span>,</span>
+<span id="cb18-3">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"how to ride a unicorn"</span>,</span>
+<span id="cb18-4">]</span></code></pre></div>
+</div>
+<div id="82ee252a-d334-4008-8f01-9f6c6dc2d3b3" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1">resp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> generate_text(</span>
+<span id="cb19-2">    tok, gen, queries, model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME,</span>
+<span id="cb19-3">    system_prompt<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"You are a funny standup comedian and reply only in one liner jokes"</span>,</span>
+<span id="cb19-4">)</span></code></pre></div>
+</div>
+<div id="d154cc85-2a21-48ce-bf38-936ca8c38009" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">resp[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>'A cloud burst is like a thunderstorm that’s so intense, it could make a cloud cry.'</code></pre>
+</div>
+</div>
+<div id="891be82f-3c42-417a-8fe9-2bc5566b1122" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">resp[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>"Just follow the rainbow and pretend you're not scared of the hooves."</code></pre>
+</div>
+</div>
+<p>Great! Notice that we can give multiple queries in one go which comes handy during batch processing.</p>
+</section>
+<section id="retrieve-results-from-corpus" class="level1">
+<h1>Retrieve results from corpus</h1>
+<section id="prompts" class="level2">
+<h2 class="anchored" data-anchor-id="prompts">Prompts</h2>
+<p>Because our model understands system and user prompts, we can set the context/role depending on what we want. Let’s load them.</p>
+<div id="ff799e1a-d84f-4776-8556-b2b4389c2fa4" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">with</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">open</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"src/prompts.yaml"</span>) <span class="im" style="color: #00769E;
+background-color: null;
+font-style: inherit;">as</span> fl:</span>
+<span id="cb24-2">    prompts <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> yaml.safe_load(fl)</span></code></pre></div>
+</div>
+<p>First we define a function to make different variants of the user query. We provide a few examples in the prompt.</p>
+</section>
+<section id="query-variations" class="level2">
+<h2 class="anchored" data-anchor-id="query-variations">Query Variations</h2>
+<div id="b0b25d68-ed7d-497d-8697-f83562db35f8" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"evolution of solar energy costs in Europe"</span></span>
+<span id="cb25-2">q_variants <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> make_query_variants(</span>
+<span id="cb25-3">    tok, gen, query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variants"</span>], n<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME</span>
+<span id="cb25-4">)</span>
+<span id="cb25-5">q_variants</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>['evolution of solar energy costs in europe',
+ 'how has the cost of solar energy changed in different european countries?',
+ 'how have solar energy prices changed in europe over the years?',
+ 'what factors have influenced the evolution of solar energy costs in europe?',
+ 'what has been the trend in solar energy costs across europe?',
+ 'what is the historical development of solar energy costs in europe?']</code></pre>
+</div>
+</div>
+<p>Nice! LLMs work best by role playing &amp; examples and therefore we have given some through system prompt. Look at the <em>variants</em> section of the <code>prompts.yaml</code> file to learn more.</p>
+<p>we always preserve the original query just in case the model loses (or deviates too far from) the original intent in its generated variants.</p>
+</section>
+<section id="query-generationrewrite" class="level2">
+<h2 class="anchored" data-anchor-id="query-generationrewrite">Query Generation/Rewrite</h2>
+<p>We now transform the query into a json with two parts <code>search</code> &amp; <code>tasks</code>. <em>Search</em> contains one or more queries based on the original query that are transformed &amp; expanded (if applicable) to be made within the context provided. <em>Tasks</em> lists one or more actions to take <em>after</em> the search is performed. Sometimes there’d be overlap in between them but that’ll be taken care during preprocessing.</p>
+<div id="f012bac7-3f50-48da-a11e-61abcb2ebc80" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"draft an email on summary of sales in the last quarter"</span></span>
+<span id="cb27-2">transform_query(tok, gen, query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rewrite"</span>], model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="21">
+<pre><code>{'search': ['summary of sales in the last quarter',
+  'sales summary for the previous quarter'],
+ 'tasks': ['draft an email based on the sales summary',
+  'send the drafted email to the relevant recipient']}</code></pre>
+</div>
+</div>
+<p>Now just like we derived many variations of the original user query earlier, we shall do the same for each of the above search queries as well. We append the tasks at the last of the user prompt.</p>
+</section>
+<section id="final-aggregation-of-queries-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="final-aggregation-of-queries-tasks">final aggregation of queries &amp; tasks</h2>
+<div id="585b32a3-d54e-4324-af62-ca70dc04fe96" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1">queries, tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb29-2">    tok, gen, query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rewrite"</span>], prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variants"</span>], </span>
+<span id="cb29-3">    gen_model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME,</span>
+<span id="cb29-4">)</span></code></pre></div>
+</div>
+<div id="d7fb8d4e-69bb-4716-9e09-c3b8626dac18" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1">queries</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="23">
+<pre><code>['draft an email on summary of sales in the last quarter',
+ 'how did sales performance compare to the previous quarter',
+ 'what is the sales overview for the quarter that just ended',
+ 'your name']</code></pre>
+</div>
+</div>
+<div id="da9c5936-6dad-49ee-b193-f366273898ba" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1">tasks</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>['draft an email', 'send the email to the relevant team']</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because we used a multilingual language model, this should also work for other languages</p>
+</div>
+</div>
+<div id="445aadb1-f2f6-4baa-88e1-74eeb2aaf435" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1">query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Was ist die Geschichte der Autos in Deutschland?"</span></span>
+<span id="cb34-2">queries, tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb34-3">    tok, gen, query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rewrite"</span>], prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variants"</span>], </span>
+<span id="cb34-4">    temperature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>, n_variations<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, gen_model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME</span>
+<span id="cb34-5">)</span></code></pre></div>
+</div>
+<div id="6e185dd6-7012-439b-8f99-a5bf5061bb98" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1">queries</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="26">
+<pre><code>['was ist die geschichte der autos in deutschland?',
+ 'wie hat sich die autoindustrie in deutschland im laufe der zeit entwickelt',
+ 'wie verändert sich die produktion von autos in deutschland']</code></pre>
+</div>
+</div>
+<div id="6a3cb5fe-15f5-4364-9fed-03dc81fa4f29" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1">tasks</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="27">
+<pre><code>[]</code></pre>
+</div>
+</div>
+</section>
+<section id="hyde-generation" class="level2">
+<h2 class="anchored" data-anchor-id="hyde-generation">HyDE generation</h2>
+<p>Let’s now pick a query that has something to do with our corpus to create hypothetical documents and its embeddings.</p>
+<div id="be75fb90-cee6-423b-b3cd-382bc57ae88f" class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1">query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"How good is table recognition in docling?"</span></span>
+<span id="cb39-2">queries, tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb39-3">    tok, gen, query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rewrite"</span>], prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variants"</span>], </span>
+<span id="cb39-4">    temperature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.7</span>, n_variations<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, gen_model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME</span>
+<span id="cb39-5">)</span>
+<span id="cb39-6">queries</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<pre><code>['how good is table recognition in docling?',
+ 'how does docling perform in identifying tables from various document types',
+ 'how effective is table recognition in document processing',
+ 'what is the accuracy of table recognition in document analysis']</code></pre>
+</div>
+</div>
+<p>Instead of passing each query, we send all in one go as a batch…</p>
+<div id="5fbe70f1-6f48-41d2-861f-78747eda34f5" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb41" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>time hyde_docs <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> generate_text(</span>
+<span id="cb41-2">    tok, gen, queries, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hyde'</span>], temperature<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">.7</span>, model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME</span>
+<span id="cb41-3">)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 11.1 s, sys: 287 ms, total: 11.4 s
+Wall time: 11.4 s</code></pre>
+</div>
+</div>
+<div id="e774df41-9ef5-4103-8fe1-a1747c0f46f5" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb43" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(hyde_docs)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="30">
+<pre><code>4</code></pre>
+</div>
+</div>
+<p>Let’s see some samples…</p>
+<div id="be53f454-efa0-43d8-89c9-8fe2eef7ed84" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb45" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> doc <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> hyde_docs[:<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]:</span>
+<span id="cb45-2">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'='</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">30</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>textwrap<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">.</span>fill(doc, width<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">80</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>==============================
+Docling is a document processing tool that includes features for recognizing
+tables within documents. According to its documentation and user reviews,
+Docling's table recognition capability is generally considered adequate for most
+use cases, including extracting table data into structured formats. The tool
+uses machine learning models to identify and parse tables, which works well for
+standard formats such as CSV, TSV, and HTML. However, users have reported that
+its performance can vary depending on the complexity and formatting of the
+original document. While it is not as advanced as some specialized tools in
+handling highly irregular or complex table structures, Docling is suitable for
+general-purpose table extraction tasks. Its effectiveness is often compared
+favorably to other document processing tools in terms of accuracy and ease of
+use.
+==============================
+Docling is a document processing tool designed to extract and structure
+information from various document types, including tables. According to a 2023
+evaluation by DocumentAI, Docling demonstrated strong performance in identifying
+and extracting tables from common document formats such as PDFs, Word documents,
+and Excel files. The tool successfully recognized tabular data in both
+structured and unstructured formats, with an accuracy rate of over 92% in
+controlled testing environments. However, its performance varied when processing
+highly formatted or scanned documents, where table recognition was less
+consistent. Users have reported that Docling's table detection is reliable for
+standard business documents but may require additional preprocessing for complex
+or non-standard layouts. The tool is part of a broader suite of AI-driven
+document processing solutions aimed at improving data extraction efficiency.</code></pre>
+</div>
+</div>
+<p>We now split it into chunks and get its embeddings; same as what we did for our corpus.</p>
+<div id="c1fa3780-1174-47ec-86f3-dee57f2f872b" class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb47" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1">chunks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb47-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> hyde_doc <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> hyde_docs:</span>
+<span id="cb47-3">    chunks.extend(text_splitter.split_text(hyde_doc))</span>
+<span id="cb47-4">q_emb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> get_emb(chunks, prompt_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"query"</span>, show_progress_bar<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">False</span>)</span>
+<span id="cb47-5">q_emb.shape</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<pre><code>(4, 1024)</code></pre>
+</div>
+</div>
+</section>
+<section id="search-in-index" class="level2">
+<h2 class="anchored" data-anchor-id="search-in-index">Search in index</h2>
+<p>We can define how many matches to retrieve for a given query through <code>k_per_variant</code></p>
+<div id="dfba4b86-221b-479c-8b13-6b413ffcab51" class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb49" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1">k_per_variant <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span></span>
+<span id="cb49-2">matches <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ds.get_nearest_examples_batch(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>, q_emb, k_per_variant)</span>
+<span id="cb49-3">np.array(matches.total_scores)</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="33">
+<pre><code>array([[0.7055741 , 0.6299919 , 0.62796915, 0.5997107 , 0.5608388 ],
+       [0.7040975 , 0.6866737 , 0.6717943 , 0.6013819 , 0.59106   ],
+       [0.53217894, 0.5187626 , 0.43610024, 0.42912632, 0.41111925],
+       [0.52601624, 0.4494145 , 0.446052  , 0.436696  , 0.3895734 ]],
+      dtype=float32)</code></pre>
+</div>
+</div>
+<p>Great! We got all the top <code>k_per_variant</code> matching chunks for each of the hyde in one go. The above array shows their corresponding similarity scores with each of the query embedding. We shall also now retrieve the unique ids of the corresponding chunks to rank them.</p>
+<div id="52d2abf1-f16f-498f-9a24-b8438a38e3da" class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb51" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1">indices <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [x[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"id"</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> x <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> matches.total_examples]</span>
+<span id="cb51-2">indices</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="34">
+<pre><code>[[7, 4, 0, 3, 1], [7, 4, 0, 3, 9], [4, 9, 0, 13, 7], [4, 9, 13, 12, 10]]</code></pre>
+</div>
+</div>
+<p>We notice that ids <code>0, 4, 7</code> consistently came out on the top. Let’s see their rankings.</p>
+<hr>
+<section id="reciprocal-rank-fusion-1" class="level3">
+<h3 class="anchored">Reciprocal Rank Fusion</h3>
+<p>We define the RRF function to rank and retrieve most relevant matches.</p>
+<div id="e096256c-9b25-4432-b43c-4b2787a39f6c" class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb53" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> reciprocal_rank_fusion(indices, top_k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, denom<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">50</span>):</span>
+<span id="cb53-2">    scores <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> defaultdict(<span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">int</span>)</span>
+<span id="cb53-3">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> row <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> indices:</span>
+<span id="cb53-4">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> rank, idx <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">enumerate</span>(row):</span>
+<span id="cb53-5">            scores[idx] <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> (rank <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> denom)</span>
+<span id="cb53-6">    results <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">sorted</span>(scores.items(), key<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">lambda</span> x: x[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>], reverse<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">True</span>)[:top_k]</span>
+<span id="cb53-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> [idx <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> idx, _ <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> results]</span></code></pre></div>
+</div>
+<p>Let’s now get the <code>top_k</code> chunk ids from all of the above that best match our original <code>query</code>.</p>
+<div id="79adb3d3-c3bd-41eb-854c-0255bcd63cf7" class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb54" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1">top_k <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb54-2">top_idx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> reciprocal_rank_fusion(indices, top_k<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>top_k)</span>
+<span id="cb54-3">top_idx</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>[4, 7]</code></pre>
+</div>
+</div>
+<div id="d60de573-5468-462a-882c-983e30a292b2" class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb56" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb56-1">Markdown(ds[top_idx[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>]][<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'chunk'</span>])</span></code></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="37">
+<section id="ai-models" class="level2">
+<h2 class="anchored" data-anchor-id="ai-models">3.2 AI models</h2>
+<p>As part of Docling, we initially release two highly capable AI models to the open-source community, which have been developed and published recently by our team. The first model is a layout analysis model, an accurate object-detector for page elements [13]. The second model is TableFormer [12, 9], a state-of-the-art table structure recognition model. We provide the pre-trained weights (hosted on huggingface) and a separate package for the inference code as docling-ibm-models . Both models are also powering the open-access deepsearch-experience, our cloud-native service for knowledge exploration tasks.</p>
+</section>
+<section id="layout-analysis-model" class="level2">
+<h2 class="anchored" data-anchor-id="layout-analysis-model">Layout Analysis Model</h2>
+<p>Our layout analysis model is an object-detector which predicts the bounding-boxes and classes of various elements on the image of a given page. Its architecture is derived from RT-DETR [16] and re-trained on DocLayNet [13], our popular human-annotated dataset for document-layout analysis, among other proprietary datasets. For inference, our implementation relies on the onnxruntime [5].</p>
+<p>The Docling pipeline feeds page images at 72 dpi resolution, which can be processed on a single CPU with sub-second latency. All predicted bounding-box proposals for document elements are post-processed to remove overlapping proposals based on confidence and size, and then intersected with the text tokens in the PDF to group them into meaningful and complete units such as paragraphs, section titles, list items, captions, figures or tables.</p>
+</section>
+<section id="table-structure-recognition" class="level2">
+<h2 class="anchored" data-anchor-id="table-structure-recognition">Table Structure Recognition</h2>
+<p>The TableFormer model [12], first published in 2022 and since refined with a custom structure token language [9], is a vision-transformer model for table structure recovery. It can predict the logical row and column structure of a given table based on an input image, and determine which table cells belong to column headers, row headers or the table body. Compared to earlier approaches, TableFormer handles many characteristics of tables, such as partial or no borderlines, empty cells, rows or columns, cell spans and hierarchy both on column-heading or row-heading level, tables with inconsistent indentation or alignment and other complexities. For inference, our implementation relies on PyTorch [2].</p>
+<p>The Docling pipeline feeds all table objects detected in the layout analysis to the TableFormer model, by providing an image-crop of the table and the included text cells. TableFormer structure predictions are matched back to the PDF cells in post-processing to avoid expensive re-transcription text in the table image. Typical tables require between 2 and 6 seconds to be processed on a standard CPU, strongly depending on the amount of included table cells.</p>
+</section>
+<section id="ocr" class="level2">
+<h2 class="anchored" data-anchor-id="ocr">OCR</h2>
+</section>
+</div>
+</div>
+<p><em>Indeed the top most document actually contains the answer to our query. We now wrap it all up in one function!</em></p>
+<div id="4fdb5025-22c2-4f7e-ab0a-0dfd6ca7f34a" class="cell" data-execution_count="38">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> retrieve(</span>
+<span id="cb57-2">    tok, gen, query, n_variants<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>, top_k_per_variant<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, top_k_retrieve<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>, </span>
+<span id="cb57-3">    model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>llm_kwargs,</span>
+<span id="cb57-4">):</span>
+<span id="cb57-5">    queries, tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb57-6">        tok, gen, query.strip(), prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"rewrite"</span>], prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"variants"</span>], </span>
+<span id="cb57-7">        n_variants, model_name, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>llm_kwargs,</span>
+<span id="cb57-8">    )</span>
+<span id="cb57-9">    hyde_docs <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> generate_text(</span>
+<span id="cb57-10">        tok, gen, queries, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hyde"</span>], model_name, <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">**</span>llm_kwargs)</span>
+<span id="cb57-11">    chunks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> []</span>
+<span id="cb57-12">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> hyde_doc <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> hyde_docs:</span>
+<span id="cb57-13">        chunks.extend(text_splitter.split_text(hyde_doc))</span>
+<span id="cb57-14">    q_emb <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> get_emb(chunks)</span>
+<span id="cb57-15">    matches <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ds.get_nearest_examples_batch(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>, q_emb, top_k_per_variant)</span>
+<span id="cb57-16">    indices <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> [match[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"id"</span>] <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> match <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> matches.total_examples]</span>
+<span id="cb57-17">    top_idx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> reciprocal_rank_fusion(indices, top_k_retrieve)</span>
+<span id="cb57-18">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> top_idx, tasks</span></code></pre></div>
+</details>
+</div>
+<div id="a6bfd2b3-72a0-47d1-83d1-0f49010d28fc" class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb58" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>time i,t <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> retrieve(tok, gen, query, model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"550a46781c7a4fd3bde41297db7c2ee0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 19.1 s, sys: 643 ms, total: 19.7 s
+Wall time: 19.8 s</code></pre>
+</div>
+</div>
+<div id="3f026427-f5f6-48b1-abd6-6bd81b012f95" class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb60" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1">i</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="40">
+<pre><code>[4, 7]</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="final-aggregated-response" class="level1">
+<h1>Final Aggregated Response</h1>
+<p>Having all the relevant text pieces to generate a context, we now couple that with the original user query and feed it to our LLM to get a final response. We shall tell what we expect and how, through the system prompt.</p>
+<div id="548f6029-a39a-4234-bda2-f5e0b165b139" class="cell" data-execution_count="41">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb62" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> get_filtered_entries(idxs):</span>
+<span id="cb62-2">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># We need to drop the index before filtering/selecting the desired indices and re-add it later</span></span>
+<span id="cb62-3">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Since it's FAISS and we index very little data, it's not noticeable</span></span>
+<span id="cb62-4">    ds.drop_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>)</span>
+<span id="cb62-5">    entries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ds.select(idxs)</span>
+<span id="cb62-6">    ds.add_faiss_index(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"embeddings"</span>, metric_type<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>faiss.METRIC_INNER_PRODUCT)</span>
+<span id="cb62-7">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> entries</span>
+<span id="cb62-8"></span>
+<span id="cb62-9"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> answer(tok, gen, query, idxs, tasks, model_name, max_ctx_chars<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">32768</span>):</span>
+<span id="cb62-10">    total, text, prompt_length <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10000</span></span>
+<span id="cb62-11">    sep <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-----</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb62-12">    tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span>.join(tasks) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> tasks <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb62-13">    entries <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> get_filtered_entries(idxs)</span>
+<span id="cb62-14">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> content <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> entries[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chunk"</span>]:</span>
+<span id="cb62-15">        ctx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>sep<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>content<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb62-16">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> total <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(ctx) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(tasks) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(sep) <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> prompt_length <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> max_ctx_chars:</span>
+<span id="cb62-17">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"context overflow"</span>)</span>
+<span id="cb62-18">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span></span>
+<span id="cb62-19">        text <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> ctx</span>
+<span id="cb62-20">        total <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">len</span>(text)</span>
+<span id="cb62-21"></span>
+<span id="cb62-22">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># add tasks if any, at the last</span></span>
+<span id="cb62-23">    text <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>sep<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}{</span>tasks<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb62-24"></span>
+<span id="cb62-25">    instruction <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"go ahead and answer!"</span></span>
+<span id="cb62-26">    user_query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">q: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>query<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">ctx:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>text<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>instruction<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb62-27">    resp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> generate_text(</span>
+<span id="cb62-28">        tok, gen, user_query, prompts[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"final_answer"</span>], model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>model_name</span>
+<span id="cb62-29">    )</span>
+<span id="cb62-30"></span>
+<span id="cb62-31">    sources <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb62-32">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> idx, entry <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">enumerate</span>(entries):</span>
+<span id="cb62-33">        source <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f'&lt;h2 style="color: cyan;"&gt;Source </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>idx <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> :: </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>entry[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"file"</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>entry[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"chunk_id"</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">&lt;/h2&gt;'</span></span>
+<span id="cb62-34">        sources <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>sep<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}{</span>source<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>entry[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'chunk'</span>]<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb62-35"></span>
+<span id="cb62-36">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> resp, sources.replace(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"```"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"`"</span>)</span>
+<span id="cb62-37"></span>
+<span id="cb62-38"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># little wrapper function to retrieve and display results</span></span>
+<span id="cb62-39"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">def</span> ask(query):</span>
+<span id="cb62-40">    start <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> time()</span>
+<span id="cb62-41">    top_idxs, tasks <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> retrieve(tok, gen, query.strip(), model_name<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>GEN_MODEL_NAME)</span>
+<span id="cb62-42">    retrieve_end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> time()</span>
+<span id="cb62-43">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"Retrieval </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>(retrieve_end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> start)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.1f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> seconds"</span>)</span>
+<span id="cb62-44">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># we can use `top_idxs` to retrieve the source content if we wish to.</span></span>
+<span id="cb62-45">    answer_start <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> time()</span>
+<span id="cb62-46">    resp, sources <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> answer(tok, gen, query, top_idxs, tasks, GEN_MODEL_NAME)</span>
+<span id="cb62-47">    end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> time()</span>
+<span id="cb62-48">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"answering took </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>(end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> answer_start)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.1f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> seconds"</span>)</span>
+<span id="cb62-49">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">return</span> <span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">f"</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">(_Whole search took </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>(end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> start)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">:.1f}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> seconds_)</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n\n</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;"># Final Answer:</span><span class="ch" style="color: #20794D;
+background-color: null;
+font-style: inherit;">\n</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span>resp<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}{</span>sources<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+</details>
+</div>
+<p>Let’s see what the model answers…</p>
+<div id="f9be5b7d-cf2b-498d-927c-ae34d93d2b7e" class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb63" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1">query</span></code></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="42">
+<pre><code>'How good is table recognition in docling?'</code></pre>
+</div>
+</div>
+<div id="27f7be88-39c3-42ca-b03b-98fc5f17f0cf" class="cell" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb65" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb65-1">resp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ask(query)</span>
+<span id="cb65-2">Markdown(resp)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"c2bb759b44414778953d3b00aa91cad5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Retrieval 18.8 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"9a38298a70cb4c628ed9bdceaef49cb5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>answering took 5.3 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="43">
+<p>(<em>Whole search took 24.2 seconds</em>)</p>
+<section id="final-answer" class="level1">
+<h1>Final Answer:</h1>
+<p>The table recognition in Docling is described as “state-of-the-art” with the TableFormer model being a “state-of-the-the-table structure recognition model”. It can predict the logical row and column structure of a given table based on an input image, and determine which table cells belong to column headers, row headers or the table body. It handles many characteristics of tables, such as partial or no borderlines, empty cells, rows or columns, cell spans and hierarchy, and other complexities. Typical tables require between 2 and 6 seconds to be processed on a standard CPU.</p>
+<hr>
+<h2 style="color: cyan;" class="anchored" data-anchor-id="final-answer">
+Source 1 :: docling_technical_report:4
+</h2>
+<section id="ai-models-1" class="level2">
+<h2 class="anchored" data-anchor-id="ai-models-1">3.2 AI models</h2>
+<p>As part of Docling, we initially release two highly capable AI models to the open-source community, which have been developed and published recently by our team. The first model is a layout analysis model, an accurate object-detector for page elements [13]. The second model is TableFormer [12, 9], a state-of-the-art table structure recognition model. We provide the pre-trained weights (hosted on huggingface) and a separate package for the inference code as docling-ibm-models . Both models are also powering the open-access deepsearch-experience, our cloud-native service for knowledge exploration tasks.</p>
+</section>
+<section id="layout-analysis-model-1" class="level2">
+<h2 class="anchored" data-anchor-id="layout-analysis-model-1">Layout Analysis Model</h2>
+<p>Our layout analysis model is an object-detector which predicts the bounding-boxes and classes of various elements on the image of a given page. Its architecture is derived from RT-DETR [16] and re-trained on DocLayNet [13], our popular human-annotated dataset for document-layout analysis, among other proprietary datasets. For inference, our implementation relies on the onnxruntime [5].</p>
+<p>The Docling pipeline feeds page images at 72 dpi resolution, which can be processed on a single CPU with sub-second latency. All predicted bounding-box proposals for document elements are post-processed to remove overlapping proposals based on confidence and size, and then intersected with the text tokens in the PDF to group them into meaningful and complete units such as paragraphs, section titles, list items, captions, figures or tables.</p>
+</section>
+<section id="table-structure-recognition-1" class="level2">
+<h2 class="anchored" data-anchor-id="table-structure-recognition-1">Table Structure Recognition</h2>
+<p>The TableFormer model [12], first published in 2022 and since refined with a custom structure token language [9], is a vision-transformer model for table structure recovery. It can predict the logical row and column structure of a given table based on an input image, and determine which table cells belong to column headers, row headers or the table body. Compared to earlier approaches, TableFormer handles many characteristics of tables, such as partial or no borderlines, empty cells, rows or columns, cell spans and hierarchy both on column-heading or row-heading level, tables with inconsistent indentation or alignment and other complexities. For inference, our implementation relies on PyTorch [2].</p>
+<p>The Docling pipeline feeds all table objects detected in the layout analysis to the TableFormer model, by providing an image-crop of the table and the included text cells. TableFormer structure predictions are matched back to the PDF cells in post-processing to avoid expensive re-transcription text in the table image. Typical tables require between 2 and 6 seconds to be processed on a standard CPU, strongly depending on the amount of included table cells.</p>
+</section>
+<section id="ocr-1" class="level2">
+<h2 class="anchored" data-anchor-id="ocr-1">OCR</h2>
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 2 :: docling_technical_report:7
+</h2>
+</section>
+<section id="applications" class="level2">
+<h2 class="anchored" data-anchor-id="applications">5 Applications</h2>
+<p>Thanks to the high-quality, richly structured document conversion achieved by Docling, its output qualifies for numerous downstream applications. For example, Docling can provide a base for detailed enterprise document search, passage retrieval or classification use-cases, or support knowledge extraction pipelines, allowing specific treatment of different structures in the document, such as tables, figures, section structure or references. For popular generative AI application patterns, such as retrieval-augmented generation (RAG), we provide quackling , an open-source package which capitalizes on Docling’s feature-rich document output to enable document-native optimized vector embedding and chunking. It plugs in seamlessly with LLM frameworks such as LlamaIndex [8]. Since Docling is fast, stable and cheap to run, it also makes for an excellent choice to build document-derived datasets. With its powerful table structure recognition, it provides significant benefit to automated knowledge-base construction [11, 10]. Docling is also integrated within the open IBM data prep kit [6], which implements scalable data transforms to build large-scale multi-modal training datasets.</p>
+</section>
+<section id="future-work-and-contributions" class="level2">
+<h2 class="anchored" data-anchor-id="future-work-and-contributions">6 Future work and contributions</h2>
+<p>Docling is designed to allow easy extension of the model library and pipelines. In the future, we plan to extend Docling with several more models, such as a figure-classifier model, an equationrecognition model, a code-recognition model and more. This will help improve the quality of conversion for specific types of content, as well as augment extracted document metadata with additional information. Further investment into testing and optimizing GPU acceleration as well as improving the Docling-native PDF backend are on our roadmap, too.</p>
+<p>We encourage everyone to propose or implement additional features and models, and will gladly take your inputs and contributions under review . The codebase of Docling is open for use and contribution, under the MIT license agreement and in alignment with our contributing guidelines included in the Docling repository. If you use Docling in your projects, please consider citing this technical report.</p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>[1] J. AI. Easyocr: Ready-to-use ocr with 80+ supported languages. https://github.com/ JaidedAI/EasyOCR , 2024. Version: 1.7.0.</li>
+<li>[2] J. Ansel, E. Yang, H. He, N. Gimelshein, A. Jain, M. Voznesensky, B. Bao, P. Bell, D. Berard, E. Burovski, G. Chauhan, A. Chourdia, W. Constable, A. Desmaison, Z. DeVito, E. Ellison, W. Feng, J. Gong, M. Gschwind, B. Hirsh, S. Huang, K. Kalambarkar, L. Kirsch, M. Lazos, M. Lezcano, Y. Liang, J. Liang, Y. Lu, C. Luk, B. Maher, Y. Pan, C. Puhrsch, M. Reso, M. Saroufim, M. Y. Siraichi, H. Suk, M. Suo, P. Tillet, E. Wang, X. Wang, W. Wen, S. Zhang, X. Zhao, K. Zhou, R. Zou, A. Mathews, G. Chanan, P. Wu, and S. Chintala. Pytorch 2: Faster</li>
+</ul>
+</section>
+</section>
+</div>
+</div>
+<p>Let’s try another one…</p>
+<div id="2b3f1abf-7372-45dc-8b91-972da2c5b721" class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb68" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1">query <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Bietet Docling OCR-Unterstützung??"</span></span>
+<span id="cb68-2">resp <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> ask(query)</span>
+<span id="cb68-3">Markdown(resp)</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"01dd68b60820446a93cd56b67c4160ee","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Retrieval 20.2 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"ecdab723145649a786dddc2cb01cb22c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>answering took 3.4 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="44">
+<p>(<em>Whole search took 23.6 seconds</em>)</p>
+<section id="final-answer-1" class="level1">
+<h1>Final Answer:</h1>
+<p>Docling bietet optionale OCR-Unterstützung, insbesondere für scanned PDFs oder content in bitmaps images. In der initialen Version verlässt sich Docling auf EasyOCR, eine beliebte dritte Partei OCR-Bibliothek mit Unterstützung für viele Sprachen.</p>
+<hr>
+<h2 style="color: cyan;" class="anchored" data-anchor-id="final-answer-1">
+Source 1 :: docling_technical_report:7
+</h2>
+<section id="applications-1" class="level2">
+<h2 class="anchored" data-anchor-id="applications-1">5 Applications</h2>
+<p>Thanks to the high-quality, richly structured document conversion achieved by Docling, its output qualifies for numerous downstream applications. For example, Docling can provide a base for detailed enterprise document search, passage retrieval or classification use-cases, or support knowledge extraction pipelines, allowing specific treatment of different structures in the document, such as tables, figures, section structure or references. For popular generative AI application patterns, such as retrieval-augmented generation (RAG), we provide quackling , an open-source package which capitalizes on Docling’s feature-rich document output to enable document-native optimized vector embedding and chunking. It plugs in seamlessly with LLM frameworks such as LlamaIndex [8]. Since Docling is fast, stable and cheap to run, it also makes for an excellent choice to build document-derived datasets. With its powerful table structure recognition, it provides significant benefit to automated knowledge-base construction [11, 10]. Docling is also integrated within the open IBM data prep kit [6], which implements scalable data transforms to build large-scale multi-modal training datasets.</p>
+</section>
+<section id="future-work-and-contributions-1" class="level2">
+<h2 class="anchored" data-anchor-id="future-work-and-contributions-1">6 Future work and contributions</h2>
+<p>Docling is designed to allow easy extension of the model library and pipelines. In the future, we plan to extend Docling with several more models, such as a figure-classifier model, an equationrecognition model, a code-recognition model and more. This will help improve the quality of conversion for specific types of content, as well as augment extracted document metadata with additional information. Further investment into testing and optimizing GPU acceleration as well as improving the Docling-native PDF backend are on our roadmap, too.</p>
+<p>We encourage everyone to propose or implement additional features and models, and will gladly take your inputs and contributions under review . The codebase of Docling is open for use and contribution, under the MIT license agreement and in alignment with our contributing guidelines included in the Docling repository. If you use Docling in your projects, please consider citing this technical report.</p>
+</section>
+<section id="references-1" class="level2">
+<h2 class="anchored" data-anchor-id="references-1">References</h2>
+<ul>
+<li>[1] J. AI. Easyocr: Ready-to-use ocr with 80+ supported languages. https://github.com/ JaidedAI/EasyOCR , 2024. Version: 1.7.0.</li>
+<li>[2] J. Ansel, E. Yang, H. He, N. Gimelshein, A. Jain, M. Voznesensky, B. Bao, P. Bell, D. Berard, E. Burovski, G. Chauhan, A. Chourdia, W. Constable, A. Desmaison, Z. DeVito, E. Ellison, W. Feng, J. Gong, M. Gschwind, B. Hirsh, S. Huang, K. Kalambarkar, L. Kirsch, M. Lazos, M. Lezcano, Y. Liang, J. Liang, Y. Lu, C. Luk, B. Maher, Y. Pan, C. Puhrsch, M. Reso, M. Saroufim, M. Y. Siraichi, H. Suk, M. Suo, P. Tillet, E. Wang, X. Wang, W. Wen, S. Zhang, X. Zhao, K. Zhou, R. Zou, A. Mathews, G. Chanan, P. Wu, and S. Chintala. Pytorch 2: Faster</li>
+</ul>
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 2 :: docling_technical_report:5
+</h2>
+</section>
+<section id="ocr-2" class="level2">
+<h2 class="anchored" data-anchor-id="ocr-2">OCR</h2>
+<p>Docling provides optional support for OCR, for example to cover scanned PDFs or content in bitmaps images embedded on a page. In our initial release, we rely on EasyOCR [1], a popular thirdparty OCR library with support for many languages. Docling, by default, feeds a high-resolution page image (216 dpi) to the OCR engine, to allow capturing small print detail in decent quality. While EasyOCR delivers reasonable transcription quality, we observe that it runs fairly slow on CPU (upwards of 30 seconds per page).</p>
+<p>We are actively seeking collaboration from the open-source community to extend Docling with additional OCR backends and speed improvements.</p>
+</section>
+<section id="assembly" class="level2">
+<h2 class="anchored" data-anchor-id="assembly">3.3 Assembly</h2>
+<p>In the final pipeline stage, Docling assembles all prediction results produced on each page into a well-defined datatype that encapsulates a converted document, as defined in the auxiliary package docling-core . The generated document object is passed through a post-processing model which leverages several algorithms to augment features, such as detection of the document language, correcting the reading order, matching figures with captions and labelling metadata such as title, authors and references. The final output can then be serialized to JSON or transformed into a Markdown representation at the users request.</p>
+</section>
+<section id="extensibility" class="level2">
+<h2 class="anchored" data-anchor-id="extensibility">3.4 Extensibility</h2>
+<p>Docling provides a straight-forward interface to extend its capabilities, namely the model pipeline. A model pipeline constitutes the central part in the processing, following initial document parsing and preceding output assembly, and can be fully customized by sub-classing from an abstract baseclass ( BaseModelPipeline ) or cloning the default model pipeline. This effectively allows to fully customize the chain of models, add or replace models, and introduce additional pipeline configuration parameters. To use a custom model pipeline, the custom pipeline class to instantiate can be provided as an argument to the main document conversion methods. We invite everyone in the community to propose additional or alternative models and improvements.</p>
+<p>Implementations of model classes must satisfy the python Callable interface. The __call__ method must accept an iterator over page objects, and produce another iterator over the page objects which were augmented with the additional features predicted by the model, by extending the provided PagePredictions data model accordingly.</p>
+</section>
+<section id="performance" class="level2">
+<h2 class="anchored" data-anchor-id="performance">4 Performance</h2>
+</section>
+</section>
+</div>
+</div>
+<hr>
+<p><em>Sweet! The final answer greatly captures the context and provides factual, grounded answer as seen from the cited documents along with replying in the same language as the user’s query.</em></p>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>We now have a complete working solution! You can tweak several parameters to trade off speed or accuracy. Ideally, this pipeline should be able to extract pieces of text even when they are deeply embedded inside a table with a complex layout, or mentioned rarely in the entire corpus or sometimes indirectly even.</p>
+<p>This entire code is available in scripts to be able to run via CLI or via gradio (local as well as on HF Spaces).</p>
+<p>Here’s how it looks with gradio for example: <img src="https://samsaara.github.io/posts/rag_with_hyde_rrf/gradio_UI.png" class="img-fluid" alt="gradio"></p>
+<p>Notice that the information is correctly extracted from a table and a gist is provided.</p>
+<p>Checkout the project <a href="https://github.com/samsaara/rag_hyde/blob/main/README.md">README</a> for more insights/observations and let me know if there’re any suggestions or corrections.</p>
+<section id="tipsobservations" class="level2">
+<h2 class="anchored" data-anchor-id="tipsobservations">Tips/Observations:</h2>
+<ul>
+<li>Extracting text as a markdown greatly preserved the structure and continuity of the text. This resulted in better logical chunking which in turn led to better embeddings and as a consequence, better search results.</li>
+<li>Reading the document via <code>docling</code> extracted more and correct text compared to <code>pymupdf4llm</code> but at a bit of an expense of speed. It is enabled by default for prioritising accuracy. This proved esp.&nbsp;useful in extracting data containing lots of tables spread over multiple pages.</li>
+<li>You can pass <code>--fast-extract</code> from CLI or tick a box via gradio UI to use pymupdf instead.</li>
+<li>Increasing the model size (coupled with correct text extraction in markdown) greatly improved performance. The Qwen3 models very much adhered to instructions but the smaller variants instead of hallucinating simply fell back to saying <em>‘I don’t know’</em> (as per instructions). The <code>4B</code> variant understood the user intent which sometimes was vague and yet managed to give relevant results. The base variant is huge and it wouldn’t have been fit and run fast enough on a consumer grade laptop GPU. Loading the <code>AWQ</code> variant of it helped as it occupied substantially less memory compared to the original without much loss in performance.</li>
+<li>This model also showed great multilingual capabilities. User can upload document in one language and ask questions in another. Or they could upload multilingual documents and ask multilingual queries. For the demo, I tested mostly in English &amp; German.</li>
+<li>The data is now stored in datasets format that allows for better storage &amp; scaling (arrow) along with indexing (FAISS) for querying.</li>
+</ul>
+<hr>
+</section>
+<section id="limitations-known-issues" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-known-issues">Limitations / Known Issues</h2>
+<ul>
+<li>Even though <code>docling</code> with mostly default options proved to be better than <code>pymupdf4llm</code> to extract text, it’s not perfect everytime. There’re instances where <em>pymupdf</em> extracted text from an embedded image inside a PDF better than docling. However, docling is highly configurable and allows for deep customization via ‘pipelines’. And it also comes with a very permissive license for commercial use compared to PyMuPDF.
+<ul>
+<li>docling comes with <code>easyocr</code> by default for text OCR. It’s not powerful enough compared to <em>tesseract</em> or similar models. But since installing the latter and linking it with docling involves touching system config, it’s not pursued.</li>
+</ul></li>
+<li>When user uploads multiple PDFs, we can improve load times by reading them asynchronously. Attempts to do that with <code>docling</code> sometimes resulted in pages with ordering different than the original. So it’s dropped for the demo. More investigation is needed later.</li>
+</ul>
+</section>
+</section>
+<section id="next-steps" class="level1">
+<h1>Next Steps</h1>
+<p>Even though this retrieval pipeline is fairly modern, it’s not bleeding edge. Since techniques like HyDE and query rewriting first appeared, several new ideas have emerged to make retrieval even smarter and faster. Some systems now combine both dense and keyword-based (sparse) search, so the strengths of each can cover the other’s weaknesses. Others use LLMs to rewrite or expand queries more efficiently before retrieval, or train learned retrievers that better understand context without needing extra generation steps. There’s also growing interest in reranking and hybrid pipelines that automatically learn how to mix results from different retrieval methods. Exploring these newer approaches could help improve both accuracy and speed.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>EDA</category>
+  <category>PyTorch</category>
+  <category>NLP</category>
+  <category>GenAI</category>
+  <category>LLMs</category>
+  <category>RAG</category>
+  <category>HyDE</category>
+  <category>RRF</category>
+  <category>Ranking</category>
+  <category>Information Retrieval</category>
+  <guid>https://samsaara.github.io/posts/rag_with_hyde_rrf/rag_hyde.html</guid>
+  <pubDate>Fri, 24 Oct 2025 18:30:00 GMT</pubDate>
+  <media:content url="https://samsaara.github.io/posts/rag_with_hyde_rrf/RAG_Robot.png" medium="image" type="image/png" height="96" width="144"/>
+</item>
 <item>
   <title>Curate jobs with Agentic AI &amp; Ollama</title>
   <link>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</link>

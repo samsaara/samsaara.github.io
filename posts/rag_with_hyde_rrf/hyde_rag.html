@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>HyDE with RAG Fusion – Saṃsāra</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-d1029c8c0624b678ec1882d5dbfbed62.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-317fa9c8a93cbaa92631be92f51646c5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-d1029c8c0624b678ec1882d5dbfbed62.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<meta name="google-site-verification" content="3SxB-BO1HYCeRZHqmQL0hnuTIvGTh2VGaIOQQz91-D4">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+</head>
+
+<body class="nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Saṃsāra</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/samsaara"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">HyDE with RAG Fusion</h1>
+                      </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+
+<p>In this notebook we will explore how to build hypothetical documents from user query and fuse them intelligently to retrieve the most relevant results from the corpus. Here’s the outline:</p>
+<section id="process" class="level2">
+<h2 class="anchored" data-anchor-id="process">Process:</h2>
+<ul>
+<li>Get the folder containing data</li>
+<li>Build Corpus &amp; Index</li>
+<li>Get the user query</li>
+<li>transform it to separate search &amp; intent (Query Rewrite)</li>
+<li>generate hypothetical documents from a (short) user query</li>
+<li>get their corresponding embeddings</li>
+<li>for each of those embeddings, get relevant results from the corpus</li>
+<li>fuse them all together using Reciprocal Rank Fusion</li>
+<li>extract top relevant results</li>
+<li>pre-process those to make a context and send it to the LLM one last time with the user query</li>
+<li>receive the final answer based on the user’s query &amp; provided context.</li>
+</ul>
+<div class="alert alert-block alert-warning">
+<pre><code>&lt;b&gt;Warning:&lt;/b&gt; The following code is tested only on linux since a mac machine is unavailable. So the code related to it, esp. the GPU one have a chance of failing.</code></pre>
+</div>
+<div id="b3ce2caa-728e-4c55-ba5b-3c2c3c3cbc20" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># import os</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># os.environ["OMP_NUM_THREADS"] = "4"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># os.environ["MKL_NUM_THREADS"] = "4"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2c0fadb4-a2f2-4167-b9ce-c1ffd1b973b4" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> gc</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> string</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> faiss</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymupdf, pymupdf4llm</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> time <span class="im">import</span> time</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> glob <span class="im">import</span> glob</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> random <span class="im">import</span> shuffle</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ast <span class="im">import</span> literal_eval</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> defaultdict</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> Dataset</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Markdown</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sentence_transformers <span class="im">import</span> SentenceTransformer</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> docling.document_converter <span class="im">import</span> DocumentConverter</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> langchain_text_splitters <span class="im">import</span> (</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    SentenceTransformersTokenTextSplitter,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    MarkdownTextSplitter,</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    ExperimentalMarkdownSyntaxTextSplitter,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    RecursiveCharacterTextSplitter,</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> (</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    AutoTokenizer,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>    AutoModelForSeq2SeqLM,</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    AutoModelForCausalLM,</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    AutoConfig,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>    AutoModel,</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="434d4378-8efa-4a2a-9233-3c9167081ab7" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> empty_cache():</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    gc.collect()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> torch.cuda.is_available():</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        torch.cuda.empty_cache()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> torch.mps.is_available():</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        torch.mps.empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-pdfs" class="level2">
+<h2 class="anchored" data-anchor-id="load-pdfs">Load PDFs</h2>
+<div id="f3a12f63-ecbe-4405-bfb7-e1be1af2c76e" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from docling.datamodel import vlm_model_specs</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># from docling.datamodel.base_models import InputFormat</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># from docling.datamodel.pipeline_options import VlmPipelineOptions</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># from docling.document_converter import DocumentConverter, PdfFormatOption</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># from docling.pipeline.vlm_pipeline import VlmPipeline</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># pipeline_options = None</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># if torch.mps.is_available():</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#     pipeline_options = VlmPipelineOptions(</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#         vlm_options=vlm_model_specs.GRANITEDOCLING_MLX,</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#     )</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># converter = DocumentConverter(</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     allowed_formats=['pdf'],</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     format_options={</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#         InputFormat.PDF: PdfFormatOption(</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#             pipeline_cls=VlmPipeline,</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#             pipeline_options=pipeline_options</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#         ),</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">#     }</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># )</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># def get_page_count(fp):</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co">#     with pymupdf.open(fp) as doc:</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#         return doc.page_count</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># def step_tuples(n, s):</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co">#     start = 1</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">#     while start &lt;= n:</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="co">#         end = min(start + s - 1, n)</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="co">#         yield (start, end)</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co">#         start = end + 1</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co"># def read_part_file(fp, page_range, md=True):</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">#     doc = converter.convert(fp, page_range=page_range).document</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co">#     return (page_range[0], doc.export_to_markdown() if md else doc.export_to_text())</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># async def _load_pdf_async(fp, num_workers=12, batch_size=20, md=True):</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co">#     pairs = step_tuples(get_page_count(fp), batch_size)</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co">#     loop = asyncio.get_event_loop()</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="co">#     # Create executor with limited workers</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co">#     with ThreadPoolExecutor(max_workers=num_workers) as executor:</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">#         futures = [loop.run_in_executor(executor, read_part_file, fp, pair, md) for pair in pairs]</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">#         results = await asyncio.gather(*futures, return_exceptions=True)</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="co">#     results = sorted(results, key=lambda x:x[0])</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">#     text = f'\n---\n'.join([x[1] for x in results])</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co">#     return (Path(fp).stem, text)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="alert alert-block alert-warning">
+<pre><code>&lt;b&gt;Warning:&lt;/b&gt; Though reading huge pdf async in parts is faster than reading whole in non-async, it is observed that sometimes the order of the pages is reversed, which is undesirable. 
+So we read in non-async way for now.</code></pre>
+</div>
+<div id="a4ab760c-fa8d-48f7-b0f4-913665ccbc5e" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_text(<span class="bu">file</span>, md<span class="op">=</span><span class="va">False</span>, backend<span class="op">=</span><span class="st">"pymupdf"</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> backend <span class="op">==</span> <span class="st">"pymupdf"</span>:</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> md:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">with</span> pymupdf.<span class="bu">open</span>(<span class="bu">file</span>) <span class="im">as</span> doc:</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="st">"</span><span class="ch">\n</span><span class="st">"</span>.join(page.get_text(<span class="op">**</span>kwargs) <span class="cf">for</span> page <span class="kw">in</span> doc)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> pymupdf4llm.to_markdown(<span class="bu">file</span>, show_progress<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> backend <span class="op">==</span> <span class="st">"docling"</span>:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        converter <span class="op">=</span> DocumentConverter(allowed_formats<span class="op">=</span>[<span class="st">"pdf"</span>])</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        doc <span class="op">=</span> converter.convert(<span class="bu">file</span>, <span class="op">**</span>kwargs).document</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        res <span class="op">=</span> doc.export_to_markdown() <span class="cf">if</span> md <span class="cf">else</span> doc.export_to_text()</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="kw">del</span> converter, doc</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        empty_cache()</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above function allows us to extract text/markdown keeping in mind different resource constraints on the host platform. We don’t need the docling model on GPU once the documents are loaded, so we offload it and empty the cache to use that memory for further computations.</p>
+<div id="aa4e36ba-bd86-483d-8dae-aafc98d2fae7" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> _load_pdf_sync(<span class="bu">file</span>, md<span class="op">=</span><span class="va">True</span>, fast<span class="op">=</span><span class="va">False</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Synchronous PDF loading function for thread pool execution"""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> extract_text(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="bu">file</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        md,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        backend<span class="op">=</span><span class="st">"docling"</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> ((<span class="kw">not</span> fast) <span class="kw">and</span> (torch.cuda.is_available() <span class="kw">or</span> torch.mps.is_available()))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span> <span class="st">"pymupdf"</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>kwargs,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (Path(<span class="bu">file</span>).stem, text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>It is observed that docling extracts content better than pymupdf but it’s slower than the latter. So we can adjust the parameters accordingly to trade off speed vs accuracy.</p>
+<div id="226d47bb-df1c-4dd1-a093-1003d94177b1" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_pdfs(files, markdown<span class="op">=</span><span class="va">True</span>, fast_extract<span class="op">=</span><span class="va">False</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Load multiple PDF files</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">        files: PDF filepaths</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">        markdown: whether to extract text in markdown</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">        fast_extract: whether to use pymupdf to extract text in markdown</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">        list: List of tuples containing (filename, extracted_text)</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # Use ThreadPoolExecutor to run synchronous operations concurrently</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># loop = asyncio.get_event_loop()</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># # Create executor with limited workers</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># with ThreadPoolExecutor(max_workers=max_concurrence) as executor:</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     # Submit all PDF processing tasks</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     futures = [</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">#         loop.run_in_executor(executor, _load_pdf_sync, file, markdown, fast_extract, **kwargs) for file in files if file is not None</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     ]</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="co">#     results = await asyncio.gather(*futures, return_exceptions=True)</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># valid_results = [result for result in results if not isinstance(result, Exception)]</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># log.debug(f"Successfully processed {len(valid_results)} out of {len(files)} PDFs")</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># return valid_results</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> files:</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        results.append(_load_pdf_sync(<span class="bu">file</span>, markdown, fast_extract, <span class="op">**</span>kwargs))</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="alert alert-block alert-info">
+<pre><code>&lt;b&gt;Note:&lt;/b&gt; When run from CLI, we use gradio where the user will directly drop the folder or choose PDF(s) to process.</code></pre>
+</div>
+<p>We can run it for e.g., by doing:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> load_pdfs([<span class="st">"Downloads/test.pdf"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>But we’ll wait until we build the corpus and call it from there instead.</p>
+</section>
+<section id="build-corpus" class="level2">
+<h2 class="anchored" data-anchor-id="build-corpus">Build Corpus</h2>
+<div id="d5576a24-df14-4055-92a8-0947d452bdb9" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_corpus(pdfs, text_splitter, <span class="op">**</span>load_pdf_kwargs):</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    texts <span class="op">=</span> load_pdfs(pdfs, <span class="op">**</span>load_pdf_kwargs)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    corpus_with_meta <span class="op">=</span> []</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    _id <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> file_name, raw_text <span class="kw">in</span> texts:</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>        chunks <span class="op">=</span> text_splitter.split_text(raw_text)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> idx, chunk <span class="kw">in</span> <span class="bu">enumerate</span>(chunks):</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            corpus_with_meta.append(</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                {</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"id"</span>: _id,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"file"</span>: Path(file_name).stem,</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"chunk_id"</span>: idx,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"chunk"</span>: chunk,</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>            _id <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Dataset.from_list(corpus_with_meta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above function loads multiple pdfs to build corpus with some metadata attached. We build a dataset from that corpus in HF datasets format. This lets us add embeddings and query on them easily later on. We also add an index <code>id</code> that’s unique across our corpus so that we can filter out corresponding entries easily irrespective of the file.</p>
+<p>But in order to run it, we need to pass on a text splitter that correctly splits the content read from the PDFs. That text could either be markdown or plain text and we need to pass the text splitter accordingly.</p>
+<div id="28c1bca4-a071-449f-a799-51e8b2cce856" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>text_splitter <span class="op">=</span> MarkdownTextSplitter(chunk_size<span class="op">=</span><span class="dv">3000</span>, chunk_overlap<span class="op">=</span><span class="dv">450</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We intend to extract the text in <em>Markdown</em> format as it preserves the structure of the content and the logical continuity better than plain text. This might result in some uneven chunks as the text splitter has to split at the nearest logical boundary of the markdown text rather than depending on the exact specified chunk size.</p>
+<div id="02d64b71-25b3-44ca-9126-f77453e3bf4f" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pdfs <span class="op">=</span> glob(<span class="st">"../../data_files/RAG/blogposts/*.pdf"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>pdfs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="10">
+<pre><code>['../../data_files/RAG/blogposts/RAG_Hyde.pdf',
+ '../../data_files/RAG/blogposts/RAG_Hack.pdf']</code></pre>
+</div>
+</div>
+<div id="01d833d6-04c2-4985-85fc-24e1331e81d2" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> build_corpus([pdfs[<span class="dv">1</span>]], text_splitter, fast_extract<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>ds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>2025-10-07 14:51:46,112 - INFO - detected formats: [&lt;InputFormat.PDF: 'pdf'&gt;]
+2025-10-07 14:51:46,155 - INFO - Going to convert document batch...
+2025-10-07 14:51:46,156 - INFO - Initializing pipeline for StandardPdfPipeline with options hash e647edf348883bed75367b22fbe60347
+2025-10-07 14:51:46,166 - INFO - Loading plugin 'docling_defaults'
+2025-10-07 14:51:46,168 - INFO - Registered picture descriptions: ['vlm', 'api']
+2025-10-07 14:51:46,180 - INFO - Loading plugin 'docling_defaults'
+2025-10-07 14:51:46,183 - INFO - Registered ocr engines: ['easyocr', 'ocrmac', 'rapidocr', 'tesserocr', 'tesseract']
+2025-10-07 14:51:46,305 - INFO - Accelerator device: 'cuda:0'
+2025-10-07 14:51:47,641 - INFO - Accelerator device: 'cuda:0'
+2025-10-07 14:51:49,020 - INFO - Accelerator device: 'cuda:0'
+2025-10-07 14:51:49,365 - INFO - Processing document RAG_Hack.pdf
+2025-10-07 14:51:57,310 - INFO - Finished converting document RAG_Hack.pdf in 11.21 sec.</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<pre><code>Dataset({
+    features: ['id', 'file', 'chunk_id', 'chunk'],
+    num_rows: 8
+})</code></pre>
+</div>
+</div>
+<div id="5073ada2-9ecd-4b83-998e-2ebcc684f4bb" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">map</span>(<span class="bu">len</span>, ds[<span class="st">"chunk"</span>][:]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="12">
+<pre><code>[2956, 2943, 2796, 2759, 2692, 2993, 2957, 883]</code></pre>
+</div>
+</div>
+<div id="75a30fed-0c3e-4da4-b714-52eceeff06b9" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="choose-embedding-model" class="level2">
+<h2 class="anchored" data-anchor-id="choose-embedding-model">Choose Embedding Model</h2>
+<p>Ideally, we want a (lightweight) model that can produce great dense vectors. We want it to be multilingual and it should return similar embeddings for similar texts in different languages. Because the user might provide documents in one language and ask questions in the other. Or the document itself might be multilingual. We should pick the one that’s most appropriate for the given task. After trying a few variants, I went with <code>Qwen3-Embedding</code>. For local setup, I’ve settled on <a href="https://huggingface.co/Qwen/Qwen3-Embedding-0.6B">0.6B</a> param model with a max. dimension of <code>1024</code> (<em>but we can go with a higher variant on HF space demo</em>).</p>
+<div id="94061123-410f-4b0e-8264-6730e3d71bc8" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># emb_model = "sentence-transformers/all-MiniLM-L6-v2"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># emb_model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="co"># emb_model = "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># emb_model = "sentence-transformers/LaBSE"</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="co"># emb_model = "T-Systems-onsite/cross-en-de-roberta-sentence-transformer"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="load-models" class="level2">
+<h2 class="anchored" data-anchor-id="load-models">Load Models</h2>
+<div id="dc71626b-aba2-4613-a0e1-738bf043482f" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_models(embed_model_name: <span class="bu">str</span>, gen_model_name: <span class="bu">str</span>, device: <span class="bu">str</span> <span class="op">=</span> <span class="va">None</span>):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This will take some time to run for the first time if the model(s) don't exist locally.</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> device:</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> torch.cuda.is_available():</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>            device <span class="op">=</span> <span class="st">"cuda"</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> torch.mps.is_available():</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>            device <span class="op">=</span> <span class="st">"mps"</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>            device <span class="op">=</span> <span class="st">"cpu"</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    dtype <span class="op">=</span> torch.bfloat16 <span class="cf">if</span> device <span class="op">==</span> <span class="st">"cuda"</span> <span class="cf">else</span> torch.float16</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> device <span class="op">!=</span> <span class="st">"mps"</span> <span class="kw">or</span> (device <span class="op">==</span> <span class="st">"mps"</span> <span class="kw">and</span> <span class="st">"mlx"</span> <span class="kw">not</span> <span class="kw">in</span> gen_model_name.lower()):</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>        tok <span class="op">=</span> AutoTokenizer.from_pretrained(gen_model_name, padding_side<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># sometimes loading an AWQ model on my local machine fails for the first time</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>            gen <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>                gen_model_name, dtype<span class="op">=</span>dtype, device_map<span class="op">=</span>device</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>            ).<span class="bu">eval</span>()</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">ImportError</span>:</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>            gen <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>                gen_model_name, dtype<span class="op">=</span>dtype, device_map<span class="op">=</span>device</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            ).<span class="bu">eval</span>()</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> mlx_lm <span class="im">import</span> load</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>        gen, tok <span class="op">=</span> load(gen_model_name)</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    embedder <span class="op">=</span> SentenceTransformer(</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>        embed_model_name,</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>        device<span class="op">=</span>device,</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>        model_kwargs<span class="op">=</span>{<span class="st">"dtype"</span>: dtype},</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> embedder, tok, gen</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For text generation model, I went with <a href="https://huggingface.co/Qwen/Qwen3-4B-AWQ">Qwen3-4B-AWQ</a> for its strong capabilities in reasoning, instruction-following, agent capabilities, and multilingual support with context window of 32,768 tokens. <em>The <code>0.6B</code> one is too little powerful to give any meaningful results and <code>1.7B</code> was about halfway there. So the next best choice was <code>4B</code> which fortunately gave correct results almost all the time</em>. The pdf text extraction in markdown format and that too by <em>docling</em> greatly contributed to this performance.</p>
+<p>We’ll define a few model combinations to use depending on host platform’s capabilities. <code>AWQ</code> (Attention Aware Quantization) preserves a small fraction of the weights that are important for LLM performance to compress a model to 4-bits with minimal performance degradation. Therefore we can be able to load huge models on limited GPU RAM that are otherwise impossible.</p>
+<div id="e14fddae-6b0c-4808-b0d1-63d251bbdf7d" class="cell" data-execution_count="16">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>MODEL_COMBOS <span class="op">=</span> {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"linux"</span>: {</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-4B-AWQ"</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 'gen_model': "Qwen/Qwen3-0.6B-GPTQ-Int8"</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 'gen_model': "Qwen/Qwen3-1.7B-GPTQ-Int8"</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># feel free to replace with any ??B-MLX-?bit versions from Qwen3 Collection at:</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># https://huggingface.co/collections/Qwen/qwen3-67dd247413f0e2e4f653967f</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mac"</span>: {</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-4B-MLX-4bit"</span>,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mac_mid"</span>: {</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-4B-MLX-6bit"</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"mac_high"</span>: {</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-4B-MLX-8bit"</span>,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># HF-low is same as `linux-local`</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    <span class="st">"HF-mid"</span>: {</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-0.6B"</span>,</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-8B-AWQ"</span>,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"HF-high"</span>: {</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embed_model"</span>: <span class="st">"Qwen/Qwen3-Embedding-4B"</span>,</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gen_model"</span>: <span class="st">"Qwen/Qwen3-14B-AWQ"</span>,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="df5afa9b-c786-451a-a8cc-059e7f9e22ab" class="cell" data-execution_count="17">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>combo <span class="op">=</span> <span class="st">"linux"</span> <span class="cf">if</span> sys.platform <span class="op">==</span> <span class="st">"linux"</span> <span class="cf">else</span> <span class="st">"mac"</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>GEN_MODEL_NAME <span class="op">=</span> MODEL_COMBOS[combo][<span class="st">"gen_model"</span>]</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>embedder, tok, gen <span class="op">=</span> load_models(</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    embed_model_name<span class="op">=</span>MODEL_COMBOS[combo][<span class="st">"embed_model"</span>],</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    gen_model_name<span class="op">=</span>MODEL_COMBOS[combo][<span class="st">"gen_model"</span>],</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`torch.bfloat16` is not supported for AWQ CUDA/XPU kernels yet. Casting to `torch.float16`.
+/var/home/vicky/Documents/code/interviews/dydon_ai/dydon_tasks/.pixi/envs/linux/lib/python3.12/site-packages/awq/__init__.py:21: DeprecationWarning: 
+I have left this message as the final dev message to help you transition.
+
+Important Notice:
+- AutoAWQ is officially deprecated and will no longer be maintained.
+- The last tested configuration used Torch 2.6.0 and Transformers 4.51.3.
+- If future versions of Transformers break AutoAWQ compatibility, please report the issue to the Transformers project.
+
+Alternative:
+- AutoAWQ has been adopted by the vLLM Project: https://github.com/vllm-project/llm-compressor
+
+For further inquiries, feel free to reach out:
+- X: https://x.com/casper_hansen_
+- LinkedIn: https://www.linkedin.com/in/casper-hansen-804005170/
+
+  warnings.warn(_FINAL_DEV_MESSAGE, category=DeprecationWarning, stacklevel=1)
+`torch.bfloat16` is not supported for AWQ CUDA/XPU kernels yet. Casting to `torch.float16`.
+2025-10-07 14:52:02,970 - INFO - Load pretrained SentenceTransformer: Qwen/Qwen3-Embedding-0.6B
+2025-10-07 14:52:11,988 - INFO - 1 prompt is loaded, with the key: query</code></pre>
+</div>
+</div>
+</section>
+<section id="embeddings-for-corpus" class="level2">
+<h2 class="anchored" data-anchor-id="embeddings-for-corpus">Embeddings for corpus</h2>
+<div id="4bf33ff8-1a76-459e-9099-63c0db8ac929" class="cell" data-execution_count="18">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_emb(texts, <span class="op">**</span>kwargs):</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> embedder.encode(texts, normalize_embeddings<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now add embeddings directly as a column to the dataset</p>
+<div id="45049b05-bd84-4272-a471-d6d5751b71d2" class="cell" data-execution_count="19">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>batch_size <span class="op">=</span> <span class="dv">8</span>  <span class="co"># change it based on your system's capabilities</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> ds.<span class="bu">map</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">lambda</span> x: {</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embeddings"</span>: get_emb(</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>            x[<span class="st">"chunk"</span>],</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>            batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>            prompt_name<span class="op">=</span><span class="st">"query"</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>            show_progress_bar<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    batched<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    batch_size<span class="op">=</span>batch_size,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"7f8a0a14c41846359f912836897aec6a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"a9c961c7c4a44bb68eedb4fa2ed3b0c5","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div id="b1fc1d5e-70b4-4085-b016-79e976a82412" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>empty_cache()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ff9b988f-c9e3-445b-8be3-df71980a8b64" class="cell" data-execution_count="21">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ds.save_to_disk('temp_dataset');</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ds = load_from_disk('temp_dataset/')</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="build-index" class="level2">
+<h2 class="anchored" data-anchor-id="build-index">Build Index</h2>
+<p>Now that we have the input data setup, it’s time to index them. We shall use FAISS as it’s efficient &amp; fast (esp.&nbsp;if you have a GPU)</p>
+<p>We add <a href="https://faiss.ai/">FAISS</a> indexing for efficient document retrieval given a query.</p>
+<div id="922e1469-cde5-449c-9cc7-c75c01be7f40" class="cell" data-execution_count="22">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>ds.add_faiss_index(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"embeddings"</span>, metric_type<span class="op">=</span>faiss.METRIC_INNER_PRODUCT</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span>  <span class="co"># , device=0 if (torch.cuda.is_available() or torch.mps.is_available()) else None)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"81b1c540d3f44dc887e2f76aca05f547","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+</section>
+<section id="generate-queries" class="level2">
+<h2 class="anchored" data-anchor-id="generate-queries">Generate queries</h2>
+<p>Now that we have the data and the models setup, time to process user queries. Let’s define a function that handles that.</p>
+<div id="ec04df94-359a-499c-ac99-7099592dc0fd" class="cell" data-execution_count="23">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_think_tag_in_each_row(tensor):</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># look for `&lt;/think&gt;` tag</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    res <span class="op">=</span> <span class="bu">dict</span>((tensor <span class="op">==</span> <span class="dv">151668</span>).nonzero().tolist())</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> res:</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> [<span class="dv">0</span>] <span class="op">*</span> <span class="bu">len</span>(tensor)</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    idxs <span class="op">=</span> []</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(tensor)):</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        idxs.append(res.get(idx, <span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [x <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> x <span class="kw">in</span> idxs]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="5d217f40-6513-44a6-af7d-c29a80e1e63c" class="cell" data-execution_count="24">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_text(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    tokenizer, model, user_prompts, system_prompt<span class="op">=</span><span class="va">None</span>, model_name<span class="op">=</span><span class="st">""</span>, <span class="op">**</span>llm_kwargs</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> model_name, <span class="st">"pass on model name"</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> system_prompt <span class="kw">is</span> <span class="va">None</span> <span class="kw">or</span> <span class="st">""</span>:</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>        system_prompt <span class="op">=</span> <span class="st">"You are a helpful assistant."</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(user_prompts, <span class="bu">str</span>):</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>        user_prompts <span class="op">=</span> [user_prompts]</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    messages <span class="op">=</span> [</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>        [</span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: system_prompt},</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: user_prompt},</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> user_prompt <span class="kw">in</span> user_prompts</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="st">"mlx"</span> <span class="kw">in</span> model_name.lower() <span class="kw">and</span> sys.platform <span class="op">==</span> <span class="st">"darwin"</span>:</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a>        <span class="im">from</span> mlx_lm <span class="im">import</span> generate</span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a>        texts <span class="op">=</span> [</span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>            tokenizer.apply_chat_template(</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>                message,</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a>                tokenize<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a>                add_generation_prompt<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb33-27"><a href="#cb33-27" aria-hidden="true" tabindex="-1"></a>                enable_thinking<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb33-28"><a href="#cb33-28" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb33-29"><a href="#cb33-29" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> message <span class="kw">in</span> messages</span>
+<span id="cb33-30"><a href="#cb33-30" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-31"><a href="#cb33-31" aria-hidden="true" tabindex="-1"></a>        responses <span class="op">=</span> [</span>
+<span id="cb33-32"><a href="#cb33-32" aria-hidden="true" tabindex="-1"></a>            generate(</span>
+<span id="cb33-33"><a href="#cb33-33" aria-hidden="true" tabindex="-1"></a>                model,</span>
+<span id="cb33-34"><a href="#cb33-34" aria-hidden="true" tabindex="-1"></a>                tokenizer,</span>
+<span id="cb33-35"><a href="#cb33-35" aria-hidden="true" tabindex="-1"></a>                prompt<span class="op">=</span>text,</span>
+<span id="cb33-36"><a href="#cb33-36" aria-hidden="true" tabindex="-1"></a>                verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb33-37"><a href="#cb33-37" aria-hidden="true" tabindex="-1"></a>                max_tokens<span class="op">=</span>llm_kwargs.pop(<span class="st">"max_new_tokens"</span>, <span class="dv">32768</span>),</span>
+<span id="cb33-38"><a href="#cb33-38" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb33-39"><a href="#cb33-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> text <span class="kw">in</span> texts</span>
+<span id="cb33-40"><a href="#cb33-40" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-41"><a href="#cb33-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb33-42"><a href="#cb33-42" aria-hidden="true" tabindex="-1"></a>        texts <span class="op">=</span> tokenizer.apply_chat_template(</span>
+<span id="cb33-43"><a href="#cb33-43" aria-hidden="true" tabindex="-1"></a>            messages, tokenize<span class="op">=</span><span class="va">False</span>, add_generation_prompt<span class="op">=</span><span class="va">True</span>, enable_thinking<span class="op">=</span><span class="va">False</span></span>
+<span id="cb33-44"><a href="#cb33-44" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb33-45"><a href="#cb33-45" aria-hidden="true" tabindex="-1"></a>        model_inputs <span class="op">=</span> tokenizer(</span>
+<span id="cb33-46"><a href="#cb33-46" aria-hidden="true" tabindex="-1"></a>            texts, return_tensors<span class="op">=</span><span class="st">"pt"</span>, truncation<span class="op">=</span><span class="va">True</span>, padding<span class="op">=</span><span class="va">True</span></span>
+<span id="cb33-47"><a href="#cb33-47" aria-hidden="true" tabindex="-1"></a>        ).to(model.device)</span>
+<span id="cb33-48"><a href="#cb33-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-49"><a href="#cb33-49" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb33-50"><a href="#cb33-50" aria-hidden="true" tabindex="-1"></a>            generated_ids <span class="op">=</span> model.generate(</span>
+<span id="cb33-51"><a href="#cb33-51" aria-hidden="true" tabindex="-1"></a>                <span class="op">**</span>model_inputs,</span>
+<span id="cb33-52"><a href="#cb33-52" aria-hidden="true" tabindex="-1"></a>                max_new_tokens<span class="op">=</span>llm_kwargs.pop(<span class="st">"max_new_tokens"</span>, <span class="dv">32768</span>),</span>
+<span id="cb33-53"><a href="#cb33-53" aria-hidden="true" tabindex="-1"></a>                temperature<span class="op">=</span>llm_kwargs.pop(<span class="st">"temperature"</span>, <span class="fl">0.7</span>),</span>
+<span id="cb33-54"><a href="#cb33-54" aria-hidden="true" tabindex="-1"></a>                top_p<span class="op">=</span>llm_kwargs.pop(<span class="st">"top_p"</span>, <span class="fl">0.8</span>),</span>
+<span id="cb33-55"><a href="#cb33-55" aria-hidden="true" tabindex="-1"></a>                top_k<span class="op">=</span>llm_kwargs.pop(<span class="st">"top_k"</span>, <span class="dv">20</span>),</span>
+<span id="cb33-56"><a href="#cb33-56" aria-hidden="true" tabindex="-1"></a>                min_p<span class="op">=</span>llm_kwargs.pop(<span class="st">"min_p"</span>, <span class="dv">0</span>),</span>
+<span id="cb33-57"><a href="#cb33-57" aria-hidden="true" tabindex="-1"></a>                <span class="op">**</span>llm_kwargs,</span>
+<span id="cb33-58"><a href="#cb33-58" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb33-59"><a href="#cb33-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-60"><a href="#cb33-60" aria-hidden="true" tabindex="-1"></a>        output_ids <span class="op">=</span> generated_ids[:, model_inputs.input_ids.shape[<span class="dv">1</span>] :]</span>
+<span id="cb33-61"><a href="#cb33-61" aria-hidden="true" tabindex="-1"></a>        idxs <span class="op">=</span> find_think_tag_in_each_row(output_ids)</span>
+<span id="cb33-62"><a href="#cb33-62" aria-hidden="true" tabindex="-1"></a>        thinking_contents <span class="op">=</span> [</span>
+<span id="cb33-63"><a href="#cb33-63" aria-hidden="true" tabindex="-1"></a>            tokenizer.decode(output_ids[i][:idx], skip_special_tokens<span class="op">=</span><span class="va">True</span>).strip(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb33-64"><a href="#cb33-64" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> i, idx <span class="kw">in</span> <span class="bu">enumerate</span>(idxs)</span>
+<span id="cb33-65"><a href="#cb33-65" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-66"><a href="#cb33-66" aria-hidden="true" tabindex="-1"></a>        contents <span class="op">=</span> [</span>
+<span id="cb33-67"><a href="#cb33-67" aria-hidden="true" tabindex="-1"></a>            tokenizer.decode(output_ids[i][idx:], skip_special_tokens<span class="op">=</span><span class="va">True</span>).strip(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb33-68"><a href="#cb33-68" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> i, idx <span class="kw">in</span> <span class="bu">enumerate</span>(idxs)</span>
+<span id="cb33-69"><a href="#cb33-69" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-70"><a href="#cb33-70" aria-hidden="true" tabindex="-1"></a>        responses <span class="op">=</span> [</span>
+<span id="cb33-71"><a href="#cb33-71" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f"</span><span class="sc">{</span>think_resp<span class="sc">}{</span>cont<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb33-72"><a href="#cb33-72" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> think_resp, cont <span class="kw">in</span> <span class="bu">zip</span>(thinking_contents, contents)</span>
+<span id="cb33-73"><a href="#cb33-73" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb33-74"><a href="#cb33-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-75"><a href="#cb33-75" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> responses[<span class="dv">0</span>] <span class="cf">if</span> <span class="bu">len</span>(user_prompts) <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> responses</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This setup allows us to pass system &amp; user prompts separately for better customization.</p>
+<p>Let’s test it with a simple query…</p>
+<div id="9da5df2a-4c02-446e-a15f-14acffed10e4" class="cell" data-execution_count="25">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>queries <span class="op">=</span> [</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"tell me about cloud bursts"</span>,</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"how to ride a unicorn"</span>,</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="82ee252a-d334-4008-8f01-9f6c6dc2d3b3" class="cell" data-execution_count="26">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> generate_text(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    tok,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    gen,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    queries,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    system_prompt<span class="op">=</span><span class="st">"You are a great funny standup comedian and reply only in one liner jokes"</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    model_name<span class="op">=</span>GEN_MODEL_NAME,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d154cc85-2a21-48ce-bf38-936ca8c38009" class="cell" data-execution_count="27">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>Markdown(resp[<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="27">
+<p>A cloud burst is like a thunderstorm that’s so intense, it’s basically the sky throwing a tantrum and decides to rain so hard it’s gonna melt the mountains.</p>
+</div>
+</div>
+<div id="891be82f-3c42-417a-8fe9-2bc5566b1122" class="cell" data-execution_count="28">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>Markdown(resp[<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="28">
+<p>Just ride it like it’s a horse, but don’t expect it to poop.</p>
+</div>
+</div>
+</section>
+<section id="retrieve-results-from-corpus" class="level1">
+<h1>Retrieve results from corpus</h1>
+<section id="aggregate-queries-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="aggregate-queries-tasks">Aggregate queries &amp; tasks</h2>
+<section id="prompts" class="level3">
+<h3 class="anchored" data-anchor-id="prompts">Prompts</h3>
+<p>Because our model understands system and user prompts, we can set the context/role depending on what we want. Let’s load it.</p>
+<div id="ff799e1a-d84f-4776-8556-b2b4389c2fa4" class="cell" data-execution_count="29">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"prompts.yaml"</span>) <span class="im">as</span> fl:</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    prompts <span class="op">=</span> yaml.safe_load(fl)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First we define a function to make different variants of our query. We provide a few examples in the prompt.</p>
+</section>
+<section id="query-variations" class="level3">
+<h3 class="anchored" data-anchor-id="query-variations">Query Variations</h3>
+<div id="678ae12f-be61-4b1e-9878-6246c57d05e9" class="cell" data-execution_count="30">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_query_variants(</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    tokenizer, model, query: <span class="bu">str</span>, prompt: <span class="bu">str</span>, n: <span class="bu">int</span> <span class="op">=</span> <span class="dv">3</span>, model_name<span class="op">=</span><span class="st">""</span>, <span class="op">**</span>llm_kwargs</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># instructions = f"\n\n(Now give me at least {n} diverse variations of user query in the same language as the user provided query)"</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    resp <span class="op">=</span> generate_text(</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>        tokenizer, model, query.<span class="bu">format</span>(n<span class="op">=</span>n), prompt, model_name<span class="op">=</span>model_name, <span class="op">**</span>llm_kwargs</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    clean_resp <span class="op">=</span> re.sub(<span class="vs">r"</span><span class="dv">^\d</span><span class="op">+</span><span class="ch">\.</span><span class="dv">\s</span><span class="op">*</span><span class="vs">"</span>, <span class="st">""</span>, resp, flags<span class="op">=</span>re.MULTILINE).split(<span class="st">"</span><span class="ch">\n</span><span class="st">"</span>)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>    queries <span class="op">=</span> [q.strip() <span class="cf">for</span> q <span class="kw">in</span> clean_resp <span class="cf">if</span> q.strip()]</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [query.lower().strip()] <span class="op">+</span> <span class="bu">sorted</span>(</span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">set</span>(<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="bu">str</span>.lower(x).strip(), queries))</span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a6436b1a-a2f0-433d-af55-ef9adde863a7" class="cell" data-execution_count="31">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="st">evolution of solar energy costs in Europe</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="1620aa8e-6795-4755-a4f3-86bcce31669a" class="cell" data-execution_count="32">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>q_variants <span class="op">=</span> make_query_variants(</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    tok, gen, query, prompts[<span class="st">"variants"</span>], n<span class="op">=</span><span class="dv">2</span>, model_name<span class="op">=</span>GEN_MODEL_NAME</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>q_variants</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="32">
+<pre><code>['evolution of solar energy costs in europe',
+ 'how has the cost of solar energy changed in different european countries?',
+ 'how have solar energy prices changed over the years in europe?',
+ 'what factors have influenced the evolution of solar energy costs in europe?',
+ 'what has been the trend in solar energy costs in europe?',
+ 'what is the historical development of solar energy costs in europe?']</code></pre>
+</div>
+</div>
+<p>LLMs work best by role playing &amp; examples and therefore we have given some through system prompt. Look at the <em>variants</em> section of the <code>prompts.yaml</code> file to learn more.</p>
+<p>we always preserve the original query just in case the model loses (or deviates too far from) the original intent in its generated variants.</p>
+</section>
+<section id="query-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="query-transformation">Query Transformation</h3>
+<p>We now transform the query into a json with two parts <code>search</code> &amp; <code>tasks</code>. <em>Search</em> contains all one or more searches to be made within the context provided and <em>Tasks</em> lists one or more actions to take <em>after</em> the search is performed.</p>
+<div id="1024a3e6-2522-484f-9984-b9e9f037e996" class="cell" data-execution_count="33">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transform_query(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>    tokenizer, model, query: <span class="bu">str</span>, rewrite_prompt: <span class="bu">str</span>, model_name<span class="op">=</span><span class="st">""</span>, <span class="op">**</span>llm_kwargs</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">dict</span>:</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""split the query into things to search and actions to take"""</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>    resp <span class="op">=</span> generate_text(</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>        tokenizer, model, query, rewrite_prompt, model_name<span class="op">=</span>model_name, <span class="op">**</span>llm_kwargs</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>        resp <span class="op">=</span> clean_rewrite_resp(resp)</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span>:</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">pass</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> resp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The generated response might not always strictly in JSON even though we ask it to. So we do some post processing.</p>
+<div id="77d57e3d-d539-47d7-a8a5-7d3390f9e2dd" class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_rewrite_resp(resp):</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>        resp <span class="op">=</span> json.loads(resp)  <span class="co"># Parse JSON</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> json.JSONDecodeError:</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>            resp <span class="op">=</span> literal_eval(resp)  <span class="co"># Fallback parse</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>            <span class="cf">pass</span>  <span class="co"># Keep resp as-is if both fail</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Ensure resp is a string before strip and slicing</span></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(resp, <span class="bu">str</span>):</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>        resp <span class="op">=</span> resp.strip().replace(<span class="st">"</span><span class="sc">{{</span><span class="st">"</span>, <span class="st">"{"</span>).replace(<span class="st">"</span><span class="sc">}}</span><span class="st">"</span>, <span class="st">"}"</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> resp:</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>            start <span class="op">=</span> resp.find(<span class="st">"{"</span>)</span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> start <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>:</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>                end <span class="op">=</span> resp[::<span class="op">-</span><span class="dv">1</span>].find(<span class="st">"}"</span>)</span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> end <span class="op">!=</span> <span class="op">-</span><span class="dv">1</span>:</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>                    resp <span class="op">=</span> resp[start : <span class="bu">len</span>(resp) <span class="op">-</span> end]</span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">return</span> clean_rewrite_resp(resp)</span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> resp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="567ad012-f65f-42a2-a408-4a8f5585ff57" class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="st">provide summary of sales in the last quarter and transfer it to an excel sheet  </span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e47500db-cac5-42e7-b9ee-9799674536be" class="cell" data-execution_count="36">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>transform_query(tok, gen, query, prompts[<span class="st">"rewrite"</span>], model_name<span class="op">=</span>GEN_MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="36">
+<pre><code>{'search': ['summary of sales in the last quarter'],
+ 'tasks': ['transfer sales data to an excel sheet']}</code></pre>
+</div>
+</div>
+<p>Now just like we derived many variations of the original user query earlier, we shall do the same for each of the above search queries as well. We append the tasks at the last of the user prompt as is.</p>
+</section>
+<section id="final-aggregation-of-queries-tasks" class="level3">
+<h3 class="anchored" data-anchor-id="final-aggregation-of-queries-tasks">final aggregation of queries &amp; tasks</h3>
+<div id="e28caa49-cead-40bc-9eb3-594f6c35f951" class="cell" data-execution_count="37">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> aggregate_queries_and_tasks(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>    tokenizer,</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    model,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    orig_query,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    rewrite_prompt,</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    variants_prompt,</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    n_variations<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    gen_model_name<span class="op">=</span><span class="st">""</span>,</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>llm_kwargs,</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># make variations for the original query as is</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    queries <span class="op">=</span> make_query_variants(</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>        tokenizer,</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>        model,</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>        orig_query.strip(),</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>        variants_prompt,</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>        n_variations,</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>        gen_model_name,</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>llm_kwargs,</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>    )[: n_variations <span class="op">+</span> <span class="dv">1</span>]</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>    tr_q <span class="op">=</span> transform_query(</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>        tokenizer, model, orig_query.strip(), rewrite_prompt, gen_model_name</span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># transformed query might have multiple things to search and tasks to perform depending on user query</span></span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># recursively get variations for each of the search queries but keep the tasks as is.</span></span>
+<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> []</span>
+<span id="cb48-28"><a href="#cb48-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">isinstance</span>(tr_q, <span class="bu">dict</span>):</span>
+<span id="cb48-29"><a href="#cb48-29" aria-hidden="true" tabindex="-1"></a>        search_results, tasks <span class="op">=</span> tr_q.get(<span class="st">"search"</span>, []), tr_q.get(<span class="st">"tasks"</span>, [])</span>
+<span id="cb48-30"><a href="#cb48-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> search_result <span class="kw">in</span> search_results:</span>
+<span id="cb48-31"><a href="#cb48-31" aria-hidden="true" tabindex="-1"></a>            queries.extend(</span>
+<span id="cb48-32"><a href="#cb48-32" aria-hidden="true" tabindex="-1"></a>                make_query_variants(</span>
+<span id="cb48-33"><a href="#cb48-33" aria-hidden="true" tabindex="-1"></a>                    tokenizer,</span>
+<span id="cb48-34"><a href="#cb48-34" aria-hidden="true" tabindex="-1"></a>                    model,</span>
+<span id="cb48-35"><a href="#cb48-35" aria-hidden="true" tabindex="-1"></a>                    search_result,</span>
+<span id="cb48-36"><a href="#cb48-36" aria-hidden="true" tabindex="-1"></a>                    variants_prompt,</span>
+<span id="cb48-37"><a href="#cb48-37" aria-hidden="true" tabindex="-1"></a>                    n_variations,</span>
+<span id="cb48-38"><a href="#cb48-38" aria-hidden="true" tabindex="-1"></a>                    gen_model_name,</span>
+<span id="cb48-39"><a href="#cb48-39" aria-hidden="true" tabindex="-1"></a>                    <span class="op">**</span>llm_kwargs,</span>
+<span id="cb48-40"><a href="#cb48-40" aria-hidden="true" tabindex="-1"></a>                )</span>
+<span id="cb48-41"><a href="#cb48-41" aria-hidden="true" tabindex="-1"></a>            )</span>
+<span id="cb48-42"><a href="#cb48-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-43"><a href="#cb48-43" aria-hidden="true" tabindex="-1"></a>    <span class="co"># keep the original user query as is (if in case LLM messes up the original query) and pick some after shuffling the rest</span></span>
+<span id="cb48-44"><a href="#cb48-44" aria-hidden="true" tabindex="-1"></a>    q, qq <span class="op">=</span> queries[<span class="dv">0</span>], queries[<span class="dv">1</span>:]</span>
+<span id="cb48-45"><a href="#cb48-45" aria-hidden="true" tabindex="-1"></a>    shuffle(qq)</span>
+<span id="cb48-46"><a href="#cb48-46" aria-hidden="true" tabindex="-1"></a>    queries <span class="op">=</span> [q] <span class="op">+</span> <span class="bu">sorted</span>(</span>
+<span id="cb48-47"><a href="#cb48-47" aria-hidden="true" tabindex="-1"></a>        <span class="bu">set</span>(<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="bu">str</span>.lower(x).strip(string.punctuation), qq[:n_variations]))</span>
+<span id="cb48-48"><a href="#cb48-48" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb48-49"><a href="#cb48-49" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">set</span>(<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="bu">str</span>.lower(x).strip(string.punctuation), tasks)))</span>
+<span id="cb48-50"><a href="#cb48-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-51"><a href="#cb48-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> queries, tasks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="585b32a3-d54e-4324-af62-ca70dc04fe96" class="cell" data-execution_count="38">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>queries, tasks <span class="op">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    tok,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    gen,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    query,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"rewrite"</span>],</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"variants"</span>],</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    gen_model_name<span class="op">=</span>GEN_MODEL_NAME,</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="d7fb8d4e-69bb-4716-9e09-c3b8626dac18" class="cell" data-execution_count="39">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>queries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="39">
+<pre><code>['provide summary of sales in the last quarter and transfer it to an excel sheet',
+ 'compile a sales summary for the last quarter and convert it into an excel spreadsheet',
+ 'create a sales report for the final quarter and transfer the information to an excel document',
+ 'what factors influenced the sales figures in the last quarter']</code></pre>
+</div>
+</div>
+<div id="da9c5936-6dad-49ee-b193-f366273898ba" class="cell" data-execution_count="40">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>tasks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="40">
+<pre><code>['transfer sales data to an excel sheet']</code></pre>
+</div>
+</div>
+<p>Because we used a multilingual language model, this should also work for other languages</p>
+<div id="09c02b75-ec1b-4387-a62e-fd4b672ecac8" class="cell" data-execution_count="41">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="st">Was ist die Geschichte der Autos in Deutschland?</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="58ef30e0-c4db-42e1-8d84-e5bac1a157e7" class="cell" data-execution_count="42">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>queries, tasks <span class="op">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    tok,</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>    gen,</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>    query,</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"rewrite"</span>],</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"variants"</span>],</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    temperature<span class="op">=</span><span class="fl">0.7</span>,</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>    n_variations<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>    gen_model_name<span class="op">=</span>GEN_MODEL_NAME,</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>queries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="42">
+<pre><code>['was ist die geschichte der autos in deutschland?',
+ 'wie hat sich die automobilbranche in deutschland im 20. jahrhundert entwickelt',
+ 'wie hat sich die automobilindustrie in deutschland im laufe der zeit verändert']</code></pre>
+</div>
+</div>
+<p>The <code>0.6B</code> and <code>1.7B</code> models of Qwen3 couldn’t strictly adhere to instruction following and sometimes outputs queries in languages other than user input but <code>4B</code> one mostly does</p>
+<div id="6a3cb5fe-15f5-4364-9fed-03dc81fa4f29" class="cell" data-execution_count="43">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>tasks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="43">
+<pre><code>['']</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="hyde-generation" class="level2">
+<h2 class="anchored" data-anchor-id="hyde-generation">HyDE generation</h2>
+<p>Let’s now pick a query that has something to do with our corpus to create hypothetical documents and its embeddings.</p>
+<div id="4e4b5a62-7741-4d3a-a5c0-a710d9d282fc" class="cell" data-execution_count="44">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="st">What's RRF?</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="alert alert-block alert-info">
+<pre><code>&lt;b&gt;Note:&lt;/b&gt; You can also pass queries in languages other than English as long as the model supports it.</code></pre>
+</div>
+<div id="d355fbe2-904c-4530-b207-ac09e8d393d9" class="cell" data-execution_count="45">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># query = "Wie geht die Deutsche Telekom mit Cyber-Bedrohungen um?"</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="co"># query = "L'engagement de Deutsche Telekom en faveur du développement durable"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="f1e42638-5c38-435a-8bf7-e94db2feac1d" class="cell" data-execution_count="46">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>queries, tasks <span class="op">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    tok,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>    gen,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    query,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"rewrite"</span>],</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>    prompts[<span class="st">"variants"</span>],</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>    n_variations<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>    temperature<span class="op">=</span><span class="fl">0.65</span>,</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>    gen_model_name<span class="op">=</span>GEN_MODEL_NAME,</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>queries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="46">
+<pre><code>["what's rrf?",
+ 'what does rrf stand for',
+ 'what is the definition of rrf',
+ 'what is the meaning of rrf']</code></pre>
+</div>
+</div>
+<p>Instead of passing each query, we send all in one go as a batch…</p>
+<div id="5fbe70f1-6f48-41d2-861f-78747eda34f5" class="cell" data-execution_count="47">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>time hyde_docs <span class="op">=</span> generate_text(tok, gen, queries, prompts[<span class="st">'hyde'</span>], temperature<span class="op">=</span><span class="fl">.7</span>, model_name<span class="op">=</span>GEN_MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 7.88 s, sys: 325 ms, total: 8.21 s
+Wall time: 8.25 s</code></pre>
+</div>
+</div>
+<div id="e774df41-9ef5-4103-8fe1-a1747c0f46f5" class="cell" data-execution_count="48">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="bu">len</span>(hyde_docs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="48">
+<pre><code>4</code></pre>
+</div>
+</div>
+<p>Split it into chunks and get its embeddings; same as what we did for our corpus.</p>
+<div id="79d0833b-0b90-485c-b5db-ed529ceb6879" class="cell" data-execution_count="49">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>chunks <span class="op">=</span> []</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> hyde_doc <span class="kw">in</span> hyde_docs:</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>    chunks.extend(text_splitter.split_text(hyde_doc))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="0eed22ab-3654-4418-a15a-0affd5ade8d8" class="cell" data-execution_count="50">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>q_emb <span class="op">=</span> get_emb(chunks, prompt_name<span class="op">=</span><span class="st">"query"</span>, show_progress_bar<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="e9622aca-1566-4e6e-ac8f-8f18097257d8" class="cell" data-execution_count="51">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>q_emb.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="51">
+<pre><code>(4, 1024)</code></pre>
+</div>
+</div>
+</section>
+<section id="search-in-index" class="level2">
+<h2 class="anchored" data-anchor-id="search-in-index">Search in index</h2>
+<div id="df85a372-eaf1-42db-b5a9-c4673205edc9" class="cell" data-execution_count="52">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>k_per_variant <span class="op">=</span> <span class="dv">5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="0290000e-8987-4761-b094-2ba24776ff43" class="cell" data-execution_count="53">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>matches <span class="op">=</span> ds.get_nearest_examples_batch(<span class="st">"embeddings"</span>, q_emb, k_per_variant)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Great! We got all the top <code>k_per_variant</code> chunk ids for each of the hyde in one go. We can check the matches and their corresponding similarity scores.</p>
+<div id="62ded422-b848-4cdc-8cb3-c9b62c64e94f" class="cell" data-execution_count="54">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>np.array(matches.total_scores)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="54">
+<pre><code>array([[0.3713252 , 0.27588677, 0.2747661 , 0.22718585, 0.19295561],
+       [0.32872462, 0.21249028, 0.19126925, 0.13797869, 0.13392635],
+       [0.38380754, 0.26836997, 0.2661351 , 0.19237362, 0.17790687],
+       [0.34622288, 0.26231945, 0.25907043, 0.21744372, 0.18157431]],
+      dtype=float32)</code></pre>
+</div>
+</div>
+<div id="52d2abf1-f16f-498f-9a24-b8438a38e3da" class="cell" data-execution_count="55">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>indices <span class="op">=</span> [x[<span class="st">"id"</span>] <span class="cf">for</span> x <span class="kw">in</span> matches.total_examples]</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>indices</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="55">
+<pre><code>[[3, 2, 4, 0, 5], [3, 2, 4, 0, 5], [3, 2, 4, 0, 7], [3, 4, 2, 0, 1]]</code></pre>
+</div>
+</div>
+<div id="ab988b39-bbe6-4801-87e0-6e5521415cc5" class="cell" data-execution_count="56">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>Markdown(matches.total_examples[<span class="dv">0</span>][<span class="st">"chunk"</span>][<span class="dv">0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="56">
+<!-- image -->
+<p>Retrieve in Parallel: Run a separate, standard vector search for each of these queries. This gives you multiple, slightly different lists of retrieved documents.</p>
+<p>Fuse the Results Intelligently: Now comes the crucial step. You can’t just mash the lists together. You need a way to merge them that prioritizes consensus. The best technique for this is Reciprocal Rank Fusion (RRF) .</p>
+<section id="explaining-rrf-why-democracy-beats-a-dictator" class="level2">
+<h2 class="anchored" data-anchor-id="explaining-rrf-why-democracy-beats-a-dictator">Explaining RRF: Why Democracy Beats a Dictator</h2>
+<p>Forget complex vector math. RRF is based on a simple, democratic principle: A document that is consistently considered ‘pretty good’ by multiple, diverse queries is more likely to be relevant than a document that is ranked #1 by a single, potentially flawed query.</p>
+<p>Here’s how it works conceptually. For each document, it gets a score based on its rank in each search result list. The formula is simple: score += 1 / (rank + k), where k is a constant to prevent division by zero and tune the algorithm.</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<ul>
+<li>Home</li>
+<li>Library</li>
+<li>Profile</li>
+<li>Stories</li>
+<li>Stats</li>
+</ul>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+</section>
+<section id="following" class="level2">
+<h2 class="anchored" data-anchor-id="following">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<ul>
+<li>Gouse MG</li>
+<li>Ashhadul Islam</li>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions</p>
+<!-- image -->
+<p>Imagine two documents, Doc A and Doc B, from two different query searches:</p>
+<p>Query 1 Results:</p>
+<p>Doc A is at rank #1. Doc B is at rank #20.</p>
+<p>Query 2 Results: Doc A is at rank #50. Doc B is at rank #2.</p>
+<p>A naive approach might just pick Doc A because it was #1 once. But RRF sees the whole picture. Doc B’s consistent high ranking gives it a much better final RRF score. It surfaces the consensus choice, making the final ranking incredibly robust to outlier results from any single query.</p>
+</section>
+<section id="the-synthesis-the-ultimate-production-ready-query-pipeline" class="level2">
+<h2 class="anchored" data-anchor-id="the-synthesis-the-ultimate-production-ready-query-pipeline">The Synthesis: The Ultimate Production-Ready Query Pipeline</h2>
+<p>This is where we tie everything together. This is the architecture we ultimately built, the one that finally solved our ‘Audit Committee’ problem for good. We created a powerful synergy between the semantic depth of HyDE and the diverse robustness of RAG-Fusion.</p>
+<p>Here is the step-by-step breakdown of this advanced pipeline:</p>
+<p>Step 1: RAG-Fusion Query Generation. The user’s initial query (‘Audit Committee’) is first sent to an LLM to generate multiple, diverse query variants. This creates a portfolio of questions that explore the user’s potential intent.</p>
+<p>Step 2: HyDE for Each Query Variant. This is the critical leap. Instead of embedding those new query strings directly, we run each one through its own independent HyDE process. For every query variant, we generate a unique, rich hypothetical document. We now have a portfolio of hypothetical answers .</p>
+</section>
+</div>
+</div>
+<hr>
+<section id="reciprocal-rank-fusion" class="level3">
+<h3 class="anchored" data-anchor-id="reciprocal-rank-fusion">Reciprocal Rank Fusion</h3>
+<p>We shall now get the <code>top_k</code> chunk ids from all of the above that best match our original <code>query</code>.</p>
+<div id="e096256c-9b25-4432-b43c-4b2787a39f6c" class="cell" data-execution_count="57">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reciprocal_rank_fusion(indices, top_k<span class="op">=</span><span class="dv">3</span>, denom<span class="op">=</span><span class="dv">50</span>):</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> defaultdict(<span class="bu">int</span>)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> row <span class="kw">in</span> indices:</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> rank, idx <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>            scores[idx] <span class="op">+=</span> <span class="dv">1</span> <span class="op">/</span> (rank <span class="op">+</span> denom)</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> <span class="bu">sorted</span>(scores.items(), key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)[:top_k]</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [idx <span class="cf">for</span> idx, _ <span class="kw">in</span> results]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="38e439cf-e9c2-4f5b-b6b3-30ec71f71d14" class="cell" data-execution_count="58">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>top_k <span class="op">=</span> <span class="dv">3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="ec91fb0d-f5af-4ca8-9aa0-6f0f7e2872a8" class="cell" data-execution_count="59">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>top_idx <span class="op">=</span> reciprocal_rank_fusion(indices, top_k<span class="op">=</span>top_k)</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>top_idx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="59">
+<pre><code>[3, 2, 4]</code></pre>
+</div>
+</div>
+<p>We wrap it all up in one function! Remember, we should also include the tasks that might have been collected during the query transformation.</p>
+<div id="4fdb5025-22c2-4f7e-ab0a-0dfd6ca7f34a" class="cell" data-execution_count="60">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> retrieve(</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>    tok,</span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>    gen,</span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>    query,</span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>    n_variants<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>    top_k_per_variant<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>    top_k_retrieve<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>    model_name<span class="op">=</span><span class="st">""</span>,</span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>llm_kwargs,</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>    queries, tasks <span class="op">=</span> aggregate_queries_and_tasks(</span>
+<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a>        tok,</span>
+<span id="cb83-13"><a href="#cb83-13" aria-hidden="true" tabindex="-1"></a>        gen,</span>
+<span id="cb83-14"><a href="#cb83-14" aria-hidden="true" tabindex="-1"></a>        query.strip(),</span>
+<span id="cb83-15"><a href="#cb83-15" aria-hidden="true" tabindex="-1"></a>        prompts[<span class="st">"rewrite"</span>],</span>
+<span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>        prompts[<span class="st">"variants"</span>],</span>
+<span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>        n_variants,</span>
+<span id="cb83-18"><a href="#cb83-18" aria-hidden="true" tabindex="-1"></a>        model_name,</span>
+<span id="cb83-19"><a href="#cb83-19" aria-hidden="true" tabindex="-1"></a>        <span class="op">**</span>llm_kwargs,</span>
+<span id="cb83-20"><a href="#cb83-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb83-21"><a href="#cb83-21" aria-hidden="true" tabindex="-1"></a>    hyde_docs <span class="op">=</span> generate_text(</span>
+<span id="cb83-22"><a href="#cb83-22" aria-hidden="true" tabindex="-1"></a>        tok, gen, queries, prompts[<span class="st">"hyde"</span>], model_name, <span class="op">**</span>llm_kwargs</span>
+<span id="cb83-23"><a href="#cb83-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb83-24"><a href="#cb83-24" aria-hidden="true" tabindex="-1"></a>    chunks <span class="op">=</span> []</span>
+<span id="cb83-25"><a href="#cb83-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> hyde_doc <span class="kw">in</span> hyde_docs:</span>
+<span id="cb83-26"><a href="#cb83-26" aria-hidden="true" tabindex="-1"></a>        chunks.extend(text_splitter.split_text(hyde_doc))</span>
+<span id="cb83-27"><a href="#cb83-27" aria-hidden="true" tabindex="-1"></a>    q_emb <span class="op">=</span> get_emb(chunks)</span>
+<span id="cb83-28"><a href="#cb83-28" aria-hidden="true" tabindex="-1"></a>    matches <span class="op">=</span> ds.get_nearest_examples_batch(<span class="st">"embeddings"</span>, q_emb, top_k_per_variant)</span>
+<span id="cb83-29"><a href="#cb83-29" aria-hidden="true" tabindex="-1"></a>    indices <span class="op">=</span> [match[<span class="st">"id"</span>] <span class="cf">for</span> match <span class="kw">in</span> matches.total_examples]</span>
+<span id="cb83-30"><a href="#cb83-30" aria-hidden="true" tabindex="-1"></a>    top_idx <span class="op">=</span> reciprocal_rank_fusion(indices, top_k_retrieve)</span>
+<span id="cb83-31"><a href="#cb83-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> top_idx, tasks</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="a6bfd2b3-72a0-47d1-83d1-0f49010d28fc" class="cell" data-execution_count="61">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>time i,t <span class="op">=</span> retrieve(tok, gen, query, model_name<span class="op">=</span>GEN_MODEL_NAME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"e99cba0379a1474c9ca81646e5e3172c","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>CPU times: user 12.2 s, sys: 656 ms, total: 12.9 s
+Wall time: 12.9 s</code></pre>
+</div>
+</div>
+<div id="3f026427-f5f6-48b1-abd6-6bd81b012f95" class="cell" data-execution_count="62">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a>i</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="62">
+<pre><code>[3, 2, 4]</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="final-answer" class="level1">
+<h1>Final Answer</h1>
+<p>We now have the relevant text pieces to generate a context. Couple that with the original user query and feed it to our LLM to get a final response. We shall tell what we expect and how through the system prompt.</p>
+<div id="8fa7344d-f3b0-4685-9fee-89671307cf0f" class="cell" data-execution_count="63">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_filtered_entries(idxs):</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># We need to drop the index before filtering/selecting the desired indices and re-add it later</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Since it's FAISS and we index very little data, it's not noticeable</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>    ds.drop_index(<span class="st">"embeddings"</span>)</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>    entries <span class="op">=</span> ds.select(idxs)</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>    ds.add_faiss_index(<span class="st">"embeddings"</span>, metric_type<span class="op">=</span>faiss.METRIC_INNER_PRODUCT)</span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> entries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="4dd56a40-52f2-4238-bad8-d87b2df562a5" class="cell" data-execution_count="64">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> answer(tok, gen, query, idxs, tasks, model_name, max_ctx_chars<span class="op">=</span><span class="dv">32768</span>):</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>    total, text, prompt_length <span class="op">=</span> <span class="dv">0</span>, <span class="st">""</span>, <span class="dv">10000</span></span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>    sep <span class="op">=</span> <span class="st">"</span><span class="ch">\n\n</span><span class="st">-----</span><span class="ch">\n\n</span><span class="st">"</span></span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>    tasks <span class="op">=</span> <span class="st">", "</span>.join(tasks) <span class="cf">if</span> tasks <span class="cf">else</span> <span class="st">""</span></span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>    entries <span class="op">=</span> get_filtered_entries(idxs)</span>
+<span id="cb89-6"><a href="#cb89-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> content <span class="kw">in</span> entries[<span class="st">"chunk"</span>]:</span>
+<span id="cb89-7"><a href="#cb89-7" aria-hidden="true" tabindex="-1"></a>        ctx <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>sep<span class="sc">}</span><span class="ch">\n\n</span><span class="sc">{</span>content<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb89-8"><a href="#cb89-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> total <span class="op">+</span> <span class="bu">len</span>(ctx) <span class="op">+</span> <span class="bu">len</span>(tasks) <span class="op">+</span> <span class="bu">len</span>(sep) <span class="op">+</span> prompt_length <span class="op">&gt;</span> max_ctx_chars:</span>
+<span id="cb89-9"><a href="#cb89-9" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="st">"context overflow"</span>)</span>
+<span id="cb89-10"><a href="#cb89-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb89-11"><a href="#cb89-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-12"><a href="#cb89-12" aria-hidden="true" tabindex="-1"></a>        text <span class="op">+=</span> ctx</span>
+<span id="cb89-13"><a href="#cb89-13" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> <span class="bu">len</span>(text)</span>
+<span id="cb89-14"><a href="#cb89-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-15"><a href="#cb89-15" aria-hidden="true" tabindex="-1"></a>    text <span class="op">+=</span> <span class="ss">f"</span><span class="sc">{</span>sep<span class="sc">}{</span>tasks<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb89-16"><a href="#cb89-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-17"><a href="#cb89-17" aria-hidden="true" tabindex="-1"></a>    instruction <span class="op">=</span> <span class="st">"go ahead and answer!"</span></span>
+<span id="cb89-18"><a href="#cb89-18" aria-hidden="true" tabindex="-1"></a>    user_query <span class="op">=</span> <span class="ss">f"</span><span class="ch">\n</span><span class="ss">q: </span><span class="sc">{</span>query<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">ctx:</span><span class="sc">{</span>text<span class="sc">}</span><span class="ss">"</span> <span class="op">+</span> <span class="ss">f"</span><span class="ch">\n\n</span><span class="sc">{</span>instruction<span class="sc">}</span><span class="ch">\n\n</span><span class="ss">"</span></span>
+<span id="cb89-19"><a href="#cb89-19" aria-hidden="true" tabindex="-1"></a>    resp <span class="op">=</span> generate_text(</span>
+<span id="cb89-20"><a href="#cb89-20" aria-hidden="true" tabindex="-1"></a>        tok, gen, user_query, prompts[<span class="st">"final_answer"</span>], model_name<span class="op">=</span>model_name</span>
+<span id="cb89-21"><a href="#cb89-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb89-22"><a href="#cb89-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-23"><a href="#cb89-23" aria-hidden="true" tabindex="-1"></a>    sources <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb89-24"><a href="#cb89-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, entry <span class="kw">in</span> <span class="bu">enumerate</span>(entries):</span>
+<span id="cb89-25"><a href="#cb89-25" aria-hidden="true" tabindex="-1"></a>        source <span class="op">=</span> <span class="ss">f'&lt;h2 style="color: cyan;"&gt;Source </span><span class="sc">{</span>idx <span class="op">+</span> <span class="dv">1</span><span class="sc">}</span><span class="ss"> :: </span><span class="sc">{</span>entry[<span class="st">"file"</span>]<span class="sc">}</span><span class="ss">:</span><span class="sc">{</span>entry[<span class="st">"chunk_id"</span>]<span class="sc">}</span><span class="ss">&lt;/h2&gt;'</span></span>
+<span id="cb89-26"><a href="#cb89-26" aria-hidden="true" tabindex="-1"></a>        sources <span class="op">+=</span> <span class="ss">f"</span><span class="sc">{</span>sep<span class="sc">}{</span>source<span class="sc">}</span><span class="ch">\n\n</span><span class="sc">{</span>entry[<span class="st">'chunk'</span>]<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb89-27"><a href="#cb89-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb89-28"><a href="#cb89-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> resp, sources.replace(<span class="st">"```"</span>, <span class="st">"`"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="db74a36b-b8aa-45f6-abf1-068c8a6164a5" class="cell" data-execution_count="65">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ask(query):</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a>    start <span class="op">=</span> time()</span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>    top_idxs, tasks <span class="op">=</span> retrieve(tok, gen, query.strip(), model_name<span class="op">=</span>GEN_MODEL_NAME)</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>    retrieve_end <span class="op">=</span> time()</span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Retrieval </span><span class="sc">{</span>(retrieve_end <span class="op">-</span> start)<span class="sc">:.1f}</span><span class="ss"> seconds"</span>)</span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># we can use `top_idxs` to retrieve the source content if we wish to.</span></span>
+<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a>    answer_start <span class="op">=</span> time()</span>
+<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>    resp, sources <span class="op">=</span> answer(tok, gen, query, top_idxs, tasks, GEN_MODEL_NAME)</span>
+<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>    end <span class="op">=</span> time()</span>
+<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"answering took </span><span class="sc">{</span>(end <span class="op">-</span> answer_start)<span class="sc">:.1f}</span><span class="ss"> seconds"</span>)</span>
+<span id="cb90-11"><a href="#cb90-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f"</span><span class="ch">\n</span><span class="ss">(_Whole search took </span><span class="sc">{</span>(end <span class="op">-</span> start)<span class="sc">:.1f}</span><span class="ss"> seconds_)</span><span class="ch">\n\n</span><span class="ss"># Final Answer:</span><span class="ch">\n</span><span class="sc">{</span>resp<span class="sc">}{</span>sources<span class="sc">}</span><span class="ss">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="2795ddb2-bb11-4792-90d3-c13429ed4301" class="cell" data-execution_count="66">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> ask(query)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>Markdown(resp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8a206f05a3434ce098e4579db815d775","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Retrieval 13.2 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"555653e20cb34b148d2e411bf46e4d1f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>answering took 4.9 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="66">
+<p>(<em>Whole search took 18.1 seconds</em>)</p>
+<section id="final-answer-1" class="level1">
+<h1>Final Answer:</h1>
+<p>RRF stands for Reciprocal Rank Fusion. It is a technique used to fuse the results of multiple independent searches, prioritizing documents that are consistently ranked highly across different queries. RRF works by assigning a score to each document based on its rank in each search result list, using the formula: score += 1 / (rank + k), where k is a constant. This method ensures that documents consistently considered relevant by multiple queries are given higher priority in the final fused result.</p>
+<hr>
+<h2 style="color: cyan;" class="anchored" data-anchor-id="final-answer-1">
+Source 1 :: RAG_Hack:3
+</h2>
+<!-- image -->
+<p>Retrieve in Parallel: Run a separate, standard vector search for each of these queries. This gives you multiple, slightly different lists of retrieved documents.</p>
+<p>Fuse the Results Intelligently: Now comes the crucial step. You can’t just mash the lists together. You need a way to merge them that prioritizes consensus. The best technique for this is Reciprocal Rank Fusion (RRF) .</p>
+<section id="explaining-rrf-why-democracy-beats-a-dictator-1" class="level2">
+<h2 class="anchored" data-anchor-id="explaining-rrf-why-democracy-beats-a-dictator-1">Explaining RRF: Why Democracy Beats a Dictator</h2>
+<p>Forget complex vector math. RRF is based on a simple, democratic principle: A document that is consistently considered ‘pretty good’ by multiple, diverse queries is more likely to be relevant than a document that is ranked #1 by a single, potentially flawed query.</p>
+<p>Here’s how it works conceptually. For each document, it gets a score based on its rank in each search result list. The formula is simple: score += 1 / (rank + k), where k is a constant to prevent division by zero and tune the algorithm.</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<ul>
+<li>Home</li>
+<li>Library</li>
+<li>Profile</li>
+<li>Stories</li>
+<li>Stats</li>
+</ul>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+</section>
+<section id="following-1" class="level2">
+<h2 class="anchored" data-anchor-id="following-1">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<ul>
+<li>Gouse MG</li>
+<li>Ashhadul Islam</li>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions</p>
+<!-- image -->
+<p>Imagine two documents, Doc A and Doc B, from two different query searches:</p>
+<p>Query 1 Results:</p>
+<p>Doc A is at rank #1. Doc B is at rank #20.</p>
+<p>Query 2 Results: Doc A is at rank #50. Doc B is at rank #2.</p>
+<p>A naive approach might just pick Doc A because it was #1 once. But RRF sees the whole picture. Doc B’s consistent high ranking gives it a much better final RRF score. It surfaces the consensus choice, making the final ranking incredibly robust to outlier results from any single query.</p>
+</section>
+<section id="the-synthesis-the-ultimate-production-ready-query-pipeline-1" class="level2">
+<h2 class="anchored" data-anchor-id="the-synthesis-the-ultimate-production-ready-query-pipeline-1">The Synthesis: The Ultimate Production-Ready Query Pipeline</h2>
+<p>This is where we tie everything together. This is the architecture we ultimately built, the one that finally solved our ‘Audit Committee’ problem for good. We created a powerful synergy between the semantic depth of HyDE and the diverse robustness of RAG-Fusion.</p>
+<p>Here is the step-by-step breakdown of this advanced pipeline:</p>
+<p>Step 1: RAG-Fusion Query Generation. The user’s initial query (‘Audit Committee’) is first sent to an LLM to generate multiple, diverse query variants. This creates a portfolio of questions that explore the user’s potential intent.</p>
+<p>Step 2: HyDE for Each Query Variant. This is the critical leap. Instead of embedding those new query strings directly, we run each one through its own independent HyDE process. For every query variant, we generate a unique, rich hypothetical document. We now have a portfolio of hypothetical answers .</p>
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 2 :: RAG_Hack:2
+</h2>
+<p>Image by Author</p>
+<!-- image -->
+<p>HyDE is a fantastic first step. It’s a powerful way to bridge the semantic gap. But in the unforgiving world of production, it has its own set of frustrating limitations.</p>
+<!-- image -->
+</section>
+<section id="the-hard-truths-why-basic-hyde-fails-in-the-real-world" class="level2">
+<h2 class="anchored" data-anchor-id="the-hard-truths-why-basic-hyde-fails-in-the-real-world">The Hard Truths: Why Basic HyDE Fails in the Real World</h2>
+<p>Implementation of HyDE can improve results dramatically. But there can be more subtle failure modes.</p>
+<p>The Risk of Hallucination: HyDE’s entire foundation rests on the LLM’s ability to generate a good hypothetical document. If the initial query is extremely vague or esoteric, the LLM can hallucinate incorrect facts or ’ drift ’ into a related but wrong topic. This poisons the entire search process from the very start.</p>
+<p>The Problem of Overgeneralization: Often, the LLM will generate a safe, overly broad document. It’s better than the original query, but it lacks the specific keywords or nuance needed to find the absolute best document chunk.</p>
+<p>The Tyranny of the Prompt: The performance is incredibly sensitive to the prompt used for generation. A slight change in wording can cause a significant drop in quality. It’s brittle.</p>
+<p>We realized HyDE gave us one good ’ shot ’ at finding the answer. But what if that one shot was slightly off target? We needed more shots. We needed to attack the problem from multiple angles at once.</p>
+</section>
+<section id="the-evolution-rag-fusion-and-the-power-of-multiple-perspectives" class="level2">
+<h2 class="anchored" data-anchor-id="the-evolution-rag-fusion-and-the-power-of-multiple-perspectives">The Evolution: RAG-Fusion and the Power of Multiple Perspectives</h2>
+<p>If HyDE is a sniper trying to hit a target with one perfect, calculated shot, RAG-Fusion is a squad of soldiers bracketing the target from multiple positions.</p>
+<p>The approach is strategically simple but powerful:</p>
+<p>Generate Multiple Query Variants: Take the original user query and feed it to an LLM, asking it to generate several rephrased, expanded, or more specific versions. This is not about generating answers, but generating better questions .</p>
+<p>Original: ‘Audit Committee’</p>
+</section>
+<section id="variants" class="level2">
+<h2 class="anchored" data-anchor-id="variants">Variants:</h2>
+<p>‘What are the responsibilities of a bank’s Audit Committee?’</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<ul>
+<li>Home</li>
+<li>Library</li>
+<li>Profile</li>
+<li>Stories</li>
+<li>Stats</li>
+</ul>
+</section>
+<section id="following-2" class="level2">
+<h2 class="anchored" data-anchor-id="following-2">Following</h2>
+<p>The Medium Blog</p>
+<ul>
+<li>Gouse MG</li>
+<li>Ashhadul Islam</li>
+<li>Discover more writers and publications to follow.</li>
+<li>See suggestions</li>
+</ul>
+<p>‘What is the required composition of an Audit Committee under RBI regulations?’</p>
+<p>‘Describe the role of the Audit Committee in internal financial controls.’</p>
+<!-- image -->
+<p>Retrieve in Parallel: Run a separate, standard vector search for each of these queries. This gives you multiple, slightly different lists of retrieved documents.</p>
+<p>Fuse the Results Intelligently: Now comes the crucial step. You can’t just mash the lists together. You need a way to merge them that prioritizes consensus. The best technique for this is Reciprocal Rank Fusion (RRF) .</p>
+</section>
+<section id="explaining-rrf-why-democracy-beats-a-dictator-2" class="level2">
+<h2 class="anchored" data-anchor-id="explaining-rrf-why-democracy-beats-a-dictator-2">Explaining RRF: Why Democracy Beats a Dictator</h2>
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 3 :: RAG_Hack:4
+</h2>
+<p>Step 2: HyDE for Each Query Variant. This is the critical leap. Instead of embedding those new query strings directly, we run each one through its own independent HyDE process. For every query variant, we generate a unique, rich hypothetical document. We now have a portfolio of hypothetical answers .</p>
+<p>Step 3: Parallel Search with HyDE Vectors. We now have multiple, rich, hypothetical document vectors. We run a parallel search for each of these in our vector store, yielding several ranked lists of documents - each list tailored to a specific perspective on the original query.</p>
+<!-- image -->
+<p>Step 4: Final Reciprocal Rank Fusion. We take all these search result lists and feed them into our RRF algorithm. RRF intelligently and democratically merges everything, pushing the documents that were consistently ranked high across all these different, deep perspectives to the very top.</p>
+</section>
+<section id="why-is-this-combination-so-powerful" class="level2">
+<h2 class="anchored" data-anchor-id="why-is-this-combination-so-powerful">Why is this combination so powerful?</h2>
+<p>RAG-Fusion provides the breadth - it explores the problem space from many different angles. HyDE provides the depth - it ensures each of those angles is represented by a rich, semantically meaningful vector. RRF provides the wisdom - it intelligently synthesizes the results to find the true, robust consensus.</p>
+</section>
+<section id="final-answers-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="final-answers-analysis">Final answers analysis</h2>
+<p>From the image below, it’s clear that the quality of answers improves noticeably. The accuracy of responses increases as we move from basic RAG to RAG with HyDE, and further to customized HyDE, each step delivering better results.</p>
+<!-- image -->
+</section>
+<section id="the-final-verdict-stop-blaming-your-tools-start-engineering-your-process" class="level2">
+<h2 class="anchored" data-anchor-id="the-final-verdict-stop-blaming-your-tools-start-engineering-your-process">The Final Verdict: Stop Blaming Your Tools, Start Engineering Your Process</h2>
+<p>For too long, the default response to poor RAG performance has been to blame the tools - ’ We need a better embedding model, ’ or ‘Let’s switch vector databases.’ But in my experience, the problem is rarely the database’s fault. It’s the query we’re giving it. We’ve been sending a blunt instrument to do a surgeon’s job.</p>
+<p>The journey from a simple RAG to a sophisticated HyDE + RAG-Fusion pipeline is a journey from being a user of AI tools to becoming a true AI engineer. It’s an acknowledgment that building reliable, production-grade</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<ul>
+<li>Home</li>
+</ul>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Library</p>
+<ul>
+<li>Profile</li>
+</ul>
+<p>Stories</p>
+<!-- image -->
+<p>Stats</p>
+</section>
+<section id="following-3" class="level2">
+<h2 class="anchored" data-anchor-id="following-3">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<ul>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions systems requires a deep, multi-layered approach to understanding user intent. It requires moving beyond a single API call and architecting a robust, resilient process.</p>
+</section>
+</section>
+</div>
+</div>
+<div id="2b3f1abf-7372-45dc-8b91-972da2c5b721" class="cell" data-execution_count="67">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"What is Retrieval Augmented Generation (RAG)?"</span></span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> ask(query)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>Markdown(resp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"bb0fd1b868bc49d5b552d6f3acc2e9ae","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Retrieval 13.0 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"48f47a7648c64cc187774709bab9b4e0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>answering took 8.1 seconds</code></pre>
+</div>
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="67">
+<p>(<em>Whole search took 21.2 seconds</em>)</p>
+<section id="final-answer-2" class="level1">
+<h1>Final Answer:</h1>
+<p>Retrieval Augmented Generation (RAG) is a framework that combines the strengths of retrieval models and generative models to produce more accurate and contextually relevant answers. It involves using a retrieval system to fetch relevant documents or information from a large corpus, and then using a generative model to create a final answer based on that retrieved information.</p>
+<p>In the context provided, RAG is described as a process that involves multiple stages, including the use of HyDE (Hypothetical Document Embedding) to generate rich, semantically meaningful hypothetical documents for each query variant. These hypothetical documents are then used in a parallel search with HyDE vectors to retrieve relevant documents. The results are then fused using RRF (Retrieval Reinforcement) to produce the final answer. This approach aims to close the semantic gap between user queries and the long, detailed documents in the vector store, delivering answers that are not just plausible, but precise, relevant, and trustworthy.</p>
+<hr>
+<h2 style="color: cyan;" class="anchored" data-anchor-id="final-answer-2">
+Source 1 :: RAG_Hack:5
+</h2>
+<!-- image -->
+<!-- image -->
+<p>Library</p>
+<ul>
+<li>Profile</li>
+</ul>
+<p>Stories</p>
+<!-- image -->
+<p>Stats</p>
+<section id="following-4" class="level2">
+<h2 class="anchored" data-anchor-id="following-4">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<ul>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions systems requires a deep, multi-layered approach to understanding user intent. It requires moving beyond a single API call and architecting a robust, resilient process.</p>
+<p>The ‘good enough’ answers from a naive RAG system are a liability. They create a facade of intelligence that crumbles under the pressure of realworld ambiguity. By building a sophisticated query transformation pipeline, you are building a system that can withstand that pressure, closing the semantic gap, and delivering answers that are not just plausible, but precise, relevant, and trustworthy.</p>
+</section>
+<section id="if-you-have-found-this-article-insightful" class="level2">
+<h2 class="anchored" data-anchor-id="if-you-have-found-this-article-insightful">If you have found this article insightful</h2>
+<p>It is a proven fact that ’ Generosity makes you a happier person ’; therefore, give claps to the article if you liked it. If you found this article insightful, follow me on LinkedIn and Medium . You can also subscribe to get notified when I publish articles. Let’s create a community! Thanks for your support!</p>
+</section>
+<section id="here-are-a-few-other-posts-you-might-find-useful" class="level2">
+<h2 class="anchored" data-anchor-id="here-are-a-few-other-posts-you-might-find-useful">Here are a few other posts you might find useful:</h2>
+<!-- image -->
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<p>Home</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Library</p>
+<p>Profile</p>
+<p>Stories</p>
+<!-- image -->
+<p>Stats</p>
+</section>
+<section id="following-5" class="level2">
+<h2 class="anchored" data-anchor-id="following-5">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<p>Discover more writers and publications to follow.</p>
+<p>See suggestions</p>
+</section>
+<section id="signing-off-chinmay" class="level2">
+<h2 class="anchored" data-anchor-id="signing-off-chinmay">Signing off, Chinmay</h2>
+<p>Large Language Models</p>
+<p>AI</p>
+<!-- image -->
+<p>Generative Ai Tools</p>
+</section>
+<section id="published-in-data-and-beyond" class="level2">
+<h2 class="anchored" data-anchor-id="published-in-data-and-beyond">Published in Data And Beyond</h2>
+<p>1.1K followers · Last published&nbsp;2 days ago</p>
+<p>Selected stories around Data Science, Machine Learning, Artificial Intelligence, Programming, and Technology topics. Writing guide: https://medium.com/dataand-beyond/how-to-write-for-data-and-beyond-b83ff0f3813e</p>
+</section>
+<section id="written-by-chinmay-bhalerao" class="level2">
+<h2 class="anchored" data-anchor-id="written-by-chinmay-bhalerao">Written by Chinmay Bhalerao</h2>
+<p>1.7K followers · 123 following</p>
+<!-- image -->
+<p>Research</p>
+<p>Follow</p>
+<!-- image -->
+<!-- image -->
+<p>AI/ML Researcher &amp; Engineer | 3x Top Writer in AI, CV &amp; Object Detection | Simplifying Tech with Insights &amp; Simulations |</p>
+<!-- image -->
+<p>Artificial Intelligence</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<p>Home</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Library</p>
+<p>Profile</p>
+<p>Stories</p>
+<!-- image -->
+<p>Stats</p>
+</section>
+<section id="following-6" class="level2">
+<h2 class="anchored" data-anchor-id="following-6">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<ul>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions</p>
+</section>
+<section id="more-from-chinmay-bhalerao-and-data-and-beyond" class="level2">
+<h2 class="anchored" data-anchor-id="more-from-chinmay-bhalerao-and-data-and-beyond">More from Chinmay Bhalerao and Data And Beyond</h2>
+<!-- image -->
+<!-- image -->
+<p>In by Data And Beyond Chinmay Bhalerao</p>
+</section>
+<section id="the-million-token-mirage-why-a-bigger-context-window-wont-fix" class="level2">
+<h2 class="anchored" data-anchor-id="the-million-token-mirage-why-a-bigger-context-window-wont-fix">The Million-Token Mirage: Why a Bigger Context Window Won’t Fix…</h2>
+<p>Why Strategic Retrieval Beats Brute-Force Context Every Time</p>
+<!-- image -->
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 2 :: RAG_Hack:4
+</h2>
+<p>Step 2: HyDE for Each Query Variant. This is the critical leap. Instead of embedding those new query strings directly, we run each one through its own independent HyDE process. For every query variant, we generate a unique, rich hypothetical document. We now have a portfolio of hypothetical answers .</p>
+<p>Step 3: Parallel Search with HyDE Vectors. We now have multiple, rich, hypothetical document vectors. We run a parallel search for each of these in our vector store, yielding several ranked lists of documents - each list tailored to a specific perspective on the original query.</p>
+<!-- image -->
+<p>Step 4: Final Reciprocal Rank Fusion. We take all these search result lists and feed them into our RRF algorithm. RRF intelligently and democratically merges everything, pushing the documents that were consistently ranked high across all these different, deep perspectives to the very top.</p>
+</section>
+<section id="why-is-this-combination-so-powerful-1" class="level2">
+<h2 class="anchored" data-anchor-id="why-is-this-combination-so-powerful-1">Why is this combination so powerful?</h2>
+<p>RAG-Fusion provides the breadth - it explores the problem space from many different angles. HyDE provides the depth - it ensures each of those angles is represented by a rich, semantically meaningful vector. RRF provides the wisdom - it intelligently synthesizes the results to find the true, robust consensus.</p>
+</section>
+<section id="final-answers-analysis-1" class="level2">
+<h2 class="anchored" data-anchor-id="final-answers-analysis-1">Final answers analysis</h2>
+<p>From the image below, it’s clear that the quality of answers improves noticeably. The accuracy of responses increases as we move from basic RAG to RAG with HyDE, and further to customized HyDE, each step delivering better results.</p>
+<!-- image -->
+</section>
+<section id="the-final-verdict-stop-blaming-your-tools-start-engineering-your-process-1" class="level2">
+<h2 class="anchored" data-anchor-id="the-final-verdict-stop-blaming-your-tools-start-engineering-your-process-1">The Final Verdict: Stop Blaming Your Tools, Start Engineering Your Process</h2>
+<p>For too long, the default response to poor RAG performance has been to blame the tools - ’ We need a better embedding model, ’ or ‘Let’s switch vector databases.’ But in my experience, the problem is rarely the database’s fault. It’s the query we’re giving it. We’ve been sending a blunt instrument to do a surgeon’s job.</p>
+<p>The journey from a simple RAG to a sophisticated HyDE + RAG-Fusion pipeline is a journey from being a user of AI tools to becoming a true AI engineer. It’s an acknowledgment that building reliable, production-grade</p>
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<!-- image -->
+<ul>
+<li>Home</li>
+</ul>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Library</p>
+<ul>
+<li>Profile</li>
+</ul>
+<p>Stories</p>
+<!-- image -->
+<p>Stats</p>
+</section>
+<section id="following-7" class="level2">
+<h2 class="anchored" data-anchor-id="following-7">Following</h2>
+<!-- image -->
+<p>The Medium Blog</p>
+<!-- image -->
+<!-- image -->
+<!-- image -->
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<ul>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions systems requires a deep, multi-layered approach to understanding user intent. It requires moving beyond a single API call and architecting a robust, resilient process.</p>
+<hr>
+<h2 style="color: cyan;" class="anchored">
+Source 3 :: RAG_Hack:0
+</h2>
+<!-- image -->
+<ul>
+<li>Discover more writers and publications to follow.</li>
+</ul>
+<p>See suggestions</p>
+<!-- image -->
+<p>A few days ago, I was chatting over tea with a friend who’s a data scientist. He shared his experience from his recent demo, which sparked my curiosity to explore solutions related to the context-aware HYDE .</p>
+<p>In his words,</p>
+<!-- image -->
+<p>All your favorite parts of Medium are now in one sidebar for easy access.</p>
+<p>Home</p>
+<p>Library</p>
+<p>Profile</p>
+<p>Stories</p>
+<p>Stats</p>
+</section>
+<section id="following-8" class="level2">
+<h2 class="anchored" data-anchor-id="following-8">Following</h2>
+<p>The Medium Blog</p>
+<p>Gouse MG</p>
+<p>Ashhadul Islam</p>
+<p>Discover more writers and publications to</p>
+<p>follow.</p>
+<p>See suggestions</p>
+<p>‘I’ll never forget the precise moment the floor fell out from under my confidence. My team and I were in a high-stakes demo, showcasing our new RAG system to the leadership of a major financial institution. This system was our key product, trained on dense compliance documents and regulatory filings. In our sandbox, it was a certified genius. Ask it about ’KYC protocols for international clients,’ and it would generate a perfect, eloquent summary. We were proud. We were ready.</p>
+<p>Then, the Chief Compliance Officer, who spoke in legal clauses and didn’t suffer fools gladly, leaned into her microphone. She wasn’t interested in conversational flair. She asked a simple, two-word query that would come to haunt me: ‘Audit Committee.’</p>
+<p>The silence was deafening. Our LLM chat application, our pride and joy, returned a jumble of barely related document chunks: a mention of an internal memo about a board meeting, a snippet defining the word ‘audit,’ and a completely unrelated section about committee charters. The answer was a disorganized, useless mess. It had failed the simplest, most fundamental test.</p>
+<p>This is the fatal flaw in 90% of standard RAG implementations. They are brilliant when the query is specific and well-formed, but they collapse into incompetence in the face of real-world user ambiguity. We had fallen victim to the ’ semantic gap ’ - the vast chasm between a user’s short, imprecise query and the long, detailed documents that hold the answer. That costly public failure taught me a lesson that now forms the bedrock of my approach to building AI: if you are not aggressively and intelligently transforming user queries before they ever touch your vector store, your RAG isn’t just underperforming; it’s a ticking time bomb of confidently irrelevant answers. After this, I started thinking and exploring methods to resolve this issue.</p>
+</section>
+<section id="the-core-problem-a-deep-dive-into-the-semantic-gap" class="level2">
+<h2 class="anchored" data-anchor-id="the-core-problem-a-deep-dive-into-the-semantic-gap">The Core Problem: A Deep Dive into the Semantic Gap</h2>
+<p>To fix this, we first need to understand the problem at a gut level. Why does a simple query like ’ Audit Committee ’ fail so spectacularly?</p>
+<p>It’s a problem of geometry. When you use an embedding model, you are converting text into a vector - a point in a high-dimensional space. The guiding principle of vector search is that ‘similar meanings should have similar vectors’ (i.e., they should be close to each other in that space).</p>
+</section>
+<section id="heres-the-catch" class="level2">
+<h2 class="anchored" data-anchor-id="heres-the-catch">Here’s the catch:</h2>
+</section>
+</section>
+</div>
+</div>
+<hr>
+</section>
+<section id="end" class="level1">
+<h1>End</h1>
+<p>We now have a complete working solution! You can tweak several parameters to trade off speed or accuracy.</p>
+<p>This entire code is available in scripts to be able to run via CLI or via gradio (local as well as HF Spaces).</p>
+<p>Checout the project README for more insights/observations.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/samsaara\.github\.io\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
