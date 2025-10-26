@@ -339,7 +339,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
                           <div class="quarto-categories">
                 <div class="quarto-category">EDA</div>
                 <div class="quarto-category">pandas</div>
-                <div class="quarto-category">SQL</div>
+                <div class="quarto-category">sql</div>
               </div>
                   </div>
   </div>
@@ -414,12 +414,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>DuckDB is very lightweight and has <strong><em>no external dependencies</em></strong> and runs <em>within</em> the host process itself. Simply install it with:</p>
 <pre><code>pip install duckdb==0.3.4</code></pre>
 <p>To initialize it, run:</p>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:34.991241Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:34.436037Z&quot;}}" data-execution_count="1">
+<div id="3f046e9c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:34.991241Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:34.436037Z&quot;}}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>dbcon <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>That’s it! Now you can test it by running:</p>
-<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:36.016219Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:35.992090Z&quot;}}" data-execution_count="2">
+<div id="c7020c8e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:36.016219Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:35.992090Z&quot;}}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dbcon.execute(<span class="st">'select 1, 2, 3'</span>).fetchall()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <pre><code>[(1, 2, 3)]</code></pre>
@@ -431,24 +431,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>If in case you wish to explore it in Jupyter Notebooks, install a few additional libraries for a better experience:</p>
 <pre><code>pip install ipython-sql SQLAlchemy duckdb-engine</code></pre>
 <p>Import them once installed:</p>
-<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.106943Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:36.943288Z&quot;}}" data-execution_count="3">
+<div id="50958cbf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.106943Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:36.943288Z&quot;}}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sqlalchemy</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext sql</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Set a few config options to prettify the output and return it as Pandas DataFrame</p>
-<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.130019Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.109333Z&quot;}}" data-execution_count="4">
+<div id="30890458" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.130019Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.109333Z&quot;}}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config SqlMagic.autopandas <span class="op">=</span> <span class="va">True</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config SqlMagic.feedback <span class="op">=</span> <span class="va">False</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>config SqlMagic.displaycon <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>DuckDB is primarily designed to be an in-memory DB. You can however persist your data to disk.</p>
-<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.405754Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.132674Z&quot;}}" data-execution_count="5">
+<div id="f2f8585d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.405754Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.132674Z&quot;}}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>sql duckdb:<span class="op">///</span>:memory:</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># %sql duckdb:///path/to/file.db</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:41.343052Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:41.318366Z&quot;}}" data-execution_count="7">
+<div id="7be11389" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:41.343052Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:41.318366Z&quot;}}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#collapse-output</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># we can also access the current config &amp; settings of DuckDB by running the following:</span></span>
@@ -727,7 +727,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>From now on, you can run SQL directly by prefixing <code>%sql</code> (or <code>%%sql</code> for multiline statements) to your code cell and get your output returned as pandas dataframe :man_dancing:.</p>
-<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:43.949965Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:43.936516Z&quot;}}" data-execution_count="8">
+<div id="5ef20730" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:43.949965Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:43.936516Z&quot;}}" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>sql select <span class="dv">1</span> <span class="im">as</span> a<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <div>
@@ -768,7 +768,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>There exist a few some external libraries that enable parallel processing but only on specific operations.</p>
 </blockquote>
 <p>While this is turned on by default, we also can explicitly set the number of threads:</p>
-<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:45.545681Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:45.487404Z&quot;}}" data-execution_count="9">
+<div id="8cb3dad5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:45.545681Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:45.487404Z&quot;}}" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#collapse-output</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># specify no. of threads for multi-threading support</span></span>
@@ -807,7 +807,7 @@ Warning
 </div>
 </div>
 <p>We can also write a short snippet to run an SQL query, and return the result as a Pandas DataFrame in a pythonic way:</p>
-<div id="cell-27" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.373995Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.367971Z&quot;}}" data-execution_count="10">
+<div id="fc6c3b93" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.373995Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.367971Z&quot;}}" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dbrun(query: <span class="bu">str</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""run the query with duckdb"""</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -822,7 +822,7 @@ Warning
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now create a DataFrame &amp; run a simple query:</p>
-<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.708828Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.647014Z&quot;}}" data-execution_count="11">
+<div id="23fcec61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.708828Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.647014Z&quot;}}" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(<span class="bu">range</span>(<span class="dv">10</span>), columns<span class="op">=</span>[<span class="st">'a'</span>])</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># querying with python function</span></span>
@@ -833,7 +833,7 @@ Warning
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Alternatively, you can also compute the result with the line magics and store the result as a python variable that you can access elsewhere:</p>
-<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:55.512332Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:55.481003Z&quot;}}" data-execution_count="13">
+<div id="3c80e62f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:55.512332Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:55.481003Z&quot;}}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co">#collapse-output</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
@@ -866,7 +866,7 @@ Tip
 <p>Often times we have data stored either in DB or in <code>parquet/csv</code> formats and they could be huge or may not/barely fit in memory. Loading them with pandas incur significant memory overhead and also possibly <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/scale.html">creates multiple copies</a> when performing certain operations. With DuckDB, such files can be queried directly without any copying because of <a href="https://arrow.apache.org/blog/2021/12/03/arrow-duckdb/">direct integration with Apache Arrow</a>.</p>
 <p>To demonstrate this, we’ll download an <a href="https://www.kaggle.com/datasets/yuanyuwendymu/airline-delay-and-cancellation-data-2009-2018">airline delay &amp; cancelation dataset from kaggle</a> (and place it under <code>data/airline_data/</code> folder). The compressed archive is about <code>~2GB</code> and when deflated, creates a couple of CSVs totalling <code>~8GB</code> of data.</p>
 <p>Let’s have a quick look at the contents by loading a single csv file:</p>
-<div id="cell-36" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:01.175371Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:00.924914Z&quot;}}" data-execution_count="14">
+<div id="6625dfe1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:01.175371Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:00.924914Z&quot;}}" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>select <span class="op">*</span></span>
@@ -1032,7 +1032,7 @@ Tip
 </div>
 </div>
 <p>we can load efficiently with pandas too by specifying the <code>nrows</code> parameter:</p>
-<div id="cell-38" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:05.133414Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:05.097132Z&quot;}}" data-execution_count="15">
+<div id="68b4709b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:05.133414Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:05.097132Z&quot;}}" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pd.read_csv(<span class="st">'./data/airline_data/2009.csv'</span>, nrows<span class="op">=</span><span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="15">
 <div>
@@ -1199,7 +1199,7 @@ Tip
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>csvs <span class="op">=</span> glob(<span class="st">'data/airline_data/*.csv'</span>)</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.concat(pd.read_csv(csv) <span class="cf">for</span> csv <span class="kw">in</span> csvs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>A better alternative would be to merge all those CSVs into a single parquet file. Unlike CSVs, parquet files are structured and as such are unambiguous to read.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> They are compressed columnar files and hence take much less space than individual CSVs combined because of the efficient Arrow data format.</p>
-<div id="cell-40" class="cell" data-execution_count="16">
+<div id="c0cba9aa" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>sql copy <span class="st">'data/airline_data/*.csv'</span> to <span class="st">'data/airline_data/data.parquet'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="16">
 <div>
@@ -1224,7 +1224,7 @@ Tip
 </div>
 </div>
 <p>Notice that we directly copied all the CSVs using regex to a single parquet file without ever copying data into pandas. Now, we ended up from a 7.5GB combined CSV files to a 2.5GB parquet file which now easily fits into memory. So we can load it with pandas as:</p>
-<div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:38.545606Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:17.672753Z&quot;}}" data-execution_count="17">
+<div id="cc51ef85" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:38.545606Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:17.672753Z&quot;}}" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(<span class="st">'data/airline_data/data.parquet'</span>)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="17">
@@ -1235,13 +1235,13 @@ Tip
 <section id="projection-filter-pushdowns" class="level2">
 <h2 class="anchored" data-anchor-id="projection-filter-pushdowns">Projection &amp; Filter Pushdowns</h2>
 <p>Now let’s do a simple filter operation on our dataset. Let’s count the total number of rows that satisfy the condition <code>TAXI_OUT &gt; 10</code>. We’ll try with both pandas &amp; duckdb.</p>
-<div id="cell-45" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.249748Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:44.719959Z&quot;}}" data-execution_count="18">
+<div id="f6368600" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.249748Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:44.719959Z&quot;}}" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>df[df[<span class="st">'TAXI_OUT'</span>] <span class="op">&gt;</span> <span class="dv">10</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="18">
 <pre><code>(45209245, 28)</code></pre>
 </div>
 </div>
-<div id="cell-46" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.499992Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:54.252243Z&quot;}}" data-execution_count="19">
+<div id="76f5e378" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.499992Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:54.252243Z&quot;}}" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>select count(<span class="op">*</span>) <span class="im">as</span> count</span>
@@ -1271,7 +1271,7 @@ Tip
 </div>
 <p>While the earlier operation took <code>~9.5s</code>, the latter just took <strong>~250ms</strong> :zap:. <em>There’s just no comparison.</em></p>
 <p>This is because duckdb automatically optimizes the query by selecting only the required column(s) (aka <code>projection pushdown</code>) and then applies the filtering to get a subset of data (aka <code>filter pushdown</code>). Pandas instead reads through all the columns. We can optimize this in pandas by doing these pushdowns ourselves.</p>
-<div id="cell-48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:35:13.066902Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:35:12.209341Z&quot;}}" data-execution_count="20">
+<div id="8020ab2b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:35:13.066902Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:35:12.209341Z&quot;}}" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>projection_pushdown_df <span class="op">=</span> df[[<span class="st">'TAXI_OUT'</span>]]</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>filter_pushdown_df <span class="op">=</span> projection_pushdown_df[projection_pushdown_df[<span class="st">'TAXI_OUT'</span>] <span class="op">&gt;</span> <span class="dv">10</span>]</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>filter_pushdown_df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1285,7 +1285,7 @@ Tip
 <h2 class="anchored" data-anchor-id="using-groupby">Using Groupby</h2>
 <p>Now let’s calculate a few aggregates using <code>groupby</code> with projection &amp; filter pushdowns combined.</p>
 <p>Here, we compute a few simple metrics with a certain airline carrier grouped by two origin &amp; destination airports and finally sort the results by the origin airport.</p>
-<div id="cell-51" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:45:43.525554Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:45:36.613608Z&quot;}}" data-execution_count="22">
+<div id="4641ff8e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:45:43.525554Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:45:36.613608Z&quot;}}" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>projection_df <span class="op">=</span> df[[<span class="st">'ORIGIN'</span>, <span class="st">'DEST'</span>, <span class="st">'TAXI_OUT'</span>, </span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'AIR_TIME'</span>, <span class="st">'DISTANCE'</span>, <span class="st">'OP_CARRIER'</span>]]</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>origin_df <span class="op">=</span> projection_df[</span>
@@ -1343,7 +1343,7 @@ Tip
 </div>
 </div>
 <p>We can make it a bit more concise by using <code>.query</code> for filtering pushdown.</p>
-<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:46:08.269756Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:46:04.842405Z&quot;}}" data-execution_count="23">
+<div id="250a0a83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:46:08.269756Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:46:04.842405Z&quot;}}" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>(df</span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a> .query(<span class="st">'OP_CARRIER == "XE" and ORIGIN in ("DCA", "EWR") and DEST in ("DCA", "EWR")'</span>)</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a> .groupby([<span class="st">'ORIGIN'</span>, <span class="st">'DEST'</span>])</span>
@@ -1395,7 +1395,7 @@ Tip
 </div>
 </div>
 <p>This approach took only about half the time (~3s) compared to our earlier one because&nbsp;<code>.query</code> uses a modified syntax of python and also indexing thus resulting in more efficient evaluation. We can now compare that to our SQL counterpart…</p>
-<div id="cell-55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:47:12.947960Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:47:12.518760Z&quot;}}" data-execution_count="24">
+<div id="87d0454c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:47:12.947960Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:47:12.518760Z&quot;}}" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>select</span>
@@ -1463,7 +1463,7 @@ Tip
 </section>
 <section id="accessing-data-with-views" class="level1">
 <h1>Accessing data with <code>Views</code></h1>
-<div id="cell-58" class="cell" data-execution_count="25">
+<div id="5d4d4c92" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>create view airlinedata <span class="im">as</span> select <span class="op">*</span> <span class="im">from</span> <span class="st">'data/airline_data/data.parquet'</span><span class="op">;</span></span>
@@ -1525,7 +1525,7 @@ Tip
 </div>
 <p>This is such a powerful feature and allows us to explore <em>lot</em> more data than traditionally possible with pandas.</p>
 <p>We can also check the datatypes and other metadata with <code>describe view/table name</code></p>
-<div id="cell-60" class="cell" data-execution_count="26">
+<div id="54704433" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#collapse-output</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>sql describe airlinedata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1807,7 +1807,7 @@ Tip
 <section id="using-approximations" class="level2">
 <h2 class="anchored" data-anchor-id="using-approximations">Using approximations</h2>
 <p>At times, it suffices just to get an estimate of certain data rather than a precise answer. Using approximations would help us to just that.</p>
-<div id="cell-62" class="cell" data-execution_count="14">
+<div id="c421734f" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>select</span>
@@ -1889,7 +1889,7 @@ Tip
 </div>
 </div>
 </div>
-<div id="cell-63" class="cell" data-execution_count="15">
+<div id="280a0ae9" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>select</span>
@@ -1978,7 +1978,7 @@ Tip
 <h2 class="anchored" data-anchor-id="using-window-functions">Using Window functions</h2>
 <p>Finally, let’s wrap our analysis by showing off a bit more of what duckdb can do using some advanced SQL operations.</p>
 <p>We create two CTEs (Common Table Expressions) to calculate a couple of features. We do filter &amp; projection pushdowns in one CTE and compute our desired features in another. The first feature is a simple demo to showcase <code>if-else</code> support. The second feature is a bit advanced where we find out the last destination a given air carrier has flown to, sorted by flying date. And when it doesn’t exist, replace it with <code>NA</code>. We then take a sample from the final resultant set.</p>
-<div id="cell-66" class="cell" data-execution_count="27">
+<div id="447f447e" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="op">%%</span>sql</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> limited_data <span class="im">as</span> (</span>

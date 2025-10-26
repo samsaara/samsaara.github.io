@@ -1792,15 +1792,15 @@ Source 2 :: docling_technical_report:5
 
  ]]></description>
   <category>EDA</category>
-  <category>PyTorch</category>
-  <category>NLP</category>
-  <category>GenAI</category>
-  <category>LLMs</category>
-  <category>RAG</category>
-  <category>HyDE</category>
-  <category>RRF</category>
-  <category>Ranking</category>
-  <category>Information Retrieval</category>
+  <category>pytorch</category>
+  <category>nlp</category>
+  <category>genai</category>
+  <category>llms</category>
+  <category>rag</category>
+  <category>hyde</category>
+  <category>rrf</category>
+  <category>ranking</category>
+  <category>information retrieval</category>
   <guid>https://samsaara.github.io/posts/rag_with_hyde_rrf/rag_hyde.html</guid>
   <pubDate>Fri, 24 Oct 2025 18:30:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/rag_with_hyde_rrf/RAG_Robot.png" medium="image" type="image/png" height="96" width="144"/>
@@ -2468,9 +2468,9 @@ font-style: inherit;">500</span>)</span></code></pre></div>
 
  ]]></description>
   <category>EDA</category>
-  <category>PyTorch</category>
-  <category>torchvision</category>
-  <category>Embeddings</category>
+  <category>pytorch</category>
+  <category>computer vision</category>
+  <category>embeddings</category>
   <category>DocLayout</category>
   <category>classification</category>
   <guid>https://samsaara.github.io/posts/layout-sim/layout-sim.html</guid>
@@ -3001,10 +3001,10 @@ Note
 </section>
 
  ]]></description>
-  <category>Agents</category>
-  <category>NLP</category>
-  <category>LLMs</category>
-  <category>Web Scraping</category>
+  <category>agents</category>
+  <category>nlp</category>
+  <category>llms</category>
+  <category>webscraping</category>
   <category>ollama</category>
   <category>crewai</category>
   <guid>https://samsaara.github.io/posts/agentic-job-search/agentic-job-search.html</guid>
@@ -4299,8 +4299,8 @@ Figure&nbsp;10: Water Levels in Germany
 
  ]]></description>
   <category>EDA</category>
-  <category>GIS</category>
-  <category>QGIS</category>
+  <category>gis</category>
+  <category>qgis</category>
   <guid>https://samsaara.github.io/posts/geospatial_intro_part_II/GIS_II.html</guid>
   <pubDate>Mon, 06 Mar 2023 18:30:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/geospatial_intro_part_II/unsplash.jpg" medium="image" type="image/jpeg"/>
@@ -4606,8 +4606,8 @@ Figure&nbsp;10: Final Map with all layers
 </ol>
 </section></div> ]]></description>
   <category>EDA</category>
-  <category>GIS</category>
-  <category>QGIS</category>
+  <category>gis</category>
+  <category>qgis</category>
   <guid>https://samsaara.github.io/posts/geospatial_intro_part_I/GIS_I.html</guid>
   <pubDate>Sat, 04 Mar 2023 18:30:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/geospatial_intro_part_I/unsplash.jpg" medium="image" type="image/jpeg"/>
@@ -6700,7 +6700,7 @@ font-style: inherit;">assert</span> torch.cuda.is_available()</span></code></pre
 <p>DuckDB is very lightweight and has <strong><em>no external dependencies</em></strong> and runs <em>within</em> the host process itself. Simply install it with:</p>
 <pre><code>pip install duckdb==0.3.4</code></pre>
 <p>To initialize it, run:</p>
-<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:34.991241Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:34.436037Z&quot;}}" data-execution_count="1">
+<div id="3f046e9c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:34.991241Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:34.436037Z&quot;}}" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> duckdb</span>
@@ -6711,7 +6711,7 @@ background-color: null;
 font-style: inherit;">connect</span>()</span></code></pre></div>
 </div>
 <p>That’s it! Now you can test it by running:</p>
-<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:36.016219Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:35.992090Z&quot;}}" data-execution_count="2">
+<div id="c7020c8e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:36.016219Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:35.992090Z&quot;}}" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1">dbcon.execute(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'select 1, 2, 3'</span>).fetchall()</span></code></pre></div>
@@ -6725,7 +6725,7 @@ font-style: inherit;">'select 1, 2, 3'</span>).fetchall()</span></code></pre></d
 <p>If in case you wish to explore it in Jupyter Notebooks, install a few additional libraries for a better experience:</p>
 <pre><code>pip install ipython-sql SQLAlchemy duckdb-engine</code></pre>
 <p>Import them once installed:</p>
-<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.106943Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:36.943288Z&quot;}}" data-execution_count="3">
+<div id="50958cbf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.106943Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:36.943288Z&quot;}}" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
@@ -6740,7 +6740,7 @@ background-color: null;
 font-style: inherit;">%</span>load_ext sql</span></code></pre></div>
 </div>
 <p>Set a few config options to prettify the output and return it as Pandas DataFrame</p>
-<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.130019Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.109333Z&quot;}}" data-execution_count="4">
+<div id="30890458" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.130019Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.109333Z&quot;}}" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%</span>config SqlMagic.autopandas <span class="op" style="color: #5E5E5E;
@@ -6764,7 +6764,7 @@ background-color: null;
 font-style: inherit;">False</span></span></code></pre></div>
 </div>
 <p>DuckDB is primarily designed to be an in-memory DB. You can however persist your data to disk.</p>
-<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.405754Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.132674Z&quot;}}" data-execution_count="5">
+<div id="f2f8585d" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:40.405754Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:40.132674Z&quot;}}" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%</span>sql duckdb:<span class="op" style="color: #5E5E5E;
@@ -6774,7 +6774,7 @@ font-style: inherit;">///</span>:memory:</span>
 background-color: null;
 font-style: inherit;"># %sql duckdb:///path/to/file.db</span></span></code></pre></div>
 </div>
-<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:41.343052Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:41.318366Z&quot;}}" data-execution_count="7">
+<div id="7be11389" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:41.343052Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:41.318366Z&quot;}}" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#collapse-output</span></span>
@@ -7063,7 +7063,7 @@ font-style: inherit;">;</span></span></code></pre></div>
 </div>
 </div>
 <p>From now on, you can run SQL directly by prefixing <code>%sql</code> (or <code>%%sql</code> for multiline statements) to your code cell and get your output returned as pandas dataframe :man_dancing:.</p>
-<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:43.949965Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:43.936516Z&quot;}}" data-execution_count="8">
+<div id="5ef20730" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:43.949965Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:43.936516Z&quot;}}" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%</span>sql select <span class="dv" style="color: #AD0000;
@@ -7112,7 +7112,7 @@ font-style: inherit;">;</span></span></code></pre></div>
 <p>There exist a few some external libraries that enable parallel processing but only on specific operations.</p>
 </blockquote>
 <p>While this is turned on by default, we also can explicitly set the number of threads:</p>
-<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:45.545681Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:45.487404Z&quot;}}" data-execution_count="9">
+<div id="8cb3dad5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:45.545681Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:45.487404Z&quot;}}" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#collapse-output</span></span>
@@ -7165,7 +7165,7 @@ Warning
 </div>
 </div>
 <p>We can also write a short snippet to run an SQL query, and return the result as a Pandas DataFrame in a pythonic way:</p>
-<div id="cell-27" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.373995Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.367971Z&quot;}}" data-execution_count="10">
+<div id="fc6c3b93" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.373995Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.367971Z&quot;}}" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
@@ -7202,7 +7202,7 @@ font-weight: bold;
 font-style: inherit;">return</span> result</span></code></pre></div>
 </div>
 <p>Now create a DataFrame &amp; run a simple query:</p>
-<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.708828Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.647014Z&quot;}}" data-execution_count="11">
+<div id="23fcec61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:48.708828Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:48.647014Z&quot;}}" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1">df <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.DataFrame(<span class="bu" style="color: null;
@@ -7237,7 +7237,7 @@ background-color: null;
 font-style: inherit;">"""</span>)</span></code></pre></div>
 </div>
 <p>Alternatively, you can also compute the result with the line magics and store the result as a python variable that you can access elsewhere:</p>
-<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:55.512332Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:55.481003Z&quot;}}" data-execution_count="13">
+<div id="3c80e62f" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:33:55.512332Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:33:55.481003Z&quot;}}" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#collapse-output</span></span>
@@ -7282,7 +7282,7 @@ Tip
 <p>Often times we have data stored either in DB or in <code>parquet/csv</code> formats and they could be huge or may not/barely fit in memory. Loading them with pandas incur significant memory overhead and also possibly <a href="https://pandas.pydata.org/pandas-docs/stable/user_guide/scale.html">creates multiple copies</a> when performing certain operations. With DuckDB, such files can be queried directly without any copying because of <a href="https://arrow.apache.org/blog/2021/12/03/arrow-duckdb/">direct integration with Apache Arrow</a>.</p>
 <p>To demonstrate this, we’ll download an <a href="https://www.kaggle.com/datasets/yuanyuwendymu/airline-delay-and-cancellation-data-2009-2018">airline delay &amp; cancelation dataset from kaggle</a> (and place it under <code>data/airline_data/</code> folder). The compressed archive is about <code>~2GB</code> and when deflated, creates a couple of CSVs totalling <code>~8GB</code> of data.</p>
 <p>Let’s have a quick look at the contents by loading a single csv file:</p>
-<div id="cell-36" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:01.175371Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:00.924914Z&quot;}}" data-execution_count="14">
+<div id="6625dfe1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:01.175371Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:00.924914Z&quot;}}" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -7458,7 +7458,7 @@ font-style: inherit;">5</span></span></code></pre></div>
 </div>
 </div>
 <p>we can load efficiently with pandas too by specifying the <code>nrows</code> parameter:</p>
-<div id="cell-38" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:05.133414Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:05.097132Z&quot;}}" data-execution_count="15">
+<div id="68b4709b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:05.133414Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:05.097132Z&quot;}}" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1">pd.read_csv(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'./data/airline_data/2009.csv'</span>, nrows<span class="op" style="color: #5E5E5E;
@@ -7647,7 +7647,7 @@ background-color: null;
 font-weight: bold;
 font-style: inherit;">in</span> csvs)</span></code></pre></div>
 <p>A better alternative would be to merge all those CSVs into a single parquet file. Unlike CSVs, parquet files are structured and as such are unambiguous to read.<sup>2</sup> They are compressed columnar files and hence take much less space than individual CSVs combined because of the efficient Arrow data format.</p>
-<div id="cell-40" class="cell" data-execution_count="16">
+<div id="c0cba9aa" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%</span>sql copy <span class="st" style="color: #20794D;
@@ -7678,7 +7678,7 @@ font-style: inherit;">'data/airline_data/data.parquet'</span></span></code></pre
 </div>
 </div>
 <p>Notice that we directly copied all the CSVs using regex to a single parquet file without ever copying data into pandas. Now, we ended up from a 7.5GB combined CSV files to a 2.5GB parquet file which now easily fits into memory. So we can load it with pandas as:</p>
-<div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:38.545606Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:17.672753Z&quot;}}" data-execution_count="17">
+<div id="cc51ef85" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:38.545606Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:17.672753Z&quot;}}" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1">df <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.read_parquet(<span class="st" style="color: #20794D;
@@ -7693,7 +7693,7 @@ font-style: inherit;">'data/airline_data/data.parquet'</span>)</span>
 <section id="projection-filter-pushdowns" class="level2">
 <h2 class="anchored" data-anchor-id="projection-filter-pushdowns">Projection &amp; Filter Pushdowns</h2>
 <p>Now let’s do a simple filter operation on our dataset. Let’s count the total number of rows that satisfy the condition <code>TAXI_OUT &gt; 10</code>. We’ll try with both pandas &amp; duckdb.</p>
-<div id="cell-45" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.249748Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:44.719959Z&quot;}}" data-execution_count="18">
+<div id="f6368600" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.249748Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:44.719959Z&quot;}}" data-execution_count="18">
 <div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1">df[df[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'TAXI_OUT'</span>] <span class="op" style="color: #5E5E5E;
@@ -7705,7 +7705,7 @@ font-style: inherit;">10</span>].shape</span></code></pre></div>
 <pre><code>(45209245, 28)</code></pre>
 </div>
 </div>
-<div id="cell-46" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.499992Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:54.252243Z&quot;}}" data-execution_count="19">
+<div id="76f5e378" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:34:54.499992Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:34:54.252243Z&quot;}}" data-execution_count="19">
 <div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -7747,7 +7747,7 @@ font-style: inherit;">10</span></span></code></pre></div>
 </div>
 <p>While the earlier operation took <code>~9.5s</code>, the latter just took <strong>~250ms</strong> :zap:. <em>There’s just no comparison.</em></p>
 <p>This is because duckdb automatically optimizes the query by selecting only the required column(s) (aka <code>projection pushdown</code>) and then applies the filtering to get a subset of data (aka <code>filter pushdown</code>). Pandas instead reads through all the columns. We can optimize this in pandas by doing these pushdowns ourselves.</p>
-<div id="cell-48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:35:13.066902Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:35:12.209341Z&quot;}}" data-execution_count="20">
+<div id="8020ab2b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:35:13.066902Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:35:12.209341Z&quot;}}" data-execution_count="20">
 <div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1">projection_pushdown_df <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> df[[<span class="st" style="color: #20794D;
@@ -7773,7 +7773,7 @@ font-style: inherit;">10</span>]</span>
 <h2 class="anchored" data-anchor-id="using-groupby">Using Groupby</h2>
 <p>Now let’s calculate a few aggregates using <code>groupby</code> with projection &amp; filter pushdowns combined.</p>
 <p>Here, we compute a few simple metrics with a certain airline carrier grouped by two origin &amp; destination airports and finally sort the results by the origin airport.</p>
-<div id="cell-51" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:45:43.525554Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:45:36.613608Z&quot;}}" data-execution_count="22">
+<div id="4641ff8e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:45:43.525554Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:45:36.613608Z&quot;}}" data-execution_count="22">
 <div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1">projection_df <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> df[[<span class="st" style="color: #20794D;
@@ -7895,7 +7895,7 @@ font-style: inherit;">0</span>)</span>
 </div>
 </div>
 <p>We can make it a bit more concise by using <code>.query</code> for filtering pushdown.</p>
-<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:46:08.269756Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:46:04.842405Z&quot;}}" data-execution_count="23">
+<div id="250a0a83" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:46:08.269756Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:46:04.842405Z&quot;}}" data-execution_count="23">
 <div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1">(df</span>
 <span id="cb28-2"> .query(<span class="st" style="color: #20794D;
 background-color: null;
@@ -7971,7 +7971,7 @@ font-style: inherit;">'sum'</span>))</span>
 </div>
 </div>
 <p>This approach took only about half the time (~3s) compared to our earlier one because&nbsp;<code>.query</code> uses a modified syntax of python and also indexing thus resulting in more efficient evaluation. We can now compare that to our SQL counterpart…</p>
-<div id="cell-55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:47:12.947960Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:47:12.518760Z&quot;}}" data-execution_count="24">
+<div id="87d0454c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2022-05-27T19:47:12.947960Z&quot;,&quot;start_time&quot;:&quot;2022-05-27T19:47:12.518760Z&quot;}}" data-execution_count="24">
 <div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -8073,7 +8073,7 @@ font-style: inherit;">'EWR'</span>)</span>
 </section>
 <section id="accessing-data-with-views" class="level1">
 <h1>Accessing data with <code>Views</code></h1>
-<div id="cell-58" class="cell" data-execution_count="25">
+<div id="5d4d4c92" class="cell" data-execution_count="25">
 <div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -8181,7 +8181,7 @@ font-style: inherit;">--</span> you can also use `ALL` instead of each column</s
 </div>
 <p>This is such a powerful feature and allows us to explore <em>lot</em> more data than traditionally possible with pandas.</p>
 <p>We can also check the datatypes and other metadata with <code>describe view/table name</code></p>
-<div id="cell-60" class="cell" data-execution_count="26">
+<div id="54704433" class="cell" data-execution_count="26">
 <div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#collapse-output</span></span>
@@ -8467,7 +8467,7 @@ font-style: inherit;">%</span>sql describe airlinedata</span></code></pre></div>
 <section id="using-approximations" class="level2">
 <h2 class="anchored" data-anchor-id="using-approximations">Using approximations</h2>
 <p>At times, it suffices just to get an estimate of certain data rather than a precise answer. Using approximations would help us to just that.</p>
-<div id="cell-62" class="cell" data-execution_count="14">
+<div id="c421734f" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -8561,7 +8561,7 @@ font-style: inherit;">10</span></span></code></pre></div>
 </div>
 </div>
 </div>
-<div id="cell-63" class="cell" data-execution_count="15">
+<div id="280a0ae9" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -8664,7 +8664,7 @@ font-style: inherit;">10</span></span></code></pre></div>
 <h2 class="anchored" data-anchor-id="using-window-functions">Using Window functions</h2>
 <p>Finally, let’s wrap our analysis by showing off a bit more of what duckdb can do using some advanced SQL operations.</p>
 <p>We create two CTEs (Common Table Expressions) to calculate a couple of features. We do filter &amp; projection pushdowns in one CTE and compute our desired features in another. The first feature is a simple demo to showcase <code>if-else</code> support. The second feature is a bit advanced where we find out the last destination a given air carrier has flown to, sorted by flying date. And when it doesn’t exist, replace it with <code>NA</code>. We then take a sample from the final resultant set.</p>
-<div id="cell-66" class="cell" data-execution_count="27">
+<div id="447f447e" class="cell" data-execution_count="27">
 <div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%%</span>sql</span>
@@ -8909,7 +8909,7 @@ font-style: inherit;">;</span></span></code></pre></div>
 </section></div> ]]></description>
   <category>EDA</category>
   <category>pandas</category>
-  <category>SQL</category>
+  <category>sql</category>
   <guid>https://samsaara.github.io/posts/duckdb-tutorial/duckdb-tutorial.html</guid>
   <pubDate>Thu, 26 May 2022 18:30:00 GMT</pubDate>
   <media:content url="https://samsaara.github.io/posts/duckdb-tutorial/duck.jpg" medium="image" type="image/jpeg"/>
